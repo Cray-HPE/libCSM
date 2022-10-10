@@ -30,29 +30,29 @@ find . -name "*.sh" -type f | entr -d sh -xec "for s in sh bash ksh; do shellspe
 + for s in sh bash ksh
 + shellspec --shell sh
 Running: /run/current-system/sw/bin/sh [bash 5.1.16(1)-release]
+.............
 
-
-Finished in 0.19 seconds (user 0.11 seconds, sys 0.06 seconds)
-0 examples, 0 failures
+Finished in 0.68 seconds (user 0.41 seconds, sys 0.27 seconds)
+13 examples, 0 failures
 
 + for s in sh bash ksh
 + shellspec --shell bash
 Running: /run/current-system/sw/bin/bash [bash 5.1.16(1)-release]
+.............
 
-
-Finished in 0.17 seconds (user 0.11 seconds, sys 0.06 seconds)
-0 examples, 0 failures
+Finished in 0.68 seconds (user 0.41 seconds, sys 0.26 seconds)
+13 examples, 0 failures
 
 + for s in sh bash ksh
 + shellspec --shell ksh
 Running: /bin/ksh [ksh Version AJM 93u+ 2012-08-01]
+.............
 
-
-Finished in 0.07 seconds (user 0.01 seconds, sys 0.00 seconds)
-0 examples, 0 failures
+Finished in 0.40 seconds (user 0.01 seconds, sys 0.00 seconds)
+13 examples, 0 failures
 
 + date
-Mon Oct 10 12:15:56 CDT 2022
+Mon Oct 10 12:39:36 CDT 2022
 ```
 
 Note this presumes all of the shells are available locally. This will become a github action as well in a future pr.
