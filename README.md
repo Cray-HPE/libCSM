@@ -3,7 +3,8 @@ A library for common for CSM.
 
 # Shell specific notes
 
-As this is library shell and intended to be usable in minimal containers and elsewhere, we want to ensure all shell is usable in any bourne compatible shell. That includes ash, dash, busybox sh, etc. Note c and teco c shells are not included in this definition.
+As this is library shell and intended to be usable in minimal containers and elsewhere, we want to ensure all shell is usable in any bourne compatible shell.
+That includes `ash`, `dash`, busybox `sh`, etc. Note `c` and `teco c` shells are not included in this definition.
 
 To aide in this we have a GitHub action, [action-sh-checker](https://github.com/luizm/action-sh-checker) that will be used to run the following on all pull requests:
 - `shellcheck`
