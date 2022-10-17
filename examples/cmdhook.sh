@@ -6,6 +6,7 @@ export _base _dir
 
 # Note: not using set -e or set -u for this example
 
+#shellcheck disable=SC2034
 SOURCEPREFIX="${_dir}/../sh/"
 . "${_dir}/../sh/lib.sh"
 
@@ -23,6 +24,7 @@ posthook() {
   stderr="${1}"
   shift
 
+  #shellcheck disable=SC2086
   cat << EOF >&2
 example post hook
 command: $@
@@ -36,9 +38,13 @@ $(cat ${stderr})
 EOF
 }
 
+#shellcheck disable=SC2034
 CURLPOSTHOOK=posthook
+#shellcheck disable=SC2034
 JQPOSTHOOK=posthook
+#shellcheck disable=SC2034
 RMPOSTHOOK=posthook
+#shellcheck disable=SC2034
 LSPOSTHOOK=posthook
 
 curl uri://isinvalid | jq -r .
