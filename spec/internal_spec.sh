@@ -1,3 +1,4 @@
+#!/usr/bin/env sh
 #
 # MIT License
 #
@@ -21,20 +22,23 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
+_base=$(basename "$0")
+_dir=$(cd -P -- "$(dirname -- "$(command -v -- "$0")")" && pwd -P || exit 126)
+export _base _dir
 
-# All lib shell should Presume to be run with set -e and set -u. Pipes are and
-# should be allowed to fail within this library, pipefile is not portable and
-# shouldn't be depended upon for error checking. If a command fails that needs
-# to be checked not piped into another command.
+Describe 'internal.sh'
+  Include sh/internal.sh
 
-# Note in posix shell there is no way to know at source time where one is
-# sourced. So we require caller scripts to provide that information in
-# $SOURCEPREFIX as executing shells do have that information.
+  Context 'mkrundir() creates directory in RUNDIR'
+    It 'creates a dir when called'
+      When call mkrundir
+      The path "${RUNDIR}" should be directory
+      End
 
-# Note: Order of imports is important, will eventually automate this.
-. "${SOURCEPREFIX?}/internal.sh"
-. "${SOURCEPREFIX?}/logger.sh"
-. "${SOURCEPREFIX?}/cmd.sh"
-
-# Don't import lib.sh directly in shellspec tests, this is why.
-trap libcleanup EXIT
+    It 'is cleaned up when libcleanup is called'
+      When call libcleanup
+      The path "${RUNDIR}" should not be directory
+      The path "${RUNDIR}" should not be file
+    End
+  End
+End

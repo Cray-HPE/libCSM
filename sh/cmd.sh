@@ -54,6 +54,10 @@ wrapcmd() {
     return 0
   fi
 
+  # Need to detect this outside of any wrapped command or hook or we detect the
+  # pipes things might be ran in.
+  _colors
+
   # You need to explicitly opt into system under test behavior (just changes the
   # function name in the end)
   SUT=${SUT:-false}
@@ -65,6 +69,32 @@ wrapcmd() {
     uppername="$(echo ${cmdname} | tr '[:lower:]' '[:upper:]')"
     evalcmd="${cmdname}"
 
+    # Less copypasta is good...er
+    UPRE="${uppername}PREHOOK"
+    UPOST="${uppername}POSTHOOK"
+
+    # If users want a default post hook set it up first the later evals will use
+    # this if present. Note, don't setup this hook if there is already a hook.
+    #
+    # For the life of me I can't figure out how to do parameter expanstion
+    # defaults in an eval here. Future me fix. TODO: Sorry its insane figure out
+    # why ${blah:-${default}} no worky.
+
+    # This is a huge hack future me red/green/refactor it.
+    #shellcheck disable=SC2116 disable=SC2086
+    eval "posthook=\$${UPOST}"
+    defposthook="${DEFAULTPOSTHOOK}"
+
+    # I had to do evil with the eval above...
+    #shellcheck disable=SC2154
+    if [ "${posthook}" != "" ]; then
+      eval "${UPOST}=\$${UPOST}"
+    elif [ "${defposthook}" != "" ]; then
+      eval "${UPOST}=\${DEFAULTPOSTHOOK}"
+    fi
+
+    # TODO: pre/validate default hooks? Not sure that makes sense... Easy to add
+    # if/when needed.
     if $SUT; then
       cmdname="sut${cmd}"
     else
@@ -116,48 +146,23 @@ wrapcmd() {
     #
     # Every one of these evals this is a non issue shellcheck.
     #shellcheck disable=SC2086
-    eval ${uppername}PREHOOK="\${${uppername}PREHOOK-}"
-    # # Don't stare too long into the \ abyss just accept the void...
-    eval "${cmd}prehook() { [ -n \"\$${uppername}PREHOOK\" ] && \$${uppername}PREHOOK \"\\\$@\"; }"
-
-    # Second hook defined exists to allow for a use case of:
-    # I have data passed to the command and need to validate it
-    #
-    # The specific use case here is curl | jq. We don't want to pass stdout from
-    # curl to jq if its say, html or simply "not json".
-    #
-    # This hook exists for that latter reason. It lets a hook determine if/when
-    # it makes sense to run the requisite command.
-    #
-    # So with that in mind the uneval'd shell looks like so:
-    # FOOVALIDATEHOOK=${FOOVALIDATEHOOK-}
-    # foovalidatehook() { if [ -n "${FOOVALIDATEHOOK}" ]; then return "${FOOVALIDATEHOOK}" "$@"; else return 0; fi }
-    #
-    # The wrapper function will exit early based on this hooks return.
-    # Every one of these evals this is a non issue shellcheck.
-    #shellcheck disable=SC2086
-    eval ${uppername}VALIDATEHOOK="\${${uppername}VALIDATEHOOK-}"
+    eval "${UPRE}=\${${UPRE}-}"
     # # Don't stare too long into the \ abyss just accept the void...
     eval "
-${cmd}validatehook() {
-  {
-    set +e
-    if [ -n \"\$${uppername}VALIDATEHOOK\" ]; then
-      \$${uppername}VALIDATEHOOK \"\\\$@\"
-      return $?
-    else
-      return 0
-    fi
-  }
+${cmd}prehook() {
+  [ -n \"\$${UPRE}\" ] && \$${UPRE} \$@ || :;
 }"
 
-    # And lastly, the third and final hook defined is basically the PREHOOK only
-    # called right before return Here to do any cleanup you may want in the
-    # PREHOOK really or record executation time whatever. You do you.
+    # The second and final hook defined is basically the PREHOOK only called
+    # right before return Here to do any cleanup you may want in the PREHOOK
+    # really or record executation time whatever. You do you.
     #shellcheck disable=SC2086
-    eval ${uppername}POSTHOOK="\${${uppername}POSTHOOK-}"
+    eval "${UPOST}=\${${UPOST}-}"
     # # Don't stare too long into the \ abyss just accept the void...
-    eval "${cmd}posthook() { [ -n \"\$${uppername}POSTHOOK\" ] && \$${uppername}POSTHOOK \$@; }"
+    eval "
+${cmd}posthook() {
+  [ -n \"\$${UPOST}\" ] && \$${UPOST} \$@ || :;
+}"
 
     # I want to be clear, this entire things crazy enough as it is but this eval
     # is not for the faint of heart, here there definitely be dragons, hold onto
@@ -167,7 +172,7 @@ ${cmd}validatehook() {
     #shellcheck disable=SC2140
     eval "
 ${cmdname}() {
-  ${cmd}prehook \$${evalcmd} \"\$@\"
+  ${cmd}prehook ${evalcmd} \"\$@\"
 
   if [ ! -t 0 ]; then
     stdin=\$(libtmpfile stdin-is-a-pipe)
@@ -175,11 +180,6 @@ ${cmdname}() {
   else
     # Its empty but eh
     stdin=\$(libtmpfile stdin)
-  fi
-
-  # TODO: Future work to pass in more than just args
-  if ! ${cmd}validatehook \$stdin \$${evalcmd} \"\$@\"; then
-    return $?
   fi
 
   if ! [ -t 1 ]; then
@@ -201,7 +201,7 @@ ${cmdname}() {
     if [ ! -z \$stdin ]; then
       ${evalcmd} "\$@" 2> \$stderr 1> \$stdout < \$stdin
     else
-      \$$evalcmd "\$@" 2> \$stderr 1> \$stdout
+      ${evalcmd} "\$@" 2> \$stderr 1> \$stdout
     fi
   }
   rc=\$?
@@ -210,8 +210,65 @@ ${cmdname}() {
   cat \$stdout >&1
   cat \$stderr >&2
 
-  ${cmd}posthook \$rc \$stdin \$stdout \$stderr \$${evalcmd} \$@
+  ${cmd}posthook \$rc \$stdin \$stdout \$stderr ${evalcmd} \"\$@\"
   return \$rc
 }"
   done
+}
+
+# Dumb helper function for the post hook
+_dump() {
+  file="${1}"
+  realfile=$(realpath "${file}")
+
+  if [ -s "${realfile}" ]; then
+    # Shellcheck can be annoying with quoting in a quoted $() call, its not
+    # needed.
+    #shellcheck disable=SC2086
+    printf "%s:\n%s" "${realfile}" "$(cat ${realfile})"
+  else
+    printf "%s: file is empty no data present\n" "${realfile}"
+  fi
+}
+
+_colors() {
+  if [ -t 1 ] && [ "$(tput colors)" -ge 8 ]; then
+    reset="$(tput sgr0)"
+    red="$(tput setaf 1)"
+    yellow="$(tput setaf 3)"
+  fi
+}
+
+# Default post hook, aka where most of the "magic" happens
+defaultposthook() {
+  rc="${1}"
+  shift
+  stdin="${1}"
+  shift
+  stdout="${1}"
+  shift
+  stderr="${1}"
+  shift
+
+  if [ "${rc}" -gt 0 ]; then
+    rcpre="${red}"
+  fi
+
+  if [ -s "${stderr}" ]; then
+    stderrpre="${red}"
+  fi
+
+  #shellcheck disable=SC2086
+  cat << EOF >&2
+${yellow-}default cmdhook debug begin${reset-}
+
+command: $@
+${rcpre-}rc: $rc${reset-}
+pwd: $(pwd)
+stdin $(_dump ${stdin})
+stdout $(_dump ${stdout})
+stderr ${stderrpre-}$(_dump ${stderr})${reset-}
+
+${yellow-}default cmdhook debug end${reset-}
+EOF
 }

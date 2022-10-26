@@ -174,47 +174,4 @@ post"
       The stderr should equal "stderr"
     End
   End
-
-  Context 'wrapcmd honors validate hook in 0 case'
-    # The "command"
-    foo() {
-      printf "stdout\n"
-      printf "stderr\n" >&2
-      return 0
-    }
-
-    Before 'wrapsetup'
-    After 'wrapteardown'
-
-    wrapsetup() {
-      DEBUG=whynot wrapcmd foo
-    }
-
-    wrapteardown() {
-      unset DEBUG
-    }
-
-    Before 'hooksetup'
-    After 'hookteardown'
-
-    hooksetup() {
-      validate() {
-        printf "validate\n"
-        return 0
-      }
-      export FOOVALIDATEHOOK=validate
-    }
-
-    hookteardown() {
-      unset FOOVALIDATEHOOK
-    }
-
-    It 'calls validate hook for foo "command"'
-      When call sutfoo
-      The status should equal 0
-      The stdout should equal "validate
-stdout"
-      The stderr should equal "stderr"
-    End
-  End
 End
