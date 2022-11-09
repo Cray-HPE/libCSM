@@ -1,6 +1,6 @@
 # Examples for how one might use this library of shenanigans
 
-## cmdhook.sh
+## `cmdhook.sh`
 
 This example script exists to demonstrate how a user could write their own hooks that could be called via the cmdhook wrapper generation function.
 
