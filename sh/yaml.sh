@@ -22,20 +22,31 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 
-# All lib shell should Presume to be run with set -e and set -u. Pipes are and
-# should be allowed to fail within this library, pipefile is not portable and
-# shouldn't be depended upon for error checking. If a command fails that needs
-# to be checked not piped into another command.
+# Function to convert a yaml bool string value(s) to a shell bool
+# https://yaml.org/type/bool.html is all the valid values
 
-# Note in posix shell there is no way to know at source time where one is
-# sourced. So we require caller scripts to provide that information in
-# $SOURCEPREFIX as executing shells do have that information.
+# Validation function should be called before the bool function, otherwise the
+# bool function will report false for invalid values.
+yamlboolvalid() {
+  case "${1?}" in
+    y | Y | yes | Yes | YES | n | N | no | No | NO | 'true' | True | TRUE | 'false' | False | FALSE | on | On | ON | off | Off | OFF)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
 
-# Note: Order of imports is important, will eventually automate this.
-. "${SOURCEPREFIX?}/internal.sh"
-. "${SOURCEPREFIX?}/logger.sh"
-. "${SOURCEPREFIX?}/cmd.sh"
-. "${SOURCEPREFIX?}/yaml.sh"
-
-# Don't import lib.sh directly in shellspec tests, this is why.
-trap libcleanup EXIT
+# Expects valid inputs, if its invalid you get false the above function is on
+# callers to use to ensure valid data is sent before calling.
+yamlbool() {
+  case "${1?}" in
+    y | Y | yes | Yes | YES | 'true' | True | TRUE | on | On | ON)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
