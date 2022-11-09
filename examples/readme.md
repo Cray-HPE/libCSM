@@ -2,12 +2,16 @@
 
 ## `cmdhook.sh`
 
-This example script exists to demonstrate how a user could write their own hooks that could be called via the cmdhook wrapper generation function.
+This example script exists to demonstrate how a user could write their own hooks that could be called via the `cmdhook` wrapper generation function.
 
 The intent is to make output like this:
 
+```bash
+./examples/cmdhook.sh
+```
+
+Output:
 ```text
-$ ./examples/cmdhook.sh
 curl: (1) Protocol "uri" not supported or disabled in libcurl
 parse error: Invalid numeric literal at line 1, column 10
 ls: cannot access '/does/not/exist': No such file or directory
@@ -15,10 +19,15 @@ rm: cannot remove '/does/not/exist': No such file or directory
 zsh: exit 1     ./examples/cmdhook.sh
 ```
 
-More useful when you use the *wrapcmd* hook functions and wrap a command as called in shell. Example (note ran on macos output will vary):
+More useful when one uses the `wrapcmd` hook functions and wrap a command as called in shell. Example:
+
+```bash
+WRAP="jq" DEBUG=sure ./examples/cmdhook.sh
+```
+
+Output:
 
 ```text
-$ WRAP="jq" DEBUG=sure ./examples/cmdhook.sh
 curl: (1) Protocol "uri" not supported or disabled in libcurl
 default cmdhook debug begin
 
@@ -93,16 +102,18 @@ rm: cannot remove '/does/not/exist': No such file or directory
 zsh: exit 1     WRAP="jq" DEBUG=sure ./examples/cmdhook.sh
 ```
 
-As you can see you get a number of bits of information you won't get by default, or with *set -x* either. Aka:
-- What was stdin to the command, if it was provided as a pipe
-- What was the commands stdout, if it was provided or output to a pipe
-- What was the commands stderr, if it was provided or output to a pipe
+As one can see one will receive information one wouldn't get by default, or with `set -x` either. Specifically:
+
+- What was `stdin` to the command, if it was provided as a pipe
+- What was the commands `stdout`, if it was provided or output to a pipe
+- What was the commands `stderr`, if it was provided or output to a pipe
 - What was the commands working directory
 - What was the commands return code
 - What was the full path to the command and its args
 
-Note that hooks of any complexity could be conceived, but the intent here is to provide a mostly drop in solution to help debug existing scripts without rewriting all of them logic wise. Or at least to find where it would be most beneficial to do so.
+> Note that hooks of any complexity could be conceived, but the intent here is to provide a
+> drop-in solution to help debug existing scripts without rewriting all of them logic wise.
 
-This example script provides an example of writing your own non default hook for the wrapper trampoline function that is created. One could imagine saving all this data in a timeline sequence to record all command executions, timing data etc...
+This example script provides an example of writing one's own non default hook for the wrapper trampoline function that is created. One could imagine saving all this data in a timeline sequence to record all command executions, timing data etc...
 
 For now the default hook should provide enough information to debug any existing command reasonably well.
