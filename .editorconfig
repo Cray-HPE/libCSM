@@ -1,13 +1,24 @@
 root = true
 
 [*]
-indent_style = space
-indent_size = 2
+charset = utf-8
 end_of_line = lf
-trim_trailing_spaces = true
+indent_style = space
 insert_final_newline = true
+trim_trailing_spaces = true
+trim_trailing_whitespace = true
 
-# trailing spaces in markdown indicate word wrap
-[*.md]
-trim_trailing_spaces = false
-max_line_length = 80
+# 4 space indentation
+[*.{py,go}]
+indent_size = 4
+
+# 2 space indentation
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.sh]
+indent_size = 2
+
+[*.{adoc,md}]
+trim_trailing_whitespace = false
+indent_size = 2

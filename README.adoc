@@ -1,0 +1,404 @@
+= CSM Library (`libcsm`)
+:toc:
+:toclevels: 4
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+A library for Cray Systems Management.
+
+== Python
+
+=== Usage
+
+
+==== Building and using `libcsm`
+
+* With `pip`
++
+[source,bash]
+----
+python -m pip install setuptools_scm[toml]
+python -m pip install .
+----
+* With `build` and `pip`
++
+[source,bash]
+----
+python -m pip install build
+python -m build
+python -m install ./dist/*.whl
+----
+
+==== Using `libcsm` in another project
+
+This module is not published to PyPi, but it is published to the Cray-HPE CSM Artifactory pip repository (which requires credentials). To use
+this module without credentials, the GitHub repository must be referenced directly.
+
+* Install
+** From Artifactory (requires authentication)
+*** Stable (`artifactory.algol60.net/artifactory/csm-python-modules/simple`)
++
+.Command
+[source,bash]
+----
+python3 -m pip install --extra-index-url https://{$ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}@artifactory.algol60.net/artifactory/csm-python-modules/simple libcsm
+----
++
+.Output
+[source,bash]
+----
+Looking in indexes: https://pypi.org/simple, https://doomslayer:****@artifactory.algol60.net/artifactory/csm-python-modules/simple
+Collecting libcsm
+  Downloading https://artifactory.algol60.net/artifactory/csm-python-modules/simple/libcsm/libcsm-0.0.1-py2.py3-none-any.whl (24 kB)
+Installing collected packages: libcsm
+Successfully installed libcsm-0.0.1
+----
+*** Unstable (`artifactory.algol60.net/artifactory/csm-python-modules/unstable`)
++
+.Command
+[source,bash]
+----
+python3 -m pip install --extra-index-url https://{$ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}@artifactory.algol60.net/artifactory/csm-python-modules/unstable libcsm
+----
++
+.Output
+[source,bash]
+----
+Looking in indexes: https://pypi.org/simple, https://doomslayer:****@artifactory.algol60.net/artifactory/csm-python-modules/unstable
+Collecting libcsm
+  Downloading https://artifactory.algol60.net/artifactory/csm-python-modules/unstable/libcsm/libcsm-0.0.1a2.dev1%2Bg757ad3a-py2.py3-none-any.whl (24 kB)
+Installing collected packages: libcsm
+Successfully installed libcsm-0.0.1a2.dev1+g757ad3a
+----
++
+** From the VCS URL
++
+[source,bash]
+----
+# From the cloned repository
+python3 -m pip install .
+
+# From the Git URL
+python3 -m pip install git+https://github.com/Cray-HPE/libcsm.git
+
+# From the Git URL from a branch
+python3 -m pip install git+https://github.com/Cray-HPE/libcsm.git@main
+
+# From the Git URL from tag
+python3 -m pip install git+https://github.com/Cray-HPE/libcsm.git@v0.0.2
+----
+
+==== Importing `libcsm`
+
+Import into another Python script or module with a standard `import` call:
+[source,python]
+----
+import libcsm
+----
+
+Look below for examples using the `libcsm` in `pyproject.toml`, `setup.py`, and `requirements.txt` based projects.
+
+For more information regarding VCS versioning and dependency managment, see the following references
+
+- https://setuptools.pypa.io/en/latest/userguide/dependency_management.html[Setuptools Dependency Management]
+- pip's documentation on https://pip.pypa.io/en/latest/topics/vcs-support/[VCS support]
+
+===== Importing `libcsm` with a `pyproject.toml` or `setup.py` file
+
+For `setup.py` files, the GitHub source can be included in another project by adding a `dependency_links=[]` parameter in the `setup()` function call.
+
+* `pyproject.toml` by branch name, git-tag, or git release
++
+[source,toml]
+----
+[project]
+# ...
+dependencies = [
+    "libcsm @ git+https://github.com/Cray-HPE/libcsm.git@main",
+    "libcsm @ git+https://github.com/Cray-HPE/libcsm.git@v1.0.2",
+    "libcsm @ git+https://github.com/Cray-HPE/libcsm.git@eleases/tag/v1.0.1",
+]
+----
+* `setup.py` by branch name, git-tag, or git release
++
+[source,python]
+----
+setup(
+    # ...
+    install_requires=[
+        # ...
+        "libcsm @ git+https://github.com/Cray-HPE/libcsm.git@main",
+        "libcsm @ git+https://github.com/Cray-HPE/libcsm.git@v1.0.2",
+        "libcsm @ git+https://github.com/Cray-HPE/libcsm.git@eleases/tag/v1.0.1",
+    ],
+),
+----
+
+===== Importing `libcsm` with a `requirements.txt` file
+
+Add a line like the ones below to a `requirements.txt` file.
+
+* By branch name
++
+[source,python]
+----
+git+git://github.com/Cray-HPE/libcsm.git@master#egg=libcsm
+----
+* By git tag
++
+[source,python]
+----
+git+git://github.com/Cray-HPE/libcsm.git@v1.0.2#egg=libcsm
+----
+* By release
++
+[source,python]
+----
+git+git://github.com/Cray-HPE/libcsm.git@releases/tag/v1.0.1#egg=libcsm
+----
+
+=== Versioning
+
+The version is derived from Git by the `setuptools_scm` Python module and follows https://peps.python.org/pep-0440/#abstract[PEP0440]'s version identification
+and dependency specification for https://peps.python.org/pep-0440/#final-releases[final] and https://peps.python.org/pep-0440/#pre-releases[pre] releases.
+
+.All Git-Tags in this repository are prefixed with `v`.
+
+==== Classification
+
+The items below denote how stable, pre-release, and unstable versions are classified through
+version strings.
+
+* **(stable) final release**: A git-tag following the `X.Y.Z` semver format is considered a final release version.
++
+[source,bash]
+----
+# Format:
+# {tag}
+# X.Y.Z
+# X - Major
+# Y - Minor
+# Z - Micro (a.k.a. patch)
+0.1.2
+----
+* **(unstable) pre-release**: A git-tag with an `a`(lpha), `b`(eta), or `r`(elease) `c`(andidate) annotation and an identification number `N` denotes a pre-release/preview.
++
+.These are rarely used for `libcsm`.
++
+[source,bash]
+----
+# Format:
+# {tag}[{a|b|rc}N]
+0.1.2a1
+0.1.2b1
+0.1.2rc1
+----
+* **(unstable) development**: Development builds **auto-increment** the micro version (the `Z` in `X.Y.Z`) or pre-release version (the `N` in `X.Y.Z{[a|b|rc]N}`), and 
+then append a suffix based on whether the working directory was **clean**, **dirty**, or **mixed**.
+** **clean**: When the version shows an appended `devN+{scm_letter}{revision_short_hash}`, that means there have been commits made since the previous git-tag.
++
+[source,bash]
+----
+# Format:
+# {next_version}.dev{distance}+{scm_letter}{revision_short_hash}
+
+# If the previous git-tag was 0.1.2:
+           0.1.3.dev4+g818da8a
+
+# If the previous get-tag was a pre-release of 0.1.3a1:
+         0.1.3a2.dev4+g818da8a
+----
+** **dirty**: When the version shows an appended `.d{YYYYMMDD}` datestamp, that means there were modified/uncommitted changes in the working directory when the application was built.
++
+[source,bash]
+----
+# Format:
+# {next_version}.d(datestamp}
+
+# If the previous git-tag was 0.1.2:
+           0.1.3.d20230123
+
+# If the previous get-tag was a pre-release of 0.1.3a1:
+         0.1.2a2.d20230123
+----
+** **mixed**: When the version shows a development tag with an appended datestamp, this means commits have been made but there were uncommitted changes present in the working directory when the application was built.
++
+[source,bash]
+----
+# Format:
+# {next_Version}.dev{distance}+{scm_letter}{revision_short_hash}.d{datestamp}
+
+# If the previous git-tag was 0.1.2:
+           0.1.3.dev3+g3071655.d20230123
+
+# If the previous get-tag was a pre-release of 0.1.3a1:
+         0.1.3a2.dev3+g3071655.d20230123
+----
+
+For more information about versioning, see https://github.com/pypa/setuptools_scm/#default-versioning-scheme[versioning scheme information].
+
+==== Configuration
+
+The `setuptools_scm` module is configured by `pyproject.toml`.
+
+For more information regarding configuration of `setuptools_scm`, see https://github.com/pypa/setuptools_scm/#version-number-construction[version number construction].
+
+==== Retrieving the Python Package Version at Runtime
+
+If at any point code within the module wants to print or be aware of the modules own version, it can. The following snippet demonstrates how to do this.
+
+[source,python]
+----
+from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError
+
+try:
+    __version__ = version("libcsm")
+except PackageNotFoundError:
+    # package is not installed
+    pass
+----
+
+=== Contributing
+
+The primary purpose of the `libcsm` module is to support CSM installation, upgrade, and operational procedures. This module serves as a place for offering functions and error handling to common tasks
+pertaining to the aforementioned CSM procedures.
+
+Contributions can be in the form of:
+
+* Python code that can be imported and used in Python scripts
+* Callables for the command line that make use of one or more functions/modules
+
+==== Adding new commands
+
+When a new or existing module of `libcsm` wants to offer a command line function an `entry_point` can be used.
+
+For example, if we wanted a command called `hms-do-stuff` to exist on the command line that invoked some code within a `libcsm` submodule like the
+code below:
+
+[source,python]
+----
+# file: ./libcsm/hms/service.py
+def do_stuff() -> None:
+    thing = 'cool stuff'
+    print(f'Doing {thing}')
+    foo(thing)
+
+def foo(stuff: str) -> None:
+    with open('/tmp/foo', 'w') as file:
+        file.write(f'finished doing {stuff}')
+----
+
+Then we could add an Entry Point to the `entry_points.ini` file
+
+[source,ini]
+----
+[console_scripts]
+hms-do-stuff = 'libcsm.hms.service:do_stuff'
+----
+
+== Shell
+
+=== Usage
+
+==== Locally
+
+Use the library in a local/development environment.
+
+.Source the shell library
+[source,bash]
+----
+SOURCEPREFIX="$(pwd)/sh"
+. ${SOURCEPREFIX}/lib.sh
+----
+
+==== On a CSM System
+
+Use the library on a CSM system.
+
+The library is installed on the following node types:
+
+* pre-install-toolkits (PIT)
+* non-compute-nodes (NCN)
+
+.Source the shell library.
+[source,bash]
+----
+SOURCEPREFIX="/usr/lib/libcsm/sh"
+. ${SOURCEPREFIX}/lib.sh
+----
+
+=== Shell specific notes
+
+As this is library shell and intended to be usable in minimal containers and elsewhere, we want to ensure all shell is usable in any bourne compatible shell.
+That includes `ash`, `dash`, busybox `sh`, etc.
+Note `c` and `teco c` shells are not included in this definition.
+
+To aide in this we have a GitHub action, https://github.com/luizm/action-sh-checker[action-sh-checker] that will be used to run the following on all pull requests:
+
+* `shellcheck`
+* `shfmt`
+* checkbashisms
+
+This will help to ensure all library code remains portable and consistently formatted and enforced.
+
+To run this action locally against work in progress changes install https://github.com/nektos/act[`act`] and/or `docker` or some other equivalent and run `act -j sh-checker`.
+
+=== Shell unit tests
+
+As we want to ensure portability across posix shells, the unit test library of choice is shellspec.
+For details why see https://shellspec.info/comparison.html[`shellspec`'s compression page] in essence it has more features than bats and also allows
+us to ensure other shells function.
+
+To locally run tests ensure one has https://github.com/shellspec/shellspec[`shellspec`] installed and available locally and one may simply run `shellspec` or `make test` to run all the unit tests.
+To run against all configured shells known to work run `make test-all`.
+
+If one also has https://github.com/eradman/entr[entr] installed one can run `make ci` to run against all of the configured shells in the `makefile` on every update to a shell script.
+
+.Run unit tests:
+[source,sh]
+----
+make ci
+----
+
+.Example output:
+[source,text]
+----
++ for s in sh bash ksh
++ shellspec --shell sh
+Running: /run/current-system/sw/bin/sh [bash 5.1.16(1)-release]
+.............
+
+Finished in 0.68 seconds (user 0.41 seconds, sys 0.27 seconds)
+13 examples, 0 failures
+
++ for s in sh bash ksh
++ shellspec --shell bash
+Running: /run/current-system/sw/bin/bash [bash 5.1.16(1)-release]
+.............
+
+Finished in 0.68 seconds (user 0.41 seconds, sys 0.26 seconds)
+13 examples, 0 failures
+
++ for s in sh bash ksh
++ shellspec --shell ksh
+Running: /bin/ksh [ksh Version AJM 93u+ 2012-08-01]
+.............
+
+Finished in 0.40 seconds (user 0.01 seconds, sys 0.00 seconds)
+13 examples, 0 failures
+
++ date
+Mon Oct 10 12:39:36 CDT 2022
+----
+
+[NOTE]
+====
+This presumes all of the shells are available locally.
+This will become a GitHub action as well in a future pull-request.
+====

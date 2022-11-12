@@ -1,0 +1,51 @@
+= Shell library docs
+:toc:
+:toclevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+== Rough design plan
+
+CAUTION: Not yet fully implemented.
+
+Premise here is if you want the whole hog just source `sh/lib.sh` after setting `SOURCEPREFIX` to the directory containing
+that dir/file. For POSIX, shells there is no portable way to "know" where one imported from, so we just defer that to calling
+scripts as they can know where they're importing from.
+
+When you have that you get all the fun stuff.
+
+Goal(s):
+
+* Make debugging shell a bit easier and have some standard library of shell aiding
+* Promote defensive scripting; provide common error handling and helper functions to mitigate mistakes
+
+That will end up with something like scripts having:
+
+[source,sh]
+----
+SOURCEPREFIX=$(pwd)/sh
+. ${SOURCEPREFIX}/lib.sh
+
+wrapcmd ls ps curl jq
+
+... stuff
+----
+
+When called with `DEBUG=anyvalue` and/or `TIMELINE=anyvalue` one will end up with a directory of 
+`/tmp/PARENTPID` with directories of the epoch start time of any `ls`, `ps`, `curl` or `jq` call containing:
+
+* `cmdline`: The command line of what was called
+* `rc`: The return code it exited with
+* `stdin{-is-a-pipe}`: Standard input, and if it was a pipe the filename will reflect that
+* `stdout{-is-a-pipe}`: Standard output, and if it was a pipe the filename will reflect that
+* `stderr{-is-a-pipe}`: Standard error, and if it was a pipe the filename will reflect that
+
+That will help with debugging shell scripts that utilize the wrapper functions.
+
+In a near future commit default hooks for the wrapper functions generated will help in output to the screen.
+For now this is MVP status. An example hook is located in the examples directory at the base of https://github.com/Cray-HPE/libcsm[this repo].
