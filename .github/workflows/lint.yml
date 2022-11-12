@@ -21,5 +21,28 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
-# Default group
-*                                                        @Cray-HPE/docs-csm-reviewers
+name: Python (lint)
+
+on: [push]
+
+jobs:
+  lint:
+    name: Lint
+    strategy:
+      matrix:
+        version: ['3.10', '3.9']
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # Also fetch git-tags
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.version }}
+    - name: nox
+      env:
+        GIT_REPO_NAME: "${GITHUB_REPOSITORY#*/}"
+      run: |
+        pip install .[ci]
+        nox -e lint

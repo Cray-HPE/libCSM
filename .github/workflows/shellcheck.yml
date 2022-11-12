@@ -21,5 +21,23 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
-# Default group
-*                                                        @Cray-HPE/docs-csm-reviewers
+name: shell (lint)
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run shellcheck
+        uses: luizm/action-sh-checker@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Note we globally ignore SC2148 as a lot of this shell is library
+          # only not something that should have a shebang line.
+          SHELLCHECK_OPTS: --severity=warning --color=always -e SC2148 # We can globally ignore things here if we want with -e SC1234
+          SHFMT_OPTS: -ci -p -i 2 -bn -sr
+        with:
+          sh_checker_comment: true
+          sh_checker_exclude: "spec" # We can exclude things here as well that should never be checked spec excluded as sh-fmt can't parse them sanely it flattens the Describe/End blocks will fix this later.

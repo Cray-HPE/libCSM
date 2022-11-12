@@ -1,7 +1,6 @@
-#
 # MIT License
 #
-# (C) Copyright 2022 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2023 Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -20,10 +19,9 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-#
 
 # Where we store all our temp dirs/files for anything this lib does.
-RUNDIR="${RUNDIR:-${TMPDIR:-/tmp}/csm-common-lib-$$}"
+RUNDIR="${RUNDIR:-${TMPDIR:-/tmp}/libcsm-$$}"
 
 # Callers of this script need to call this in an exit handler or temp files
 # created will not be cleaned up.

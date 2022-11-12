@@ -1,7 +1,7 @@
 #
 # MIT License
 #
-# (C) Copyright 2022 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2022-2023 Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -31,6 +31,24 @@ endif
 # This is for ci/testing/unit testing
 SHELLSPEC:=shellspec
 
+ifeq ($(NAME),)
+export NAME := $(shell basename $(shell pwd))
+endif
+
+ifeq ($(ARCH),)
+export ARCH := x86_64
+endif
+
+ifeq ($(PYTHON_VERSION),)
+export PYTHON_VERSION := 3.10
+endif
+
+export PYTHON_BIN := python$(PYTHON_VERSION)
+
+ifeq ($(VERSION),)
+export VERSION := $(shell python3 -m setuptools_scm | tr -s '-' '~' | tr -d '^v')
+endif
+
 # Might want to run with parallelism by default to make sure people don't
 # introduce dependencies in tests and with randomness.
 # SHELLSEPCARGS:=--jobs 4
@@ -41,6 +59,11 @@ BASH:=bash
 KSH:=ksh
 SHELLS:=$(SH) $(BASH) $(KSH)
 DATE:=date
+
+SPEC_FILE ?= ${NAME}.spec
+SOURCE_NAME ?= ${NAME}
+BUILD_DIR ?= $(PWD)/dist/rpmbuild
+SOURCE_PATH := ${BUILD_DIR}/SOURCES/${SOURCE_NAME}-${VERSION}.tar.bz2
 
 # Quick run shellspec to do a one off test
 .PHONY: test
@@ -61,3 +84,24 @@ test-all:
 .PHONY: ci
 ci:
 	find . -name "*.sh" -type f | $(ENTR) -d sh -xec "for s in $(SHELLS); do $(SHELLSPEC) --shell \$$s $(SHELLSPECARGS); done; $(DATE)"
+
+.PHONY: rpm
+rpm: prepare rpm_package_source rpm_build_source rpm_build
+
+.PHONY: prepare
+prepare:
+	rm -rf $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)/SPECS $(BUILD_DIR)/SOURCES
+	cp $(SPEC_FILE) $(BUILD_DIR)/SPECS/
+
+.PHONY: rpm_package_source
+rpm_package_source:
+	tar --transform 'flags=r;s,^,/${NAME}-${VERSION}/,' --exclude .nox --exclude dist/rpmbuild -cvjf $(SOURCE_PATH) .
+
+.PHONY: rpm_build_source
+rpm_build_source:
+	rpmbuild --nodeps -ts $(SOURCE_PATH) --define "_topdir $(BUILD_DIR)"
+
+.PHONY: rpm_build
+rpm_build:
+	rpmbuild --nodeps -ba $(SPEC_FILE) --define "_topdir $(BUILD_DIR)"
