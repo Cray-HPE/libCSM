@@ -28,14 +28,23 @@
 # to be checked not piped into another command.
 
 # Note in posix shell there is no way to know at source time where one is
-# sourced. So we require caller scripts to provide that information in
-# $SOURCEPREFIX as executing shells do have that information.
+# sourced from a sourced file. So we require caller scripts to provide that
+# information in $SOURCEPREFIX as executing shells do have that information.
+#
+# Yes BASH_SOURCE allows this, but that doesn't work on dash, or ash, or
+# anything other than bash and our intent here is to run in busybox containers
+# as well as ubuntu.
 
 # Note: Order of imports is important, will eventually automate this.
-. "${SOURCEPREFIX?}/internal.sh"
-. "${SOURCEPREFIX?}/logger.sh"
-. "${SOURCEPREFIX?}/cmd.sh"
-. "${SOURCEPREFIX?}/yaml.sh"
+if [ -n "${SOURCEPREFIX}" ]; then
+  . "${SOURCEPREFIX}/internal.sh"
+  . "${SOURCEPREFIX}/logger.sh"
+  . "${SOURCEPREFIX}/cmd.sh"
+  . "${SOURCEPREFIX}/yaml.sh"
 
-# Don't import lib.sh directly in shellspec tests, this is why.
-trap libcleanup EXIT
+  # Don't import lib.sh directly in shellspec tests, this is why.
+  trap libcleanup EXIT
+else
+  # Nothing will be sourced in this case
+  printf "You must set SOURCEPREFIX to the base directory of lib.sh in before sourcing this library!\n" >&2
+fi
