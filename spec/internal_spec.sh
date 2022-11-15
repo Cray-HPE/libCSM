@@ -33,7 +33,13 @@ Describe 'internal.sh'
     It 'creates a dir when called'
       When call mkrundir
       The path "${RUNDIR}" should be directory
-      End
+    End
+
+    It 'libtmpfile'
+      When call libtmpfile sut
+      The status should equal 0
+      The output should be a file
+    End
 
     It 'is cleaned up when libcleanup is called'
       When call libcleanup

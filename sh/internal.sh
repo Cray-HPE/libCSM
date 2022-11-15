@@ -43,9 +43,12 @@ mkrundir() {
 # files prefix name should be. The intended interface for script users.
 libtmpfile() {
   prefix="${1:-caller-did-not-pick-a-name}"
-  mkrundir
-  tmpfile=$(mktemp -t "${RUNDIR}" "${prefix}-XXXXXXXX")
-  rc=$?
-  echo "${tmpfile}"
-  return "${rc}"
+  (
+    TMPDIR="${RUNDIR}"
+    mkrundir
+    tmpfile=$(mktemp -t "${prefix}-XXXXXXXX")
+    rc=$?
+    echo "${tmpfile}"
+    return "${rc}"
+  )
 }
