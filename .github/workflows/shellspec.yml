@@ -1,0 +1,43 @@
+name: Run shellspec on all platforms that matter
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - test
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: cachix/install-nix-action@v18
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - run: |
+          nix-shell -p shellspec --run 'shellspec --jobs 2 --random specfiles'
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install brew and whatnot
+        run: |
+          brew tap shellspec/shellspec
+          brew update
+          brew install shellspec ksh93 bash
+          # brew upgrade
+
+      - name: Check
+        run: |
+          shellspec --jobs 2 --random specfiles
