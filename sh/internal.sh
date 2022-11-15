@@ -44,7 +44,7 @@ mkrundir() {
 libtmpfile() {
   prefix="${1:-caller-did-not-pick-a-name}"
   mkrundir
-  tmpfile=$(mktemp -p "${RUNDIR}" "${prefix}-XXXXXXXX")
+  tmpfile=$(mktemp -t "${RUNDIR}" "${prefix}-XXXXXXXX")
   rc=$?
   echo "${tmpfile}"
   return "${rc}"
