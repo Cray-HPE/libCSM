@@ -21,16 +21,16 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
-name: Check Shell Scripts
+name: shellcheck (lint)
 on:
-  pull_request:
-
+  push:
+  workflow_dispatch:
 jobs:
-  sh-checker:
+  shellcheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run the sh-checker
+      - name: Run shellcheck
         uses: luizm/action-sh-checker@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
