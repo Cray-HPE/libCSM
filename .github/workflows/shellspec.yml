@@ -46,16 +46,25 @@ jobs:
       - if: ${{ matrix.os == 'ubuntu-latest' }}
         name: Run shellspec
         run: |
-          nix-shell -p shellspec --run 'shellspec'
+          sudo apt-get install -y ksh zsh make curl
+          VERSION=0.28.1
+          (
+            install -dm755 $HOME/shellspec
+            cd $HOME/shellspec
+            curl -L https://github.com/shellspec/shellspec/archive/${VERSION}.tar.gz -o shellspec-${VERSION}.tar.gz
+            tar xzvf shellspec-${VERSION}.tar.gz
+            sudo ln -s $HOME/shellspec/shellspec-${VERSION}/shellspec /usr/bin/shellspec
+          )
+          make test-all SHELLSPECARGS="--jobs 2 --random specfiles"
 
       - if: ${{ matrix.os == 'macos-latest' }}
         name: Install shellspec (macOS)
         run: |
           brew tap shellspec/shellspec
           brew update
-          brew install shellspec ksh93 bash
+          brew install shellspec bash
 
       - if: ${{ matrix.os == 'macos-latest' }}
         name: Run shellspec
         run: |
-          shellspec --jobs 2 --random specfiles
+          make test-all SHELLSPECARGS="--jobs 2 --random specfiles"
