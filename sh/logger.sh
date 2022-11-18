@@ -98,67 +98,14 @@ log() {
 }
 
 # Helper functions for typing less log ... statements
-emerg() {
-  log emerg "$@"
+for lvl in emerg alert crit error warn notice info debug; do
+  eval "
+${lvl}() {
+  log ${lvl} \"\$@\"
 }
 
-alert() {
-  log alert "$@"
+_${lvl}() {
+  LOG_LEVEL=${lvl} log ${lvl} \"\$@\"
 }
-
-crit() {
-  log crit "$@"
-}
-
-error() {
-  log error "$@"
-}
-
-warn() {
-  log warn "$@"
-}
-
-notice() {
-  log notice "$@"
-}
-
-info() {
-  log info "$@"
-}
-
-debug() {
-  log debug "$@"
-}
-
-# And more internal "ignore LOG_LEVEL" versions.
-_emerg() {
-  LOG_LEVEL=emerg log emerg "$@"
-}
-
-_alert() {
-  LOG_LEVEL=alert log alert "$@"
-}
-
-_crit() {
-  LOG_LEVEL=crit log crit "$@"
-}
-
-_error() {
-  LOG_LEVEL=error log error "$@"
-}
-
-_warn() {
-  LOG_LEVEL=warn log warn "$@"
-}
-
-_notice() {
-  LOG_LEVEL=notice log notice "$@"
-}
-
-_info() {
-  LOG_LEVEL=info log info "$@"
-}
-
-_debug() {
-  LOG_LEVEL=debug log debug "$@"
-}
+"
+done
