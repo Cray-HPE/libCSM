@@ -44,18 +44,15 @@ jobs:
             experimental-features = nix-command flakes
 
       - if: ${{ matrix.os == 'ubuntu-latest' }}
-        name: Run shellspec
+        name: Install shellspec (ubuntu)
         run: |
           sudo apt-get install -y ksh zsh make curl
           VERSION=0.28.1
-          (
-            install -dm755 $HOME/shellspec
-            cd $HOME/shellspec
-            curl -L https://github.com/shellspec/shellspec/archive/${VERSION}.tar.gz -o shellspec-${VERSION}.tar.gz
-            tar xzvf shellspec-${VERSION}.tar.gz
-            sudo ln -s $HOME/shellspec/shellspec-${VERSION}/shellspec /usr/bin/shellspec
-          )
-          make test-all SHELLSPECARGS="--jobs 2 --random specfiles"
+          install -dm755 $HOME/shellspec
+          cd $HOME/shellspec
+          curl -L https://github.com/shellspec/shellspec/archive/${VERSION}.tar.gz -o shellspec-${VERSION}.tar.gz
+          tar xzvf shellspec-${VERSION}.tar.gz
+          sudo ln -s $HOME/shellspec/shellspec-${VERSION}/shellspec /usr/bin/shellspec
 
       - if: ${{ matrix.os == 'macos-latest' }}
         name: Install shellspec (macOS)
@@ -64,7 +61,6 @@ jobs:
           brew update
           brew install shellspec bash
 
-      - if: ${{ matrix.os == 'macos-latest' }}
-        name: Run shellspec
+      - name: Run shellspec
         run: |
           make test-all SHELLSPECARGS="--jobs 2 --random specfiles"
