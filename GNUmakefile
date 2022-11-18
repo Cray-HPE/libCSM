@@ -57,7 +57,8 @@ ENTR:=entr
 SH:=sh
 BASH:=bash
 KSH:=ksh
-SHELLS:=$(SH) $(BASH) $(KSH)
+ZSH:=zsh
+SHELLS:=$(SH) $(BASH) $(KSH) $(ZSH)
 DATE:=date
 
 SPEC_FILE ?= ${NAME}.spec
