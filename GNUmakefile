@@ -52,7 +52,7 @@ endif
 # Might want to run with parallelism by default to make sure people don't
 # introduce dependencies in tests and with randomness.
 # SHELLSEPCARGS:=--jobs 4
-SHELLSEPCARGS:=
+SHELLSPECARGS:=
 ENTR:=entr
 SH:=sh
 BASH:=bash
@@ -66,13 +66,17 @@ SOURCE_NAME ?= ${NAME}
 BUILD_DIR ?= $(PWD)/dist/rpmbuild
 SOURCE_PATH := ${BUILD_DIR}/SOURCES/${SOURCE_NAME}-${VERSION}.tar.bz2
 
+phonies:=ci
+phonies+=test
+phonies+=test-all
+
+.PHONY: $(phonies)
+
 # Quick run shellspec to do a one off test
-.PHONY: test
 test:
 	$(SHELLSPEC)
 
 # Run tests against all the shell intepreters in SHELLS
-.PHONY: test-all
 test-all:
 	set -xe; for s in $(SHELLS); do $(SHELLSPEC) --shell $$s $(SHELLSPECARGS); done;
 
@@ -82,9 +86,8 @@ test-all:
 # Good shell shouldn't care what bourne interpreter its running within and
 # ensures we can run in a busybox/alpine linux container easy peasy lemon
 # squeezy if needed.
-.PHONY: ci
 ci:
-	find . -name "*.sh" -type f | $(ENTR) -d sh -xec "for s in $(SHELLS); do $(SHELLSPEC) --shell \$$s $(SHELLSPECARGS); done; $(DATE)"
+	find . -name "*.sh" -type f | $(ENTR) -d sh -xec "shellcheck --shell=sh; for s in $(SHELLS); do $(SHELLSPEC) --shell \$$s $(SHELLSPECARGS); done; $(DATE)"
 
 .PHONY: rpm
 rpm: prepare rpm_package_source rpm_build_source rpm_build

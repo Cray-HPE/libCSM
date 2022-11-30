@@ -43,21 +43,32 @@
 # LVL     0     1     2    3     4    5      6    7
 SEVERITY="EMERG:ALERT:CRIT:ERROR:WARN:NOTICE:INFO:DEBUG"
 
-# Default log level is warn unless someone chooses a higher/lower level
+# Default log level is info unless someone chooses a higher/lower level
+# LOG_LEVEL=${LOG_LEVEL:-info}
 LOG_LEVEL=${LOG_LEVEL:-warn}
 
 # Basically get the index for the SEVERITY value, nothing special
+# TODO: The log severity won't change at runtime, turn this all into simple eval
+# statements that call static functions and save cpu O(n) time
 sevtolvl() {
   lvl=$1
-  sev=$(echo "${lvl}" | tr '[:lower:]' '[:upper:]')
-  idx=0
-  for s in $(echo $SEVERITY | tr ':' ' '); do
-    if [ "${sev}" = "${s}" ]; then
-      break
-    fi
-    idx=$((idx + 1))
-  done
-  return $idx
+  if ! command -v _memo_sevtolvl_"${lvl}" > /dev/null 2>&1; then
+    sev=$(echo "${lvl}" | tr '[:lower:]' '[:upper:]')
+    idx=0
+    for s in $(echo $SEVERITY | tr ':' ' '); do
+      if [ "${sev}" = "${s}" ]; then
+        break
+      fi
+      idx=$((idx + 1))
+    done
+
+    # The "memoize" logic here is simply define a function that returns the
+    # value. Unless we need to ever change logging levels dynamically at/during
+    # a script being run this is fine...
+    eval "_memo_sevtolvl_${lvl}() { return ${idx}; }"
+  fi
+
+  _memo_sevtolvl_"${lvl}"
 }
 
 # Print out ^^^
@@ -74,28 +85,35 @@ log_state() {
 # log error message with whatever
 # error message with whatever
 log() {
-  level=$1
+  _log_level=$1
   shift
 
-  sev=$(echo "${level}" | tr '[:lower:]' '[:upper:]')
-  lc=$(echo "${level}" | tr '[:upper:]' '[:lower:]')
+  _log_sev=$(echo "${_log_level}" | tr '[:lower:]' '[:upper:]')
+  _log_lc=$(echo "${_log_level}" | tr '[:upper:]' '[:lower:]')
 
-  sevtolvl "${sev}"
-  lhs=$?
+  sevtolvl "${_log_sev}"
+  _log_lhs=$?
   sevtolvl "${LOG_LEVEL}"
-  rhs=$?
-  if [ $lhs -le $rhs ]; then
+  _log_rhs=$?
+  if [ $_log_lhs -le $_log_rhs ]; then
     # Note: do not switch $* to $@ here, in spaces/args with printf lie dragons.
     # (it split lines probably off IFS dunno for now, future me problem)
     #
-    # For now dump to stderr
-    printf "%s: %s\n" "${lc}" "$*" >&2
+    # For now dump to stderr no control over what goes to stdout, use printf for that?
+    printf "%s: %s\n" "${_log_lc}" "$*" >&2
+  fi
+
+  if [ -n "${TRACEPREFIX}" ]; then
+    cat << EOF >> "${TRACEPREFIX}/timeline"
+${_log_lc}: $*
+EOF
   fi
 }
 
 # Helper functions for typing less log ... statements
 for lvl in emerg alert crit error warn notice info debug; do
   eval "
+_LOG_LEVEL_${lvl}=$(sevtolvl)
 ${lvl}() {
   log ${lvl} \"\$@\"
 }

@@ -46,6 +46,7 @@ jobs:
       - if: ${{ matrix.os == 'ubuntu-latest' }}
         name: Install shellspec (ubuntu)
         run: |
+          sudo apt-get update
           sudo apt-get install -y ksh zsh make curl
           VERSION=0.28.1
           install -dm755 $HOME/shellspec
@@ -63,4 +64,4 @@ jobs:
 
       - name: Run shellspec
         run: |
-          make test-all SHELLSPECARGS="--jobs 2 --random specfiles"
+          make test-all SHELLSPECARGS="--jobs 2 --random specfiles" || make test-all SHELLSPECARGS="-x"

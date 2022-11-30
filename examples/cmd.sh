@@ -33,14 +33,6 @@ if [ -n "${DEBUG}" ]; then
   #shellcheck source=./../sh/lib.sh
   . "${SOURCEPREFIX}/lib.sh"
 
-  # Not used directly but indirectly so shellchecks just being pedantic.
-  #shellcheck disable=SC2034
-  DEFAULTPOSTHOOK="${DEFAULTPOSTHOOK:-defaultposthook}"
-
-  # We don't want word splitting here with this var.
-  #shellcheck disable=SC2086
-  wrapcmd ${WRAP:-curl jq ls rm}
-
   posthook() {
     rc="${1}"
     shift
@@ -76,6 +68,10 @@ EOF
     RMPOSTHOOK="${RMPOSTHOOK:-posthook}"
     LSPOSTHOOK="${LSPOSTHOOK:-posthook}"
   }
+
+  # We don't want word splitting here with this var.
+  #shellcheck disable=SC2086
+  wrapcmd ${WRAP:-curl jq ls rm}
 fi
 
 # Needs to be below the ${DEBUG} block as that would count as an unbound variable if it is not set
@@ -85,7 +81,9 @@ fi
 # The "actual" script, note you could skip defining your own hook to save some
 # lines but this is a complete example.
 curl uri://isinvalid | jq -r .
-curl -s https://example.com/dne | jq -r .
+jq -r . << EOF
+this is not json
+EOF
 
 ls /does/not/exist
 rm /does/not/exist
