@@ -135,7 +135,8 @@ pipeline {
 
                         agent {
                             docker {
-                                args '-u root' // Build Python RPMs as root for Python rpm macros to build with the right sitelib.
+                                // Mount docker.sock so the clamAV container can run inside of the Docker image, we need to run in a Docker image to get the right os-release file.
+                                args '-u root -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker --group-add 999'
                                 label "metal-gcp-builder"
                                 reuseNode true
                                 image "${pythonImage}:${PYTHON_VERSION}"
