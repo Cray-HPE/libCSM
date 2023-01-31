@@ -136,7 +136,7 @@ pipeline {
                         agent {
                             docker {
                                 // Mount docker.sock so the clamAV container can run inside of the Docker image, we need to run in a Docker image to get the right os-release file.
-                                args '-u root -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker --group-add 999'
+                                args '-u root -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker -v /home/jenkins/.ssh:/root/.ssh -v /home/jenkins/.ssh:/home/jenkins/.ssh --group-add 999'
                                 label "metal-gcp-builder"
                                 reuseNode true
                                 image "${pythonImage}:${PYTHON_VERSION}"

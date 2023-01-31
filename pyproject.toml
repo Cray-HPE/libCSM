@@ -82,4 +82,5 @@ requires = [
 ]
 
 [tool.distutils.bdist_wheel]
-universal = true
+universal = false # This app. is not compatible with Python2.
+
