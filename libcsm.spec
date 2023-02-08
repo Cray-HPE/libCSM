@@ -22,21 +22,21 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 
-# Auto-generate RPM dependencies based on the Python project.
-%{?python_enable_dependency_generator}
-
 %define doc_dir /usr/share/doc/%(echo $NAME)/
 %define doc_example_dir %{doc_dir}examples/
 %define install_dir /usr/lib/%(echo $NAME)/
 %define install_shell_dir %{install_dir}sh
+%define install_python_dir %{install_dir}python
 
 # Define which Python flavors python-rpm-macros will use (this can be a list).
 # https://github.com/openSUSE/python-rpm-macros#terminology
 %define pythons %(echo $PYTHON_BIN)
 
 # python*-devel is not listed because our build environments install Python from source and not from OS packaging.
+AutoReqProv: no
 BuildRequires: python-rpm-generators
 BuildRequires: python-rpm-macros
+Requires: python%{python_version_nodots}-base
 Name: %(echo $NAME)
 BuildArch: %(echo $ARCH)
 License: MIT License
@@ -45,42 +45,41 @@ Version: %(echo $VERSION)
 Release: 1
 Source: %{name}-%{version}.tar.bz2
 Vendor: Hewlett Packard Enterprise Development LP
-Provides: python%{python_version_nodots}-%(echo $NAME) = %{version}-%{release}
-Provides: %(echo $NAME) = %{version}-%{release}
-%python_subpackages
 
 %description
 A library for providing common functions to
 Cray System Management procedures and operations.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%setup
 
 %build
-# Install setuptools_scm[toml] so any context in this RPM build can resolve the module version.
-%python_exec -m pip install -U setuptools_scm[toml]
-
-# Build a source distribution.
-%python_exec -m pip install -U build
 %python_exec -m build --sdist
-
-# Ensure a wheel is built.
-%pyproject_wheel
+%python_exec -m build --wheel
 
 %install
-%pyproject_install
+
+# Install setuptools_scm[toml] so any context in this RPM build can resolve the module version.
+%python_exec -m virtualenv --no-periodic-update --no-setuptools --no-pip --no-wheel %{buildroot}%{install_python_dir}
+
+# Build a source distribution.
+%python_exec -m pip install --disable-pip-version-check --no-cache --root=%{buildroot}%{install_python_dir}  ./dist/*.whl
+
+# Fix the virtualenv activation script, ensure VIRTUAL_ENV points to the installed location on the system.
+sed -i -E 's:^(VIRTUAL_ENV=).*:\1'%{install_python_dir}':' %{buildroot}%{install_python_dir}/bin/activate
 
 install -d -m 755 %{buildroot}%{doc_example_dir}
 cp -pvr ./examples/* %{buildroot}%{doc_example_dir} | awk '{print $3}' | sed "s/'//g" | sed "s|$RPM_BUILD_ROOT||g" | tee -a INSTALLED_FILES
 
 install -d -m 755 %{buildroot}%{install_shell_dir}
 cp -pvr ./sh/* %{buildroot}%{install_shell_dir} | awk '{print $3}' | sed "s/'//g" | sed "s|$RPM_BUILD_ROOT||g" | tee -a INSTALLED_FILES
-cat INSTALLED_FILES | xargs -i sh -c 'test -L {} && exit || test -f $RPM_BUILD_ROOT/{} && echo {} || echo %dir {}' | sort -u > FILES
+
+find %{buildroot}%{install_python_dir} | sed 's:'${RPM_BUILD_ROOT}'::' | tee -a INSTALLED_FILES
+cat INSTALLED_FILES | xargs -i sh -c 'test -f $RPM_BUILD_ROOT{} && echo {} || echo %dir {}' | sort -u > FILES
 
 %clean
 
-%files %{python_files} -f FILES
-%{python3_sitearch}/*
+%files -f FILES
 %docdir %{doc_dir}
 %docdir %{doc_example_dir}
 %doc README.adoc

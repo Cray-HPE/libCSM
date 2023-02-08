@@ -46,7 +46,7 @@ endif
 export PYTHON_BIN := python$(PYTHON_VERSION)
 
 ifeq ($(VERSION),)
-export VERSION := $(shell python3 -m setuptools_scm | tr -s '-' '~' | tr -d '^v')
+export VERSION := $(shell python3 -m setuptools_scm | tr -s '-' '~' | sed 's/^v//')
 endif
 
 # Might want to run with parallelism by default to make sure people don't

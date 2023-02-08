@@ -1,0 +1,27 @@
+name: Promote build to a release (stable)
+on:
+  push:
+    tags:
+      - 'v?[0-9]+.[0-9]+.[0-9]+'
+
+env:
+  ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_ALGOL60_USERNAME }}
+  ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_ALGOL60_TOKEN }}
+jobs:
+  Promote:
+    runs-on: ubuntu-latest
+    env:
+      HOME: /home/github-actions-runner
+    steps:
+
+      - uses: actions/checkout@v3
+
+      # TODO: Add step to wait and download the artifacts from Artifactory.
+      # NOTE: Russell is testing the logic to do this in another repository.
+
+      - uses: ncipollo/release-action@v1
+        with:
+          generateReleaseNotes: true
+#          artifacts: ${{ env.dir_upload }}
+          prerelease: false
+          makeLatest: true

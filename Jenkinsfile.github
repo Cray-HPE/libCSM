@@ -152,7 +152,7 @@ pipeline {
                                 publishCsmRpms(
                                         arch: "${ARCH}",
                                         isStable: isStable,
-                                        component: "python${PYTHON_VERSION}-${env.NAME}",
+                                        component: env.NAME,
                                         os: "sle-${sles_major}sp${sles_minor}",
                                         pattern: "dist/rpmbuild/RPMS/${ARCH}/*.rpm",
                                 )
