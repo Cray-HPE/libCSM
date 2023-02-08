@@ -37,6 +37,7 @@
 # python*-devel is not listed because our build environments install Python from source and not from OS packaging.
 BuildRequires: python-rpm-generators
 BuildRequires: python-rpm-macros
+Requires: %{python_flavor}-base
 Name: %(echo $NAME)
 BuildArch: %(echo $ARCH)
 License: MIT License
