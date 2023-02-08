@@ -37,6 +37,7 @@
 # python*-devel is not listed because our build environments install Python from source and not from OS packaging.
 BuildRequires: python-rpm-generators
 BuildRequires: python-rpm-macros
+Requires: %{python_version_nodots}-base
 Name: %(echo $NAME)
 BuildArch: %(echo $ARCH)
 License: MIT License
@@ -45,9 +46,9 @@ Version: %(echo $VERSION)
 Release: 1
 Source: %{name}-%{version}.tar.bz2
 Vendor: Hewlett Packard Enterprise Development LP
-Provides: python%{python_version_nodots}-%(echo $NAME) = %{version}-%{release}
-Provides: %(echo $NAME) = %{version}-%{release}
-%python_subpackages
+Provides: python%{python_version_nodots}-%{name} = %{version}-%{release}
+
+%{python_subpackages}
 
 %description
 A library for providing common functions to
