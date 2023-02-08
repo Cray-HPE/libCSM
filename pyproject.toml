@@ -37,7 +37,9 @@ classifiers = [
     'Programming Language :: Python :: 3.10',
 ]
 description = 'Callables and modules for CSM usage.'
-dependencies = []
+dependencies = [
+    'kubernetes<23,>=22.0',
+]
 dynamic = ['entry-points', 'scripts', 'version']
 maintainers = [
     { name = 'Russell Bunch', email = 'doomslayer@hpe.com'}
