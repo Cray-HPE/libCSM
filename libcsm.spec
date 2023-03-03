@@ -45,6 +45,7 @@ Version: %(echo $VERSION)
 Release: 1
 Source: %{name}-%{version}.tar.bz2
 Vendor: Hewlett Packard Enterprise Development LP
+Obsoletes: %{python_flavor}-%{name}
 
 %description
 A library for providing common functions to
