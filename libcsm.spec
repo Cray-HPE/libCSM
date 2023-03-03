@@ -45,6 +45,7 @@ Version: %(echo $VERSION)
 Release: 1
 Source: %{name}-%{version}.tar.bz2
 Vendor: Hewlett Packard Enterprise Development LP
+Obsoletes: %{python_flavor}-%{name}
 
 %description
 A library for providing common functions to
@@ -60,10 +61,11 @@ Cray System Management procedures and operations.
 %install
 
 # Install setuptools_scm[toml] so any context in this RPM build can resolve the module version.
-%python_exec -m virtualenv --no-periodic-update --no-setuptools --no-pip --no-wheel %{buildroot}%{install_python_dir}
+%python_exec -m virtualenv --no-periodic-update --no-setuptools --no-wheel %{buildroot}%{install_python_dir}
 
 # Build a source distribution.
-%python_exec -m pip install --disable-pip-version-check --no-cache --root=%{buildroot}%{install_python_dir}  ./dist/*.whl
+%{buildroot}%{install_python_dir}/bin/python -m pip install --disable-pip-version-check --no-cache ./dist/*.whl
+%{buildroot}%{install_python_dir}/bin/python -m pip uninstall -y pip
 
 # Fix the virtualenv activation script, ensure VIRTUAL_ENV points to the installed location on the system.
 sed -i -E 's:^(VIRTUAL_ENV=).*:\1'%{install_python_dir}':' %{buildroot}%{install_python_dir}/bin/activate
