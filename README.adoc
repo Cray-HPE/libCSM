@@ -31,7 +31,7 @@ python -m pip install .
 ----
 python -m pip install build
 python -m build
-python -m install ./dist/*.whl
+python -m pip install ./dist/*.whl
 ----
 
 ==== Using `libcsm` in another project
