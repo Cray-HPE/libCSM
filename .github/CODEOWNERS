@@ -22,4 +22,4 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 # Default group
-*                                                        @Cray-HPE/docs-csm-reviewers
+*                                                        @Cray-HPE/libcsm-core
