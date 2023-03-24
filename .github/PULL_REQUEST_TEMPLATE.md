@@ -9,7 +9,7 @@
 
 #### Issue Type
 
-<!--- Delete un-needed bullets -->
+<!--- Delete un-needed bullets; choose one or more.  -->
 
 - Bugfix Pull Request
 - Docs Pull Request
@@ -24,9 +24,8 @@
 <!--- checked checkbox: [x] -->
 <!--- invalid checkbox: [] -->
 
-- [ ] I have included documentation in my PR (or it is not required)
-- [ ] I tested this on internal system (if yes, please include results or a description of the test)
-- [ ] I tested this on a vshasta system (if yes, please include results or a description of the test)
+- [ ] I have included documentation in my PR (or it is not required).
+- [ ] I have added unit tests for my code.
  
 ### Idempotency
  
