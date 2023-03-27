@@ -88,7 +88,7 @@ def lint(session):
     """Run flake8 linter and plugins."""
     session.install(".[lint]")
     session.install(".")
-    session.run("pylint", 'libcsm')
+    session.run("pylint", 'libcsm', 'tests')
 
 
 @nox.session(python="3")
