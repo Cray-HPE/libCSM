@@ -58,9 +58,9 @@ pipeline {
             matrix {
 
                 agent {
-                    node {
-                        label "metal-gcp-builder"
-                        customWorkspace "${env.WORKSPACE}/${ARCH}/${PYTHON_VERSION}"
+                    docker {
+                        reuseNode true
+                        image "${pythonImage}:${PYTHON_VERSION}"
                     }
                 }
 
@@ -78,17 +78,14 @@ pipeline {
 
                 }
 
+                environment {
+                    BUILD_DIR = "${env.WORKSPACE}/dist/rpmbuild/${ARCH}/${PYTHON_VERSION}"
+                }
+
                 stages {
 
                     stage('Prepare: RPMs') {
 
-                        agent {
-                            docker {
-                                label 'docker'
-                                reuseNode true
-                                image "${pythonImage}:${PYTHON_VERSION}"
-                            }
-                        }
                         steps {
                             script {
                                 // Use setuptools_scm to resolve the version(s) to use for the build.
@@ -109,14 +106,6 @@ pipeline {
                             VERSION = "${version}"
                         }
 
-                        agent {
-                            docker {
-                                args '-u root' // Build Python RPMs as root for Python rpm macros to build with the right site-lib.
-                                label 'docker'
-                                reuseNode true
-                                image "${pythonImage}:${PYTHON_VERSION}"
-                            }
-                        }
                         steps {
                             script {
                                 sh "make rpm"
@@ -133,16 +122,6 @@ pipeline {
 
                     stage('Publish: RPMs') {
 
-                        agent {
-                            docker {
-                                // Mount docker.sock so the clamAV container can run inside of the Docker image, we need to run in a Docker image to get the right os-release file.
-                                args '-u root -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker -v /home/jenkins/.ssh:/root/.ssh -v /home/jenkins/.ssh:/home/jenkins/.ssh --group-add 999'
-                                label "metal-gcp-builder"
-                                reuseNode true
-                                image "${pythonImage}:${PYTHON_VERSION}"
-                            }
-                        }
-
                         steps {
                             script {
                                 def sleVersion = sh(returnStdout: true, script: 'awk -F= \'/VERSION_ID/{gsub(/["]/,""); print \$NF}\' /etc/os-release').trim()
@@ -154,14 +133,14 @@ pipeline {
                                         isStable: isStable,
                                         component: env.NAME,
                                         os: "sle-${sles_major}sp${sles_minor}",
-                                        pattern: "dist/rpmbuild/RPMS/${ARCH}/*.rpm",
+                                        pattern: "dist/rpmbuild/${ARCH}/${PYTHON_VERSION}/RPMS/${ARCH}/*.rpm",
                                 )
                                 publishCsmRpms(
                                         arch: "src",
                                         component: env.NAME,
                                         isStable: isStable,
                                         os: "sle-${sles_major}sp${sles_minor}",
-                                        pattern: "dist/rpmbuild/SRPMS/*.rpm",
+                                        pattern: "dist/rpmbuild/${ARCH}/${PYTHON_VERSION}/SRPMS/*.rpm",
                                 )
                             }
                         }
