@@ -65,6 +65,7 @@ test = [
 # Defines which folders belong to our package.
 [tool.setuptools.packages.find]
 include = ["libcsm*"]
+exclude = ["libcsm.tests*"]
 
 [tool.setuptools.dynamic]
 entry-points = { file = ['entry_points.ini'] }
@@ -83,4 +84,3 @@ requires = [
 
 [tool.distutils.bdist_wheel]
 universal = false # This app. is not compatible with Python2.
-

@@ -35,6 +35,7 @@ build/
 dist/
 .eggs/
 .pytest_cache/
+__pycache__/
 *.egg*
 *.[tn]ox
 **/*coverage*
