@@ -36,7 +36,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Note we globally ignore SC2148 as a lot of this shell is library
           # only not something that should have a shebang line.
-          SHELLCHECK_OPTS: --severity=warning --color=always -e SC2148 # We can globally ignore things here if we want with -e SC1234
+          #
+          # The shebang check is disabled as most of the shell here is truly a
+          # library and these scripts cannot be ran, we default to posix shell
+          # SC2148
+          #
+          # We also allow local to be used for scoping with variables SC3043
+          SHELLCHECK_OPTS: --shell=sh --severity=warning --color=always -e SC2148 -e SC3043
+          # Options kinda chosen at random based off most of our shell in use
+          # these seemed to be the union set of most of them.
           SHFMT_OPTS: -ci -p -i 2 -bn -sr
         with:
           sh_checker_comment: true

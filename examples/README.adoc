@@ -9,7 +9,7 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-== `cmdhook.sh`
+== `cmd.sh`
 
 This example script exists to demonstrate how a user could write their own hooks that could be called via the `cmdhook` wrapper generation function.
 

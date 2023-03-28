@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
+#shellcheck disable=SC2317
+#
 # MIT License
 #
 # (C) Copyright 2023 Hewlett Packard Enterprise Development LP
@@ -170,6 +172,46 @@ stdout"
       The stdout should equal "stdout
 post"
       The stderr should equal "stderr"
+    End
+  End
+
+  Context 'enable_tracing() works as intended'
+    # To make these tests work we need to "change" time, since nothing acts on
+    # the time itself I'm just defining epoch date time to "sut"
+    _epoch() { printf "sut"; }
+    _pwd() { printf "sut"; }
+    _tty() { printf "sut"; }
+    _who() { printf "sut"; }
+
+    _trace_cleanup() { return 1; }
+
+    # For now just always tear down the trace directory should be fine even if
+    # its missing.
+    traceteardown() {
+      _clean_trace_dir
+    }
+    After 'traceteardown'
+
+    timelinecmp() {
+      %text
+      #|trace enabled at sut for sut.sh
+      #|args:
+      #|pwd: sut
+      #|tty: sut
+      #|who: sut
+      #|start: sut
+    }
+
+    It 'enable_tracing creates what we expect'
+      When call enable_tracing sut.sh
+      The status should equal 0
+      The path "${TRACEDIR}/sut.sh" should be a directory
+      The path "${TRACEDIR}/sut.sh/sut" should be a directory
+      The path "${TRACEDIR}/sut.sh/sut/timeline" should be a file
+      The path "${TRACEDIR}/sut.sh/sut/env" should be a file
+      The path "${TRACEDIR}/sut.sh/sut/ps-ef" should be a file
+      The path "${TRACEDIR}/sut.sh/sut/uptime" should be a file
+      The contents of file "${TRACEDIR}/sut.sh/sut/timeline" should equal "$(timelinecmp)"
     End
   End
 End

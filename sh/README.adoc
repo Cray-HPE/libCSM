@@ -9,43 +9,56 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-== Rough design plan
+== Goals
 
-CAUTION: Not yet fully implemented.
+To help facilitate bourne shell debugging. Note, this means bourne, not only bourne again shell. This library is enforced to be posix clean and all unit tests are run against all known bourne shells. This is to ensure the library is usable in shells such as busybox sh, ash, or dash. The goal is for this shell library to be usable in and out of environments such as rescue shells etc...
 
-Premise here is if you want the whole hog just source `sh/lib.sh` after setting `SOURCEPREFIX` to the directory containing
-that dir/file. For POSIX, shells there is no portable way to "know" where one imported from, so we just defer that to calling
-scripts as they can know where they're importing from.
+While we don't hate c family shells, given their limited usage, this library will not ever support them without support from shellspec.
 
-When you have that you get all the fun stuff.
+Hidden design goals to the library is to make incorporation of debugging facilities contained within as easy as possible. As well as to create a "standard" xkcd stdlib with known contract behavior that can be built on top of.
 
-Goal(s):
+== Portability Caveats
 
-* Make debugging shell a bit easier and have some standard library of shell aiding
-* Promote defensive scripting; provide common error handling and helper functions to mitigate mistakes
+While the general goal is posix clean, given it is 2023 and all the shells being tested allow for it. Using local to namespace vars in functions is recommended to prevent variable name collisions.
 
-That will end up with something like scripts having:
+Taking inspiration from c++ and its ilk any variable prefixed with _ should be considered to be an implementation detail. Using any variable with these variables should be done at the callers understanding they may entirely change or be removed in any future library update.
+
+== Porting Script Howto
+
+All that is well and good but how do you actually use the library? The library assumes you know where you're importing it from, aka where it resides on disk is a known factor.
+
+That will end up with existing or new scripts starting with something like the following:
 
 [source,sh]
 ----
-SOURCEPREFIX=$(pwd)/sh
-. ${SOURCEPREFIX}/lib.sh
+#shellcheck disable=SC2086,SC2046
+. ${SOURCEPREFIX:=$(dirname $(readlink -f "${_dir}/path/to/sh/lib.sh"))}/lib.sh
+tracing_enabled && enable_tracing "${_base}" jq ls curl grep ps
 
-wrapcmd ls ps curl jq
-
-... stuff
+... your script goes here and uses those commands or other to be wrapped at runtime
 ----
 
-When called with `DEBUG=anyvalue` and/or `TIMELINE=anyvalue` one will end up with a directory of 
-`/tmp/PARENTPID` with directories of the epoch start time of any `ls`, `ps`, `curl` or `jq` call containing:
+And when called with *DEBUG=trace* you will end up with a txz of the run printed to stderr at the end of the script run containing all the wrapped commands stdin, stderr, and stdout streams.
 
-* `cmdline`: The command line of what was called
-* `rc`: The return code it exited with
-* `stdin{-is-a-pipe}`: Standard input, and if it was a pipe the filename will reflect that
-* `stdout{-is-a-pipe}`: Standard output, and if it was a pipe the filename will reflect that
-* `stderr{-is-a-pipe}`: Standard error, and if it was a pipe the filename will reflect that
+Please stick to the SOURCEPREFIX line above even if it is crazy, the intent is to make it easy to point any script using this library to another install via:
 
-That will help with debugging shell scripts that utilize the wrapper functions.
+[source,sh]
+----
+SOURCEPREFIX=/some/other/path/to/lib.sh script
+----
 
-In a near future commit default hooks for the wrapper functions generated will help in output to the screen.
-For now this is MVP status. An example hook is located in the examples directory at the base of https://github.com/Cray-HPE/libcsm[this repo].
+This lets us not have to modify scripts using this library but test out updates to the library easily.
+
+== Rough design goals
+
+Beyond "just write ye olde posix compliant shell", the underlying design goal was to demonstrate that you can indeed debug shell command inputs on stdin/stdout and provide a lot better development experience with copious abuse of eval() and company.
+
+While the techniques employed in this library are not one recommended for general shell usage they do enable a much better user and developer experience around debugging situations such as: why did that command I piped complain about data on stdin, and what exactly did it send?
+
+With the tracing support you also gain post run debug logging for later inspection a la crash etc...
+
+== Future additions for an adventurous or crazier person than me
+
+Might be useful to have the tracing functionality save wrapped command outputs that can be re-used as a unit test for the library to save time in adding more tests for other parts of the library.
+
+Figure out some way to not have to require callers to explicitly call wrapcmd() on the functions or commands desired to be traced/wrapped. This might be a bit hard or even impossible portably without something like precmd() in zsh in all shells. The current design while not great works decently enough. There might be something in the bowels of posix that might make this possible however.
