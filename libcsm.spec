@@ -26,7 +26,7 @@
 %define doc_example_dir %{doc_dir}examples/
 %define install_dir /usr/lib/%(echo $NAME)/
 %define install_shell_dir %{install_dir}sh
-%define install_python_dir %{install_dir}python
+%define install_python_dir %{install_dir}libcsm-venv
 
 # Define which Python flavors python-rpm-macros will use (this can be a list).
 # https://github.com/openSUSE/python-rpm-macros#terminology
