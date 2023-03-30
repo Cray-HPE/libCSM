@@ -37,7 +37,9 @@ classifiers = [
     'Programming Language :: Python :: 3.10',
 ]
 description = 'Callables and modules for CSM usage.'
-dependencies = []
+dependencies = [
+    'kubernetes~=22.6.0',
+]
 dynamic = ['entry-points', 'scripts', 'version']
 maintainers = [
     { name = 'Russell Bunch', email = 'doomslayer@hpe.com'}
@@ -60,6 +62,7 @@ test = [
     'coverage~=7.1',
     'pytest~=7.2',
     'pytest-cov~=4.0',
+    'mock~=5.0',
 ]
 
 # Defines which folders belong to our package.
