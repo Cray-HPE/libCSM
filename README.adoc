@@ -119,10 +119,7 @@ respective to the distribution being used.
 +
 [source,bash]
 ----
-SLES_VERSION=$(awk -F= '/VERSION_ID/{gsub(/["]/,"");printf($NF)}' /etc/os-release)
-SLES_MAJOR=$(echo -n $SLES_VERSION | awk -F. '{print $1}')
-SLES_MINOR=$(echo -n $SLES_VERSION | awk -F. '{print $NF}')
-zypper --plus-repo=https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-${SLES_MAJOR}sp${SLES_MINOR}/ --no-gpg-checks in libcsm
+zypper --plus-repo=https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-$(awk -F= '/VERSION=/{gsub(/["-]/, "") ; print tolower($NF)}' /etc/os-release)/ --no-gpg-checks in libcsm
 ----
 . Then use `libcsm`.
 - Activate the virtual environment
