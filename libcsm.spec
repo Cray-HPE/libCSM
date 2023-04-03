@@ -66,7 +66,7 @@ Cray System Management procedures and operations.
 # Build a source distribution.
 %{buildroot}%{install_python_dir}/bin/python -m pip install --disable-pip-version-check --no-cache ./dist/*.whl
 
-# Remove build tools
+# Remove build tools to decrease the virtualenv size.
 %{buildroot}%{install_python_dir}/bin/python -m pip uninstall -y pip setuptools wheel
 
 # Fix the virtualenv activation script, ensure VIRTUAL_ENV points to the installed location on the system.
