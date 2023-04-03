@@ -32,7 +32,7 @@
 # https://github.com/openSUSE/python-rpm-macros#terminology
 %define pythons %(echo $PYTHON_BIN)
 
-# python*-devel is not listed because our build environments install Python from source and not from OS packaging.
+# python*-devel is not listed because we do not ship the ability to rebuild our PIP package.
 AutoReqProv: no
 BuildRequires: python-rpm-generators
 BuildRequires: python-rpm-macros
