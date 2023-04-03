@@ -38,7 +38,7 @@ classifiers = [
 ]
 description = 'Callables and modules for CSM usage.'
 dependencies = [
-    'kubernetes~=22.6.0',
+    'kubernetes~=26.1.0',
 ]
 dynamic = ['entry-points', 'scripts', 'version']
 maintainers = [
