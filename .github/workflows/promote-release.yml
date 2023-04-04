@@ -5,23 +5,28 @@ on:
       - 'v?[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_ALGOL60_USERNAME }}
-  ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_ALGOL60_TOKEN }}
+  STREAM: stable
 jobs:
   Promote:
     runs-on: ubuntu-latest
-    env:
-      HOME: /home/github-actions-runner
     steps:
-
       - uses: actions/checkout@v3
 
-      # TODO: Add step to wait and download the artifacts from Artifactory.
-      # NOTE: Russell is testing the logic to do this in another repository.
+      - name: Jfrog setup
+        uses: jfrog/setup-jfrog-cli@v3
+        env:
+          JF_URL: https://artifactory.algol60.net
+          JF_USER: ${{ secrets.ARTIFACTORY_ALGOL60_USERNAME }}
+          JF_ACCESS_TOKEN: ${{ secrets.ARTIFACTORY_ALGOL60_TOKEN }}
+
+      - uses: ./.github/actions/prepare-artifacts
+        with:
+          STREAM: ${{ env.STREAM }}
 
       - uses: ncipollo/release-action@v1
         with:
+          allowUpdates: true # if the job is re-ran to catch missed artifacts, allow updates
           generateReleaseNotes: true
-#          artifacts: ${{ env.dir_upload }}
+          artifacts: ${{ env.DIR_UPLOAD }}/*
           prerelease: false
           makeLatest: true
