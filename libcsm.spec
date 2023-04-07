@@ -32,7 +32,7 @@
 # https://github.com/openSUSE/python-rpm-macros#terminology
 %define pythons %(echo $PYTHON_BIN)
 
-# python*-devel is not listed because our build environments install Python from source and not from OS packaging.
+# python*-devel is not listed because we do not ship the ability to rebuild our PIP package.
 AutoReqProv: no
 BuildRequires: python-rpm-generators
 BuildRequires: python-rpm-macros
@@ -66,7 +66,7 @@ Cray System Management procedures and operations.
 # Build a source distribution.
 %{buildroot}%{install_python_dir}/bin/python -m pip install --disable-pip-version-check --no-cache ./dist/*.whl
 
-# Remove build tools
+# Remove build tools to decrease the virtualenv size.
 %{buildroot}%{install_python_dir}/bin/python -m pip uninstall -y pip setuptools wheel
 
 # Fix the virtualenv activation script, ensure VIRTUAL_ENV points to the installed location on the system.
