@@ -70,7 +70,7 @@ export VERSION := $(shell python3 -m setuptools_scm 2>/dev/null | tr -s '-' '~' 
 endif
 
 ifeq ($(VERSION),)
-$(error VERSION not set! Verify setuptools_scm[toml] is installed and try again.)
+$(warning VERSION not set! Verify setuptools_scm[toml] is installed and try again.)
 endif
 
 #############################################################################
