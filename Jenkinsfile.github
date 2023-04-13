@@ -30,6 +30,10 @@ if (env.BRANCH_NAME ==~ ~"^PR-\\d+") {
     currentBuild.result = 'SUCCESS'
     echo "Pull-Request builds are skipped."
     return
+} else if (env.BRANCH_NAME ==~ ~"^dependabot/github_actions") {
+    currentBuild.result = 'SUCCESS'
+    echo "Dependabot GitHub action builds are skipped."
+    return
 }
 
 // Only consider X.Y.Z and X.Y.Z.postN tags as stable.
