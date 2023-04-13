@@ -30,11 +30,16 @@ if (env.BRANCH_NAME ==~ ~"^PR-\\d+") {
     currentBuild.result = 'SUCCESS'
     echo "Pull-Request builds are skipped."
     return
+} else if (env.BRANCH_NAME ==~ ~"^dependabot/github_actions") {
+    currentBuild.result = 'SUCCESS'
+    echo "Dependabot GitHub action builds are skipped."
+    return
 }
 
-// Only consider X.Y.Z tags as stable, do not consider X.Y.Z{[a|b|rc]N} or X.Y.Z.* tags as stable.
+// Only consider X.Y.Z and X.Y.Z.postN tags as stable.
+// Never consider X.Y.Z{[a|b|rc} or X.Y.Z.* tags (that are not post-releases) as stable.
 // The ==~ operator performs an exact match.
-def stableToken = ~/v?\d+\.\d+\.\d+/
+def stableToken = ~/v?\d+\.\d+\.\d+(\.post\d+)?/
 def isStable = (env.TAG_NAME != null & env.TAG_NAME ==~ stableToken) ? true : false
 pipeline {
     agent {
@@ -93,10 +98,12 @@ pipeline {
                                 sh "python3 -m pip install setuptools_scm[toml]"
                                 version = sh(returnStdout: true, script: "python3 -m setuptools_scm | tr -s '-' '~' | sed 's/^v//'").trim()
 
-                                // Inject distro-specific metadata (e.g. which distro and service pack).
-                                runLibraryScript("addRpmMetaData.sh", "${env.NAME}.spec")
                                 sh "make prepare"
-                                sh "git update-index --assume-unchanged ${env.NAME}.spec"
+
+                                // Inject distro-specific metadata (e.g. which distro and service pack).
+                                dir("${env.BUILD_DIR}/SPECS/") {
+                                    runLibraryScript("addRpmMetaData.sh", "${env.NAME}.spec")
+                                }
                             }
                         }
                     }
@@ -148,11 +155,6 @@ pipeline {
                     }
                 }
             }
-        }
-    }
-    post {
-        always {
-            postChownFiles()
         }
     }
 }
