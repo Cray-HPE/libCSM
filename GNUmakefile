@@ -137,6 +137,7 @@ phonies+=rpm_build_source
 phonies+=rpm_package_source
 phonies+=ruff
 phonies+=synk
+phonies+=docs
 
 all : prepare rpm
 
@@ -158,9 +159,14 @@ help:
 	@echo '    rpm_build_source		Builds the SRPM.'
 	@echo '    rpm_package_source   Creates the RPM source tarball.'
 	@echo ''
+	@echo '	   docs					Generate Python sphinx documentation.'
 
 clean:
 	rm -rf build dist .ruff_cache
+
+docs:
+	sphinx-build -b html ./docs ./docs/_build
+
 
 #############################################################################
 # RPM targets
