@@ -25,8 +25,8 @@
 Function for setting boot-image in BSS
 """
 from libcsm import api
-from s3_object import *
-from libcsm import get_xnames_by_role_subrole
+from libcsm.s3 import s3_object
+from libcsm.hsm import get_xnames
 import sys 
 import json
 import requests
@@ -60,7 +60,7 @@ def main():
 
     components = []
     if args.hsm_role_subrole is not None:
-        components += get_xnames_by_subrole(args.api_gateway_address, args.hsm_role_subrole, session)
+        components += get_xnames.get_xnames_by_subrole(args.api_gateway_address, args.hsm_role_subrole, session)
 
     if args.xnames is not None:
         xnames = args.xnames.split(",")
@@ -72,10 +72,10 @@ def main():
 
     # verify we can access the boot-images bucket
     bucket_name="boot-images"
-    verify_bucket_exists(bucket_name)
+    s3_object.verify_bucket_exists(bucket_name)
 
     # get the image-id info
-    image_dict = get_image_info(bucket_name, args.image_id, args.endpoint_url)
+    image_dict = s3_object.get_image_info(bucket_name, args.image_id, args.endpoint_url)
 
     for component in components:
         body = {'hosts': [component]}
