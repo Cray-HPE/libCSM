@@ -87,9 +87,11 @@ def get_image_info(bucket_name, image_id, endpoint_url):
                 break
         try:
             if image_dict[image_type] is None:
-                raise Exception("ERROR could not find image for {}".format(image_type))
+                print("ERROR could not find image for {}".format(image_type))
+                sys.exit(1)
         except:
-            raise Exception("ERROR could not find image for {}".format(image_type))
+            print("ERROR could not find image for {}".format(image_type))
+            sys.exit(1)
 
     print("Using images: ", image_dict)
     return image_dict
