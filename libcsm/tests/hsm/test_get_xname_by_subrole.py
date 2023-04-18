@@ -50,15 +50,13 @@ class MockHTTPResponse:
             return self.json_data
 
 
-@mock.patch('kubernetes.config.load_kube_config')
-@mock.patch('kubernetes.client.CoreV1Api')
 class TestXnamesBySubrole:
 
-    def test_get_xnames(self, *_) -> None:
+    @mock.patch('libcsm.api.Auth', spec=True)
+    def test_get_xnames(self, mock_auth):
         """
         Tests successful run of the HSM get_xnames_by_role_subrole function.
         """  
-        print("Here in test")  
         hsm_role_subrole = "Management_Worker"
         
         status_code = http.HTTPStatus.OK
@@ -68,20 +66,24 @@ class TestXnamesBySubrole:
                     ]
                 }
         with mock.patch.object(Session, 'get', return_value=MockHTTPResponse(data, status_code)):
-            xnames = get_xnames.get_xnames_by_role_subrole(None, hsm_role_subrole, Session)
-            assert xnames == ['1','2']
+            mock_auth._token = "test_token_abc"
+            with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
+                xnames = get_xnames.get_xnames_by_role_subrole(None, hsm_role_subrole, Session)
+                assert xnames == ['1','2']
 
-
-    def test_get_xnames_bad_subrole(self, *_) -> None:
+    @mock.patch('libcsm.api.Auth', spec=True)
+    def test_get_xnames_bad_subrole(self, mock_auth):
         """
         Tests run of the HSM get_xnames_by_role_subrole function with bad role_subrole.
         """    
         hsm_role_subrole = "Management_badSubrole"
         with pytest.raises(SystemExit):
-            get_xnames.get_xnames_by_role_subrole(None, hsm_role_subrole, None)
+            mock_auth._token = "test_token_abc"
+            with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
+                get_xnames.get_xnames_by_role_subrole(None, hsm_role_subrole, None)
 
-
-    def test_get_xnames_bad_response(self, *_) -> None:
+    @mock.patch('libcsm.api.Auth', spec=True)
+    def test_get_xnames_bad_response(self, mock_auth):
         """
         Tests run of the HSM get_xnames_by_role_subrole function with bad resonse from HMS.
         """    
@@ -94,5 +96,6 @@ class TestXnamesBySubrole:
                 }
         with mock.patch.object(Session, 'get', return_value=MockHTTPResponse(data, status_code)):
             with pytest.raises(SystemExit):
-                get_xnames.get_xnames_by_role_subrole(None, hsm_role_subrole, Session)
-    
+                mock_auth._token = "test_token_abc"
+                with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
+                    get_xnames.get_xnames_by_role_subrole(None, hsm_role_subrole, Session)
