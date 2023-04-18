@@ -24,25 +24,38 @@
 """
 Function to get xnames by subrole from HSM
 """
-from libcsm.hsm import hsmApi
+from libcsm import api
 import sys
 import json
 import http
 import requests
 
+ROLE_SUBROLES = ["Management_Master", "Management_Worker", "Management_Storage"]
 
-def get_by_role_subrole(role_subrole: str):
-    hsm_api = hsmApi.API()
-    try:
-        components_response = hsm_api.get_components(role_subrole)
-    except Exception as ex:
-        print(f'{ex}')
-        sys.exit(1)
+class API:
+    def __init__(self, api_gateway_address="api-gw-service-nmn.local"):
 
-    xnames = []
-    if components_response is not None:
-        for component in components_response.json()['Components']:
-            xnames.append(component['ID'])
-    else:
-        print('ERROR no componenets were found with hsm_role_subrole: {}'.format(role_subrole))
-    return xnames
+        self.api_gateway_address = api_gateway_address
+        self.hsm_components_url = 'https://{}/apis/smd/hsm/v2/State/Components'.format(self.api_gateway_address)
+
+
+    def get_components(role_subrole: str):
+        # get token
+        auth = api.Auth()
+        auth.refresh_token()
+        # get session
+        session = requests.Session()
+        session.verify = False
+        # get components
+        if role_subrole not in ROLE_SUBROLES:
+            raise ERROR
+        subrole = role_subrole.split("_")[1]
+        try:
+            components_response = session.get(self.hsm_components_url + '?role=Management&subrole={}'.format(subrole),
+                headers={'Authorization': 'Bearer {}'.format(auth.token)})
+        except error:
+            print(f'Failed to get components')
+        if components_response.status_code != http.HTTPStatus.OK:
+            raise Exception('ERROR Failed to get components with subrole {}'.format(subrole))
+        
+        return components_response
