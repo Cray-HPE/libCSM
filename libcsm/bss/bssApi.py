@@ -52,7 +52,8 @@ class API:
         except requests.exceptions.RequestException as ex:
             print(f'ERROR exception: {type(ex).__name__} when trying to get bootparameters')
         if bss_response.status_code != http.HTTPStatus.OK:
-            raise Exception('ERROR Failed to get BSS bootparameters for {}'.format(component))
+            raise Exception('ERROR Failed to get BSS bootparameters for {}'.format(xname))
+            return None
         return bss_response.json()[0]
 
 

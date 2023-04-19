@@ -33,7 +33,11 @@ import requests
 
 def get_by_role_subrole(role_subrole: str):
     hsm_api = hsmApi.API()
-    components_response = hsm_api.get_components(role_subrole)
+    try:
+        components_response = hsm_api.get_components(role_subrole)
+    except Exception as ex:
+        print(f'{ex}')
+        sys.exit(1)
     xnames = []
     if components_response is not None:
         for component in components_response.json()['Components']:
