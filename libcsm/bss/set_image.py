@@ -33,9 +33,13 @@ import requests
 
 from argparse import ArgumentParser
 
-def set_bss_image(comp_xname, image_dict):
-    bss_api = bssApi.API()    
-    bss_json = bss_api.get_bss_bootparams(component)
+def set_bss_image(component, image_dict):
+    bss_api = bssApi.API()
+    try:
+        bss_json = bss_api.get_bss_bootparams(component)
+    except Exception:
+        print(f"ERROR failed to get boot parameters for {component} before patching bootparameters")
+        sys.exit(1)
     
     # set new images
     bss_json['initrd'] = image_dict['initrd']
@@ -52,7 +56,11 @@ def set_bss_image(comp_xname, image_dict):
 
     # verify images in BSS
     print("New images in BSS for {} are:".format(component))
-    bss_json = bss_api.get_bss_bootparams(component)
+    try:
+        bss_json = bss_api.get_bss_bootparams(component)
+    except Exception:
+        print(f"ERROR failed to get boot parameters for {component} after patching bootparameters")
+        sys.exit(1)
     print("  Metal.server image: ", bss_json['params'].split("metal.server=", 1)[1].split(" ",1)[0])
     print("  Initrd image:       ", bss_json['initrd'])
     print("  Kernel image:       ", bss_json['kernel'])
