@@ -22,18 +22,18 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Tests for the api submodule.
+Tests for the ``api`` submodule.
 """
+from urllib import request
+
 import base64
 import io
-
 from dataclasses import dataclass
-from urllib import request
 import pytest
-
 from kubernetes import client
 from urllib3.exceptions import MaxRetryError
 import mock
+
 from libcsm import api
 
 
@@ -85,7 +85,8 @@ class TestApi:
         Verify our expected errors cause our custom error to be raised.
         """
         auth = api.Auth()
-        auth.core.read_namespaced_secret.side_effect = client.exceptions.ApiException
+        auth.core.read_namespaced_secret.side_effect = \
+            client.exceptions.ApiException
         with pytest.raises(api.AuthException):
             auth.refresh_token()
         auth.core.read_namespaced_secret.side_effect = MaxRetryError(

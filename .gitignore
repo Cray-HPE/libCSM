@@ -39,6 +39,8 @@ __pycache__/
 *.egg*
 *.[tn]ox
 **/*coverage*
+*.log
+
 
 # RPM Build items
 FILES

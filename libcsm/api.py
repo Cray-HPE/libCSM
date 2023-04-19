@@ -24,14 +24,13 @@
 """
 Submodule for interacting with CSM API services.
 """
-from urllib.parse import urlencode
-from urllib import request
-
-import base64
 from json import loads
+
+from urllib import request
+from urllib.parse import urlencode
+import base64
 from kubernetes import client
 from kubernetes import config
-
 from urllib3.exceptions import MaxRetryError
 
 SECRET = 'admin-client-auth'
@@ -59,7 +58,6 @@ class Auth:
     """
 
     def __init__(self, **kwargs) -> None:
-
         config.load_kube_config(**kwargs)
         self.core = client.CoreV1Api()
         self._token = None
@@ -107,7 +105,6 @@ class Auth:
     def token(self) -> str:
         """
         The authentication token.
-        :return: The active token.
         """
         return self._token
 
