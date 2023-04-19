@@ -22,7 +22,7 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Tests for the ``cmd`` module.
+Tests for the ``os`` module.
 """
 from os import getcwd
 
@@ -32,7 +32,7 @@ from libcsm.os import chdir
 
 class TestCLI:
     """
-    Test class for the ``cli`` module.
+    Test class for the ``os`` module.
     """
 
     def test_run_command(self) -> None:
