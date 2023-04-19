@@ -30,38 +30,33 @@ import json
 import http
 import requests
 
-ROLES = ["Management"]
-SUBROLES = ["Master", "Worker", "Storage"]
 ROLE_SUBROLES = ["Management_Master", "Management_Worker", "Management_Storage"]
 
 class API:
     def __init__(self, api_gateway_address="api-gw-service-nmn.local"):
 
         self.api_gateway_address = api_gateway_address
-        self.bootparams_url = 'https://{}/apis/bss/boot/v1/bootparameters'.format(self.api_gateway_address)
-        self.session = requests.Session()
-        self.session.verify = False
+        self.hsm_components_url = 'https://{}/apis/smd/hsm/v2/State/Components'.format(self.api_gateway_address)
 
 
-    def get_bss_json(xname: str):
+    def get_components(self, role_subrole: str):
         # get token
         auth = api.Auth()
         auth.refresh_token()
-        body = {'hosts': [xname]}
-        bss_response = self.session.get(self.bootparams_url,
-                                headers={'Authorization': 'Bearer {}'.format(auth.token),
-                                            "Content-Type": "application/json"},
-                                data=json.dumps(body))
-        return bss_response.json()[0]
-
-
-    def patch_bss_json(xname : str, bss_json):
-        patch_response = self.session.patch(self.bootparams_url,
-                            headers={'Authorization': 'Bearer {}'.format(auth.token),
-                                    "Content-Type": "application/json"},
-                            data=json.dumps(bss_json))
-        if patch_response.status_code != http.HTTPStatus.OK:
-            print('ERROR Failed to patch BSS entry for {}'.format(component))
-            raise Error
-        else:
-            print('BSS entry patched')
+        # get session
+        session = requests.Session()
+        session.verify = False
+        # get components
+        if role_subrole not in ROLE_SUBROLES:
+            raise KeyError('ERROR {} is not a valid role_subrole'.format(role_subrole))
+            return None
+        subrole = role_subrole.split("_")[1]
+        try:
+            components_response = session.get(self.hsm_components_url + '?role=Management&subrole={}'.format(subrole),
+                headers={'Authorization': 'Bearer {}'.format(auth.token)})
+        except requests.exceptions.RequestException as ex:
+            print(f'ERROR exception: {type(ex).__name__} when trying to get components')
+        if components_response.status_code != http.HTTPStatus.OK:
+            raise Exception('ERROR Failed to get components with subrole {}'.format(subrole))
+        
+        return components_response

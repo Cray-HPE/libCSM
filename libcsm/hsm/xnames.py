@@ -24,8 +24,7 @@
 """
 Function to get xnames by subrole from HSM
 """
-from libcsm import api
-from libcsm.hsm import api 
+from libcsm.hsm import hsmApi
 import sys
 import json
 import http
@@ -33,11 +32,8 @@ import requests
 
 
 def get_by_role_subrole(role_subrole: str):
-    hsm_api = api.API()
-    try:
-        components = hsm_api.get_components(role_subrole)
-    except client.exceptions.ApiException as error:
-        print(f'Failed to resolve Kubernetes secret [{SECRET}]: {error}')
+    hsm_api = hsmApi.API()
+    components_response = hsm_api.get_components(role_subrole)
     xnames = []
     if components_response is not None:
         for component in components_response.json()['Components']:
@@ -45,4 +41,3 @@ def get_by_role_subrole(role_subrole: str):
     else:
         print('ERROR no componenets were found with hsm_role_subrole: {}'.format(role_subrole))
     return xnames
-    
