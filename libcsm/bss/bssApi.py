@@ -45,9 +45,9 @@ class API:
         body = {'hosts': [xname]}
         try:
             bss_response = self.session.get(self.bootparams_url,
-                                    headers={'Authorization': 'Bearer {}'.format(self._auth.token),
-                                                "Content-Type": "application/json"},
-                                    data=json.dumps(body))
+                            headers={'Authorization': 'Bearer {}'.format(self._auth.token),
+                                        "Content-Type": "application/json"},
+                            data=json.dumps(body))
         except requests.exceptions.RequestException as ex:
             print(f'ERROR exception: {type(ex).__name__} when trying to get bootparameters')
         if bss_response.status_code != http.HTTPStatus.OK:
