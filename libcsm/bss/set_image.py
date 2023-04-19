@@ -24,10 +24,9 @@
 """
 Function for setting boot-image in BSS
 """
-from libcsm import api
 from libcsm.s3 import s3_object
-from libcsm.hsm import xnames, api
-from libcsm.bss import api
+from libcsm.hsm import xnames
+from libcsm.bss import bssApi
 import sys 
 import json
 import requests
@@ -35,8 +34,8 @@ import requests
 from argparse import ArgumentParser
 
 def set_bss_image(comp_xname, image_dict):
-    bss_api = bss.API()    
-    bss_json = bss_api.get_bss_json(component)
+    bss_api = bssApi.API()    
+    bss_json = bss_api.get_bss_bootparams(component)
     
     # set new images
     bss_json['initrd'] = image_dict['initrd']
@@ -49,11 +48,11 @@ def set_bss_image(comp_xname, image_dict):
         sys.exit(1)
     bss_json['params'] = params.replace(current_rootfs, image_dict['rootfs'])
 
-    bss_api.patch_bss_json(component, bss_json)
+    bss_api.patch_bss_bootparams(component, bss_json)
 
     # verify images in BSS
     print("New images in BSS for {} are:".format(component))
-    bss_json = bss_api.get_bss_json(component)
+    bss_json = bss_api.get_bss_bootparams(component)
     print("  Metal.server image: ", bss_json['params'].split("metal.server=", 1)[1].split(" ",1)[0])
     print("  Initrd image:       ", bss_json['initrd'])
     print("  Kernel image:       ", bss_json['kernel'])
@@ -62,7 +61,7 @@ def set_bss_image(comp_xname, image_dict):
 def main():
 
     # parse arguments
-    parser = argparse.ArgumentParser(description='Set BSS image utility.')
+    parser = ArgumentParser(description='Set BSS image utility.')
     parser.add_argument('--hsm_role_subrole', action='store',
                         help='HSM role and subrole of nodes to set BSS image (e.g. Management_Master, Management_Storage).')
     parser.add_argument('--xnames', action='store',
@@ -84,8 +83,8 @@ def main():
     if args.hsm_role_subrole is not None:
         try:
             comp_xnames += xnames.get_by_role_subrole(args.hsm_role_subrole)
-        catch:
-            raise Error
+        except Exception as error:
+            print(f'{error}')
 
     if args.xnames is not None:
         xnames_arr = args.xnames.split(",")

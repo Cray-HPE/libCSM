@@ -48,8 +48,7 @@ def get_object_owner(bucket, object_name):
     p = Popen(['radosgw-admin', 'object', 'stat', '--object', object_name, '--bucket', bucket], encoding='ISO-8859-1', stdout=PIPE)
     output, error = p.communicate()
     if p.returncode != 0:
-        print("ERROR failed to get the owner of object: {} in bucket: {}. Verify that {} exists.". format(object_name, bucket, object_name))
-        sys.exit(1)
+        raise Exception("ERROR failed to get the owner of object: {} in bucket: {}. Verify that {} exists.". format(object_name, bucket, object_name))
     info = json.loads(output)
     owner = info['policy']['owner']['id']
     return owner
@@ -66,7 +65,11 @@ def get_creds(owner):
 
 def get_image_info(bucket_name, image_id, endpoint_url):
     image_manifest = image_id + "/manifest.json"
-    owner = get_object_owner(bucket_name, image_manifest)
+    try:
+        owner = get_object_owner(bucket_name, image_manifest)
+    except Exception as error:
+        print(f'{error}')
+        sys.exit(1)
     a_key, s_key = get_creds(owner)
     s3_config = Config(connect_timeout=S3_CONNECT_TIMEOUT,
                            read_timeout=S3_READ_TIMEOUT)
