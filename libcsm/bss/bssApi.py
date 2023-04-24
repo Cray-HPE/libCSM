@@ -37,16 +37,15 @@ class API:
         self.bootparams_url = 'https://{}/apis/bss/boot/v1/bootparameters'.format(self.api_gateway_address)
         self.session = requests.Session()
         self.session.verify = False
+        self._auth = api.Auth()
+        self._auth.refresh_token()
 
 
     def get_bss_bootparams(self, xname: str):
-        # get token
-        auth = api.Auth()
-        auth.refresh_token()
         body = {'hosts': [xname]}
         try:
             bss_response = self.session.get(self.bootparams_url,
-                                    headers={'Authorization': 'Bearer {}'.format(auth.token),
+                                    headers={'Authorization': 'Bearer {}'.format(self._auth.token),
                                                 "Content-Type": "application/json"},
                                     data=json.dumps(body))
         except requests.exceptions.RequestException as ex:
@@ -58,12 +57,9 @@ class API:
 
 
     def patch_bss_bootparams(self, xname : str, bss_json):
-        # get token
-        auth = api.Auth()
-        auth.refresh_token()
         try:
             patch_response = self.session.patch(self.bootparams_url,
-                                headers={'Authorization': 'Bearer {}'.format(auth.token),
+                                headers={'Authorization': 'Bearer {}'.format(self._auth.token),
                                         "Content-Type": "application/json"},
                                 data=json.dumps(bss_json))
         except requests.exceptions.RequestException as ex:
