@@ -33,32 +33,23 @@ import subprocess
 from argparse import ArgumentParser
 from subprocess import Popen, PIPE
 from botocore.config import Config
+from libcsm.os import run_command
 
 S3_CONNECT_TIMEOUT=60
 S3_READ_TIMEOUT=1
 
 def verify_bucket_exists(bucket):
-    p = Popen(['radosgw-admin', 'bucket', 'list', '--bucket', bucket], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    output, error = p.communicate()
-    if p.returncode != 0:
-        print("ERROR bucket %s not found." % bucket, file = sys.stderr)
-        sys.exit(1)
+    result = run_command(['radosgw-admin', 'bucket', 'list', '--bucket', bucket])
 
 def get_object_owner(bucket, object_name):
-    p = Popen(['radosgw-admin', 'object', 'stat', '--object', object_name, '--bucket', bucket], encoding='ISO-8859-1', stdout=PIPE)
-    output, error = p.communicate()
-    if p.returncode != 0:
-        raise Exception("ERROR failed to get the owner of object: {} in bucket: {}. Verify that {} exists.". format(object_name, bucket, object_name))
-    info = json.loads(output)
+    result = run_command(['radosgw-admin', 'object', 'stat', '--object', object_name, '--bucket', bucket])
+    info = json.loads(result)
     owner = info['policy']['owner']['id']
     return owner
 
 def get_creds(owner):
-    p = Popen(['radosgw-admin', 'user', 'info', '--uid', owner], universal_newlines=True, stdout=PIPE)
-    output, error = p.communicate()
-    if p.returncode != 0:
-        sys.exit(1)
-    info = json.loads(output)
+    result = run_command(['radosgw-admin', 'user', 'info', '--uid', owner])
+    info = json.loads(result)
     a_key = info['keys'][0]['access_key']
     s_key = info['keys'][0]['secret_key']
     return a_key, s_key
