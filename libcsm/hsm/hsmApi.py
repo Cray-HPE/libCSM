@@ -37,12 +37,11 @@ class API:
 
         self.api_gateway_address = api_gateway_address
         self.hsm_components_url = 'https://{}/apis/smd/hsm/v2/State/Components'.format(self.api_gateway_address)
+        self._auth = api.Auth()
+        self._auth.refresh_token()
 
 
     def get_components(self, role_subrole: str):
-        # get token
-        auth = api.Auth()
-        auth.refresh_token()
         # get session
         session = requests.Session()
         session.verify = False
@@ -53,7 +52,7 @@ class API:
         subrole = role_subrole.split("_")[1]
         try:
             components_response = session.get(self.hsm_components_url + '?role=Management&subrole={}'.format(subrole),
-                headers={'Authorization': 'Bearer {}'.format(auth.token)})
+                headers={'Authorization': 'Bearer {}'.format(self._auth.token)})
         except requests.exceptions.RequestException as ex:
             print(f'ERROR exception: {type(ex).__name__} when trying to get components')
         if components_response.status_code != http.HTTPStatus.OK:
