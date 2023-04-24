@@ -39,17 +39,23 @@ S3_CONNECT_TIMEOUT=60
 S3_READ_TIMEOUT=1
 
 def verify_bucket_exists(bucket):
-    result = run_command(['radosgw-admin', 'bucket', 'list', '--bucket', bucket])
+    result = vars(run_command(['radosgw-admin', 'bucket', 'list', '--bucket', bucket]))
+    if result['_return_code'] != 0:
+        raise Exception("{}".format(result['_stderr']))
 
 def get_object_owner(bucket, object_name):
-    result = run_command(['radosgw-admin', 'object', 'stat', '--object', object_name, '--bucket', bucket])
-    info = json.loads(result)
+    result = vars(run_command(['radosgw-admin', 'object', 'stat', '--object', object_name, '--bucket', bucket]))
+    if result['_return_code'] != 0:
+        raise Exception("{}".format(result['_stderr']))
+    info = json.loads(result['_stdout'])
     owner = info['policy']['owner']['id']
     return owner
 
 def get_creds(owner):
-    result = run_command(['radosgw-admin', 'user', 'info', '--uid', owner])
-    info = json.loads(result)
+    result = vars(run_command(['radosgw-admin', 'user', 'info', '--uid', owner]))
+    if result['_return_code'] != 0:
+        raise Exception("{}".format(result['_stderr']))
+    info = json.loads(result['_stdout'])
     a_key = info['keys'][0]['access_key']
     s_key = info['keys'][0]['secret_key']
     return a_key, s_key
@@ -61,7 +67,12 @@ def get_image_info(bucket_name, image_id, endpoint_url):
     except Exception as error:
         print(f'{error}')
         sys.exit(1)
-    a_key, s_key = get_creds(owner)
+    try:
+        a_key, s_key = get_creds(owner)
+    except Exception as error:
+        print(f'{error}')
+        sys.exit(1)
+        
     s3_config = Config(connect_timeout=S3_CONNECT_TIMEOUT,
                            read_timeout=S3_READ_TIMEOUT)
     s3_resource = boto3.resource('s3',
