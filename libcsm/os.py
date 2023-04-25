@@ -113,7 +113,7 @@ class _CLI:
         return self._stderr
 
     @property
-    def return_code(self) -> str:
+    def return_code(self) -> int:
         """
         return code from the command.
         """
