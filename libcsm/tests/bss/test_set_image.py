@@ -26,9 +26,7 @@ import pytest
 import mock
 
 from libcsm.bss import set_image, api
-from libcsm.s3 import images
 from libcsm.hsm import xnames
-
 
 
 class TestSetImage:
@@ -44,11 +42,6 @@ class TestSetImage:
         """
         Verify clean run, this mocks every function used.
         """
-        mocked_image_info = {
-            "initrd":"inidrd_image",
-            "kernel":"kernel_image",
-            "rootfs":"rootfs_image"
-            }
         with mock.patch("sys.argv", ["main", "--image_id", "image123", "--xname", "xname1"]):
             set_image.main()
 
@@ -60,11 +53,6 @@ class TestSetImage:
         """
         Verify invalid inputs raises exceptions, this mocks every function used.
         """
-        mocked_image_info = {
-            "initrd":"inidrd_image",
-            "kernel":"kernel_image",
-            "rootfs":"rootfs_image"
-            }
         with mock.patch("sys.argv", ["main", "--image_id", "image123"]):
             with pytest.raises(SystemExit):
                 set_image.main()
@@ -77,11 +65,6 @@ class TestSetImage:
         """
         Verify clean run with hsm_role_subrole provided.
         """
-        mocked_image_info = {
-            "initrd":"inidrd_image",
-            "kernel":"kernel_image",
-            "rootfs":"rootfs_image"
-            }
         with mock.patch.object(xnames, 'get_by_role_subrole', return_value=["xname1", "xname2"]):
             with mock.patch("sys.argv", ["main", "--image_id", "image123", "--hsm_role_subrole", "Management_Storage"]):
                 set_image.main()

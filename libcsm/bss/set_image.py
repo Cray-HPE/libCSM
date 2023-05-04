@@ -24,22 +24,21 @@
 """
 Function for setting boot-image in BSS
 """
+
+import sys
+
+from argparse import ArgumentParser
 from libcsm.s3 import images
 from libcsm.hsm import xnames
 from libcsm.bss import api
-import sys 
-import json
-import requests
-
-from argparse import ArgumentParser
-
 
 def main():
 
     # parse arguments
     parser = ArgumentParser(description='Set BSS image utility.')
     parser.add_argument('--hsm_role_subrole', action='store',
-                        help='HSM role and subrole of nodes to set BSS image (e.g. Management_Master, Management_Storage).')
+                        help='HSM role and subrole of nodes to set BSS image \
+                        (e.g. Management_Master, Management_Storage).')
     parser.add_argument('--xnames', action='store',
                         help='Xnames of nodes to set BSS image of in comma separated list.')
     parser.add_argument('--image_id', action='store',

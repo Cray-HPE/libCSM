@@ -24,14 +24,9 @@
 """
 Submodule for interacting with s3 objects.
 """
-import sys
 import json
-import botocore
 import boto3
-import subprocess
 
-from argparse import ArgumentParser
-from subprocess import Popen, PIPE
 from botocore.config import Config
 from libcsm.os import run_command
 
@@ -90,7 +85,7 @@ class S3Object:
         Get object access key.
         """
         return self._a_key
-    
+
     @property
     def s_key(self) -> str:
         """

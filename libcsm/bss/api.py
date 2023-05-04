@@ -24,11 +24,11 @@
 """
 Function to get xnames by subrole from HSM
 """
-from libcsm import api
-import sys
 import json
 import http
 import requests
+
+from libcsm import api
 
 class API:
     def __init__(self, api_gateway_address="api-gw-service-nmn.local"):
@@ -66,14 +66,14 @@ class API:
             print(f'ERROR exception: {type(ex).__name__} when trying to patch bootparameters')
         if patch_response.status_code != http.HTTPStatus.OK:
             raise Exception('ERROR Failed to patch BSS bootparameters for {}'.format(xname))
-        else:
-            print('BSS entry patched')
+        print('BSS entry patched')
 
     def set_bss_image(self, xname: str, image_dict: dict):
-        
+
         if 'initrd' not in image_dict or 'kernel' not in image_dict or 'rootfs' not in image_dict:
-            raise Exception("ERROR set_bss_image has inputs 'xname' and 'image_dictonary' where 'image_dictionary' is a dictionary containing \
-            values for 'initrd', 'kernel', and 'rootfs'. The inputs recieved were xname:{}, image_dictionary:{}".format(xname, image_dict))
+            raise Exception("ERROR set_bss_image has inputs 'xname' and 'image_dictonary' where \
+            'image_dictionary' is a dictionary containing values for 'initrd', 'kernel', and \
+            'rootfs'. The inputs recieved were xname:{}, image_dictionary:{}".format(xname, image_dict))
 
         bss_json = self.get_bss_bootparams(xname)
         if 'initrd' not in bss_json or 'kernel' not in bss_json:
@@ -85,9 +85,9 @@ class API:
         params = bss_json['params']
         try:
             current_rootfs = params.split("metal.server=", 1)[1].split(" ",1)[0]
-        except:
-            raise Exception("ERROR could not find current metal.server image in {} bss params".format(xname))
-            
+        except Exception as exc:
+            raise Exception("ERROR could not find current metal.server image in {} bss params".format(xname)) from exc
+
         bss_json['params'] = params.replace(current_rootfs, image_dict['rootfs'])
 
         self.patch_bss_bootparams(xname, bss_json)

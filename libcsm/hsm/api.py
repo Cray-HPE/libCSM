@@ -24,11 +24,11 @@
 """
 Function to get xnames by subrole from HSM
 """
-from libcsm import api
-import sys
-import json
+
 import http
 import requests
+
+from libcsm import api
 
 ROLE_SUBROLES = ["Management_Master", "Management_Worker", "Management_Storage"]
 
@@ -48,7 +48,6 @@ class API:
         # get components
         if role_subrole not in ROLE_SUBROLES:
             raise KeyError('ERROR {} is not a valid role_subrole'.format(role_subrole))
-            return None
         subrole = role_subrole.split("_")[1]
         try:
             components_response = session.get(self.hsm_components_url + '?role=Management&subrole={}'.format(subrole),
