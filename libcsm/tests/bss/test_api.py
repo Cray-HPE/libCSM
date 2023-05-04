@@ -35,7 +35,7 @@ from kubernetes import client
 from urllib3.exceptions import MaxRetryError
 import mock
 from libcsm import api
-from libcsm.bss import bssApi
+from libcsm.bss import api as bssApi
 import http
 from requests import Session
 import json
@@ -124,3 +124,86 @@ class TestBssApi:
             with mock.patch.object(Session, 'get', return_value=mock_bss_response):
                 with pytest.raises(Exception):
                     boot_params = bss_api.patch_bss_bootparams('some_xname', [{'json_key': 'json_value'}])
+
+    @mock.patch('libcsm.api.Auth', spec=True)
+    def test_set_bss_image(self, mock_auth):
+        """
+        Tests successful set_bss_iamge function.
+        """  
+        image_dict = {
+            "initrd" : "initrd_image",
+            "rootfs" : "rootfs_image",
+            "kernel" : "kernel_image"
+        }
+        
+        mocked_boot_params = {
+            "initrd" : "pre_initrd",
+            "kernel" : "pre_kernel",
+            "params" : "abc metal.server=pre_rootfs xyz"
+        }
+        mock_status = http.HTTPStatus.OK
+        mock_bss_response = MockHTTPResponse(mocked_boot_params, mock_status)
+        bss_api = bssApi.API()
+        with mock.patch.object(bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):
+            with mock.patch.object(bss_api, 'patch_bss_bootparams', return_value=None):
+                bss_api.set_bss_image("xname", image_dict)
+
+    @mock.patch('libcsm.api.Auth', spec=True)
+    def test_set_bss_image_bad_inputs(self, mock_auth):
+        """
+        Tests bad run of set_bss_iamge function because of invalid image_dict passed in.
+        """  
+        image_dict = {
+            "XX_bad_XX" : "initrd_image",
+            "rootfs" : "rootfs_image",
+            "kernel" : "kernel_image"
+        }
+        bss_api = bssApi.API()
+        with pytest.raises(Exception):
+            ass.api.set_bss_image("xname", image_dict)
+
+    @mock.patch('libcsm.api.Auth', spec=True)
+    def test_set_bss_image_bad_boot_params1(self, mock_auth):
+        """
+        Tests successful set_bss_iamge function.
+        """  
+        image_dict = {
+            "initrd" : "initrd_image",
+            "rootfs" : "rootfs_image",
+            "kernel" : "kernel_image"
+        }
+        
+        mocked_boot_params = {
+            "XX-bad" : "pre_initrd",
+            "kernel" : "pre_kernel",
+            "params" : "abc metal.server=pre_rootfs xyz"
+        }
+        mock_status = http.HTTPStatus.OK
+        mock_bss_response = MockHTTPResponse(mocked_boot_params, mock_status)
+        bss_api = bssApi.API()
+        with mock.patch.object(bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):
+            with pytest.raises(Exception):
+                bss_api.set_bss_image("xname", image_dict)
+
+    @mock.patch('libcsm.api.Auth', spec=True)
+    def test_set_bss_image_bad_boot_params2(self, mock_auth):
+        """
+        Tests successful set_bss_iamge function.
+        """  
+        image_dict = {
+            "initrd" : "initrd_image",
+            "rootfs" : "rootfs_image",
+            "kernel" : "kernel_image"
+        }
+        
+        mocked_boot_params = {
+            "initrd" : "pre_initrd",
+            "kernel" : "pre_kernel",
+            "params" : "abc metal.sXXX=pre_rootfs xyz"
+        }
+        mock_status = http.HTTPStatus.OK
+        mock_bss_response = MockHTTPResponse(mocked_boot_params, mock_status)
+        bss_api = bssApi.API()
+        with mock.patch.object(bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):
+            with pytest.raises(Exception):
+                bss_api.set_bss_image("xname", image_dict)

@@ -35,7 +35,8 @@ from kubernetes import client
 from urllib3.exceptions import MaxRetryError
 import mock
 from libcsm import api
-from libcsm.hsm import hsmApi, xnames
+from libcsm.hsm import xnames
+from libcsm.hsm import api as hsmApi
 import http
 from requests import Session
 import json
@@ -95,7 +96,7 @@ class TestHsmApi:
     @mock.patch('libcsm.api.Auth', spec=True)
     def test_get_components_bad_response(self, mock_auth):
         """
-        Tests error is raised when bad role_subrole is provided.
+        Tests error is raised when a bad response is recieved from session.get() function.
         """  
         mock_auth._token = "test_token_abc"
         mock_components = { "Components": [

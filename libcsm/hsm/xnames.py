@@ -24,20 +24,15 @@
 """
 Function to get xnames by subrole from HSM
 """
-from libcsm.hsm import hsmApi
+from libcsm.hsm import api
 import sys
 import json
 import http
 import requests
 
-
 def get_by_role_subrole(role_subrole: str):
-    hsm_api = hsmApi.API()
-    try:
-        components_response = hsm_api.get_components(role_subrole)
-    except Exception as ex:
-        print(f'{ex}')
-        sys.exit(1)
+    hsm_api = api.API()
+    components_response = hsm_api.get_components(role_subrole)
     xnames = []
     if components_response is not None:
         for component in components_response.json()['Components']:

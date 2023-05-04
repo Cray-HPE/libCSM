@@ -35,7 +35,8 @@ from kubernetes import client
 from urllib3.exceptions import MaxRetryError
 import mock
 from libcsm import api
-from libcsm.hsm import hsmApi, xnames
+from libcsm.hsm import api as hsmApi
+from  libcsm.hsm import xnames
 import http
 from requests import Session
 import json
@@ -84,5 +85,19 @@ class TestXnames:
         mock_auth._token = "test_token_abc"
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
             with pytest.raises(KeyError):
+                xnames_arr = xnames.get_by_role_subrole(hsm_role_subrole)
+
+    @mock.patch('libcsm.api.Auth', spec=True)
+    def test_xnames_with_no_components(self, mock_auth):
+        """
+        Tests get run of HSM get_xnames_by_role_subrole where no components are returned
+        """  
+        hsm_role_subrole = "Management_Storage"  
+        mock_components = { "Components": []
+                        }  
+        hsm_api = hsmApi.API()
+        mock_auth._token = "test_token_abc"
+        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
+            with mock.patch.object(hsmApi.API, 'get_components', return_value=MockHTTPResponse(mock_components, 200)):
                 xnames_arr = xnames.get_by_role_subrole(hsm_role_subrole)
                 assert xnames_arr == []
