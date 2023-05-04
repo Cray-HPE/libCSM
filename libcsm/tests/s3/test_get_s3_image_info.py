@@ -25,9 +25,10 @@
 import pytest
 import mock
 import json
+import io
 from botocore.response import StreamingBody
 
-from libcsm.s3 import images
+from libcsm.s3 import images, s3object
 
 class MockS3Object:
     """
@@ -35,19 +36,17 @@ class MockS3Object:
     """
     def __init__(self, mocked_images):
         body_json = {
-            'Body': [
-                {'Artifacts': mocked_images },
-            ]
+                'artifacts': mocked_images 
         }
 
-        body_string = json.dumps(body_json).encode('utf-8')
+        body_string = json.dumps(body_json).encode()
 
         body_stream = StreamingBody(
-            StringIO(body_string),
+            io.BytesIO(body_string),
             len(body_string)
         )
 
-        self.mocked_response = {'Body': body_stream}
+        self.mock_response = {'Body': body_stream}
 
 
 class TestGetS3ImageInfo:
