@@ -21,70 +21,32 @@
 #  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
-"""
-Submodule for interacting with s3 objects or buckets.
-"""
+
 import sys
 import json
 import botocore
 import boto3
 import subprocess
+from libcsm.s3 import s3object
 
-from argparse import ArgumentParser
-from subprocess import Popen, PIPE
-from botocore.config import Config
-from libcsm.os import run_command
+"""
+Function to get the initrd, rootfs, and kernel image paths given an s3 bucket and image ID.
+This returns a dictionary
+    {
+        rootfs: "<rootfs_image_path>"
+        kernel: "<kernal_image_path>"
+        initrd: "<initrd_image_path>"
+    }
+"""
 
-S3_CONNECT_TIMEOUT=60
-S3_READ_TIMEOUT=1
-
-def verify_bucket_exists(bucket):
-    result = run_command(['radosgw-admin', 'bucket', 'list', '--bucket', bucket])
-    if result.return_code != 0:
-        raise Exception("{}".format(result.stderr))
-
-def get_object_owner(bucket, object_name):
-    result = run_command(['radosgw-admin', 'object', 'stat', '--object', object_name, '--bucket', bucket])
-    if result.return_code != 0:
-        raise Exception("{}".format(result.stderr))
-    info = json.loads(result.stdout)
-    owner = info['policy']['owner']['id']
-    return owner
-
-def get_creds(owner):
-    result = run_command(['radosgw-admin', 'user', 'info', '--uid', owner])
-    if result.return_code != 0:
-        raise Exception("{}".format(result.stderr))
-    info = json.loads(result.stdout)
-    a_key = info['keys'][0]['access_key']
-    s_key = info['keys'][0]['secret_key']
-    return a_key, s_key
-
-def get_image_info(bucket_name, image_id, endpoint_url):
+def get_s3_image_info(bucket_name, image_id, endpoint_url) -> dict:
     image_manifest = image_id + "/manifest.json"
-    try:
-        owner = get_object_owner(bucket_name, image_manifest)
-    except Exception as error:
-        print(f'{error}')
-        sys.exit(1)
-    try:
-        a_key, s_key = get_creds(owner)
-    except Exception as error:
-        print(f'{error}')
-        sys.exit(1)
-
-    s3_config = Config(connect_timeout=S3_CONNECT_TIMEOUT,
-                           read_timeout=S3_READ_TIMEOUT)
-    s3_resource = boto3.resource('s3',
-                        endpoint_url=endpoint_url,
-                        aws_access_key_id=a_key,
-                        aws_secret_access_key=s_key,
-                        config=s3_config)
-
-    s3_object = s3_resource.Object(bucket_name, image_manifest).get()
-    image_dict = {}
+    image_object = s3object.S3Object(bucket_name, image_manifest)
+    s3_object = image_object.get_object(endpoint_url)
     object_json = json.loads(s3_object['Body'].read())
     images_json = object_json['artifacts']
+
+    image_dict = {}
     for image_type in ["initrd", "kernel", "rootfs"]:
         for image in images_json:
             if image_type in image['type']:
