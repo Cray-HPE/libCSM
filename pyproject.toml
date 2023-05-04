@@ -53,7 +53,7 @@ license = { file = 'LICENSE' }
 
 [project.optional-dependencies]
 ci = [
-    'nox~=2022.11.21',
+    'nox~=2023.4.22',
 ]
 lint = [
     'pylint~=2.15',
