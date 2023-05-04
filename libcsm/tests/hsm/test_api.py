@@ -22,24 +22,17 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Tests for the hsm get_xnames_by_subrole submodule.
+Tests for the hsm api submodule.
 """
-import base64
-import io
 
-from dataclasses import dataclass
-from urllib import request
 import pytest
-
-from kubernetes import client
-from urllib3.exceptions import MaxRetryError
 import mock
-from libcsm import api
-from libcsm.hsm import xnames
-from libcsm.hsm import api as hsmApi
 import http
 from requests import Session
-import json
+from kubernetes import client
+
+from libcsm import api
+from libcsm.hsm import api as hsmApi
 
 
 class MockHTTPResponse:
@@ -57,13 +50,13 @@ class TestHsmApi:
     def test_get_components(self, mock_auth):
         """
         Tests successful run of the HSM get_components function.
-        """  
+        """ 
         mock_auth._token = "test_token_abc"
         mock_components = { "Components": [
                             { "ID" : "1"},
-                            { "ID" : "2"} 
+                            { "ID" : "2"}
                             ]
-                        } 
+                        }
         mock_status = http.HTTPStatus.OK
         mock_response = MockHTTPResponse(mock_components, mock_status)
         hsm_api = hsmApi.API()
@@ -71,7 +64,6 @@ class TestHsmApi:
             with mock.patch.object(Session, 'get', return_value=mock_response):
                 components = hsm_api.get_components('Management_Master')
                 assert components == mock_response
-
 
     @mock.patch('libcsm.api.Auth', spec=True)
     def test_get_components_bad_subrole(self, mock_auth):
@@ -90,7 +82,7 @@ class TestHsmApi:
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
             with mock.patch.object(Session, 'get', return_value=mock_response):
                 with pytest.raises(KeyError):
-                    components = hsm_api.get_components('Management_bad_subrole')
+                    hsm_api.get_components('Management_bad_subrole')
 
 
     @mock.patch('libcsm.api.Auth', spec=True)
@@ -110,4 +102,4 @@ class TestHsmApi:
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
             with mock.patch.object(Session, 'get', return_value=mock_response):
                 with pytest.raises(Exception):
-                    components = hsm_api.get_components('Management_Worker')
+                    hsm_api.get_components('Management_Worker')

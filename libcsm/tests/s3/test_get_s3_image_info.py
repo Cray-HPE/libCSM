@@ -22,10 +22,10 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 
-import pytest
-import mock
 import json
 import io
+import pytest
+import mock
 from botocore.response import StreamingBody
 
 from libcsm.s3 import images, s3object
@@ -75,7 +75,7 @@ class TestGetS3ImageInfo:
 
     @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
     @mock.patch('libcsm.s3.s3object.S3Object.get_object')
-    def test_bad_get_image_info(self, mock_get_object, mock_verify_bucket_exists) -> None:
+    def test_bad_get_image_info(self, mock_get_object, *_) -> None:
         """
         Verify get_s3_image_info runs smoothly.
         """
@@ -87,4 +87,4 @@ class TestGetS3ImageInfo:
         mock_object = MockS3Object(mocked_images)
         with mock.patch.object(s3object.S3Object, 'get_object', return_value=mock_object.mock_response):
             with pytest.raises(Exception):
-                image_dict = images.get_s3_image_info("bucket", "image", "info")
+                images.get_s3_image_info("bucket", "image", "info")

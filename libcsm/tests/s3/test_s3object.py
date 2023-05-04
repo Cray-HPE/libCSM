@@ -51,7 +51,7 @@ class TestS3Object:
         Verify verify_bucket_exists runs smoothly.
         """
         mock_run_command.return_value.return_code = 0
-        obj = s3object.S3Object("a_bucket", "b_object")
+        s3object.S3Object("a_bucket", "b_object")
 
     @mock.patch('libcsm.s3.s3object.run_command', autospec=True)
     def test_object_bad_bucket(self, mock_run_command) -> None:
@@ -60,16 +60,16 @@ class TestS3Object:
         """
         mock_run_command.return_value.return_code = 2
         with pytest.raises(Exception):
-            obj = s3object.S3Object("a_bucket", "b_object")
-    
+            s3object.S3Object("a_bucket", "b_object")
+
     @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
     @mock.patch('libcsm.s3.s3object.run_command', autospec=True)
-    def test_object_owner(self, mock_run_command, mock_verify_bucket) -> None:
+    def test_object_owner(self, mock_run_command, *_) -> None:
         """
         Verify get_object_owner runs smoothly.
         """
         obj = s3object.S3Object("a_bucket", "b_object")
-        
+
         mock_run_command.return_value.return_code = 0
         mock_run_command.return_value.stdout = '{"policy": {"owner": {"id": "owner_id"}}}'
         obj.get_object_owner()
@@ -77,12 +77,12 @@ class TestS3Object:
 
     @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
     @mock.patch('libcsm.s3.s3object.run_command', autospec=True)
-    def test_object_bad_owner(self, mock_run_command, mock_verify_bucket) -> None:
+    def test_object_bad_owner(self, mock_run_command, *_) -> None:
         """
         Verify get_object_owner raises exception when run_command has error.
         """
         obj = s3object.S3Object("a_bucket", "b_object")
-        
+
         mock_run_command.return_value.return_code = 2
         mock_run_command.return_value.stdout = '{"policy": {"owner": {"id": "owner_id"}}}'
         with pytest.raises(Exception):
@@ -91,7 +91,7 @@ class TestS3Object:
     @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
     @mock.patch('libcsm.s3.s3object.S3Object.get_object_owner')
     @mock.patch('libcsm.s3.s3object.run_command', autospec=True)
-    def test_get_creds(self, mock_run_command, mock_object_owner, mock_verify_bucket) -> None:
+    def test_get_creds(self, mock_run_command, *_) -> None:
         """
         Verify get_creds runs smoothly.
         """
@@ -106,7 +106,7 @@ class TestS3Object:
     @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
     @mock.patch('libcsm.s3.s3object.S3Object.get_object_owner')
     @mock.patch('libcsm.s3.s3object.run_command', autospec=True)
-    def test_get_bad_creds(self, mock_run_command, mock_object_owner, mock_verify_bucket) -> None:
+    def test_get_bad_creds(self, mock_run_command, *_) -> None:
         """
         Verify get_creds raises exception when run_command has error.
         """

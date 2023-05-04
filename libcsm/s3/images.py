@@ -22,11 +22,8 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 
-import sys
 import json
-import botocore
-import boto3
-import subprocess
+
 from libcsm.s3 import s3object
 
 """
@@ -55,8 +52,8 @@ def get_s3_image_info(bucket_name, image_id, endpoint_url) -> dict:
         try:
             if image_dict[image_type] is None:
                 raise Exception("ERROR could not find image for {}".format(image_type))
-        except:
-            raise Exception("ERROR could not find image for {}".format(image_type))
+        except Exception as exc:
+            raise Exception("ERROR could not find image for {}".format(image_type)) from exc
 
     print("Using images: ", image_dict)
     return image_dict
