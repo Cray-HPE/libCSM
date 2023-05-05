@@ -25,7 +25,7 @@
 import pytest
 import mock
 
-from libcsm.bss import set_image, api
+from libcsm.bss import set_image
 from libcsm.hsm import xnames
 
 

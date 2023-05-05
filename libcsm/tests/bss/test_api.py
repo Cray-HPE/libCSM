@@ -64,11 +64,10 @@ class TestBssApi:
                 assert boot_params == mock_components[0]
 
     @mock.patch('libcsm.api.Auth', spec=True)
-    def test_get_bss_bootparameters_bad_response(self, mock_auth):
+    def test_get_bss_bootparameters_bad_response(self):
         """
         Tests bad response from the BSS get_bss_bootparameters function.
         """
-        mock_auth._token = "test_token_abc"
         mock_components = [
                             { "ID" : "1"},
                             { "ID" : "2"}
@@ -83,11 +82,10 @@ class TestBssApi:
 
 
     @mock.patch('libcsm.api.Auth', spec=True)
-    def test_patch_bss_bootparameters(self, mock_auth):
+    def test_patch_bss_bootparameters(self):
         """
         Tests successful run of the BSS get_patch_bootparameters function.
         """
-        mock_auth._token = "test_token_abc"
         mock_components = [
                             { "ID" : "1"},
                             { "ID" : "2"}
@@ -100,11 +98,10 @@ class TestBssApi:
                 bss_api.patch_bss_bootparams('some_xname', [{'json_key': 'json_value'}])
 
     @mock.patch('libcsm.api.Auth', spec=True)
-    def test_patch_bss_bootparameters_bad_response(self, mock_auth):
+    def test_patch_bss_bootparameters_bad_response(self):
         """
         Tests bad response from the BSS patch_bss_bootparameters function.
         """
-        mock_auth._token = "test_token_abc"
         mock_components = [
                             { "ID" : "1"},
                             { "ID" : "2"} 
