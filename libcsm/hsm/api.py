@@ -29,6 +29,9 @@ import http
 import requests
 
 from libcsm import api
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 ROLE_SUBROLES = ["Management_Master", "Management_Worker", "Management_Storage"]
 

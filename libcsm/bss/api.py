@@ -29,6 +29,9 @@ import http
 import requests
 
 from libcsm import api
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 class API:
     def __init__(self, api_gateway_address="api-gw-service-nmn.local"):

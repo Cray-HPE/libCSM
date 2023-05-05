@@ -30,6 +30,9 @@ import requests
 import json
 
 from libcsm import api
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 class API:
     def __init__(self, api_gateway_address="api-gw-service-nmn.local"):
@@ -50,7 +53,7 @@ class API:
         except requests.exceptions.RequestException as ex:
             print(f'ERROR exception: {type(ex).__name__} when trying to get components')
         if components_response.status_code != http.HTTPStatus.OK:
-            raise Exception('ERROR Failed to get components with subrole {}'.format(subrole))
+            raise Exception('ERROR Bad response recieved from SLS. Recived: {}'.format(components_response))
 
         return components_response
 

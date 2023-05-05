@@ -33,7 +33,7 @@ from libcsm.sls import api
 def main():
 
     # parse arguments
-    parser = ArgumentParser(description='Set BSS image utility.')
+    parser = ArgumentParser(description='Get the Xname for a management node. This queries SLS for management nodes\' information.')
     parser.add_argument('--hostname', action='store',
                         required=True, help='hostname of the node whose Xname should be returned.')
     parser.add_argument('--api_gateway_address', action='store', default='api-gw-service-nmn.local',
