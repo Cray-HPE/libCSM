@@ -27,11 +27,9 @@ Function to get xnames by subrole from HSM
 
 import http
 import requests
-
+import certifi
+from os import getenv
 from libcsm import api
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 ROLE_SUBROLES = ["Management_Master", "Management_Worker", "Management_Storage"]
 
@@ -42,12 +40,13 @@ class API:
         self.hsm_components_url = 'https://{}/apis/smd/hsm/v2/State/Components'.format(self.api_gateway_address)
         self._auth = api.Auth()
         self._auth.refresh_token()
+        self._crt_path = getenv("REQUESTS_CA_BUNDLE", certifi.where())
 
 
     def get_components(self, role_subrole: str):
         # get session
         session = requests.Session()
-        session.verify = False
+        session.verify = self._crt_path
         # get components
         if role_subrole not in ROLE_SUBROLES:
             raise KeyError('ERROR {} is not a valid role_subrole'.format(role_subrole))

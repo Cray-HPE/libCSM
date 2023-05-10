@@ -27,21 +27,21 @@ Function to get xnames by subrole from HSM
 import json
 import http
 import requests
-
+import certifi
+from os import genenv
 from libcsm import api
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 class API:
     def __init__(self, api_gateway_address="api-gw-service-nmn.local"):
 
         self.api_gateway_address = api_gateway_address
         self.bootparams_url = 'https://{}/apis/bss/boot/v1/bootparameters'.format(self.api_gateway_address)
-        self.session = requests.Session()
-        self.session.verify = False
         self._auth = api.Auth()
         self._auth.refresh_token()
+        self._crt_path = getenv("REQUESTS_CA_BUNDLE", certifi.where())
+        self.session = requests.Session()
+        self.session.verify = self._crt_path
 
 
     def get_bss_bootparams(self, xname: str):
@@ -64,6 +64,7 @@ class API:
             patch_response = self.session.patch(self.bootparams_url,
                                 headers={'Authorization': 'Bearer {}'.format(self._auth.token),
                                         "Content-Type": "application/json"},
+                                verify=self._crt_path,
                                 data=json.dumps(bss_json))
         except requests.exceptions.RequestException as ex:
             print(f'ERROR exception: {type(ex).__name__} when trying to patch bootparameters')

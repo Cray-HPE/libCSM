@@ -26,24 +26,20 @@ Function for setting boot-image in BSS
 """
 
 import sys
-
+import click
 from argparse import ArgumentParser
 from libcsm.sls import api
 
-def main():
-
-    # parse arguments
-    parser = ArgumentParser(description='Get the Xname for a management node. This queries SLS for management nodes\' information.')
-    parser.add_argument('--hostname', action='store',
-                        required=True, help='hostname of the node whose Xname should be returned.')
-    parser.add_argument('--api_gateway_address', action='store', default='api-gw-service-nmn.local',
-                        help='Address of the API gateway.')
-    args = parser.parse_args()
-
-
-    sls_api = api.API(args.api_gateway_address)
+@click.command()
+@click.option('--hostname', required=True, type=str, help='hostname of the node whose Xname should be returned.')
+@click.option('--api_gateway_address', required=False, type=str, default='api-gw-service-nmn.local')
+def main(hostname, api_gateway_address):
+    
+    """Get the Xname of a NCN given a hostname. This queries SLS for management nodes' information."""
+    
+    sls_api = api.API(api_gateway_address)
     try:
-        print(sls_api.get_xname(args.hostname))
+        print(sls_api.get_xname(hostname))
     except Exception as error:
         print(f'{error}')
         sys.exit(1)
