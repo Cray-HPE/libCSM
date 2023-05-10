@@ -28,7 +28,7 @@ import json
 import http
 import requests
 import certifi
-from os import genenv
+from os import getenv
 from libcsm import api
 
 
