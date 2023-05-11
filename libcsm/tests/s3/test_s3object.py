@@ -42,8 +42,8 @@ class TestS3Object:
         assert obj.bucket == "a_bucket"
         assert obj.object_name == "b_object"
         assert obj.owner is None
-        assert obj.a_key is None
-        assert obj.s_key is None
+        assert obj._a_key is None
+        assert obj._s_key is None
 
     @mock.patch('libcsm.s3.s3object.run_command', autospec=True)
     def test_object_good_bucket(self, mock_run_command) -> None:
