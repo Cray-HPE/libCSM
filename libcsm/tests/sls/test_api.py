@@ -42,10 +42,10 @@ class MockHTTPResponse:
     def json(self):
         return self.json_data
 
-
+@mock.patch('kubernetes.config.load_kube_config')
 class TestSLSApi:
 
-    def test_get_management_components_from_sls(self):
+    def test_get_management_components_from_sls(self, *_) -> None:
         """
         Tests successful run of the SLS get_management_components_from_sls function.
         """
@@ -61,7 +61,7 @@ class TestSLSApi:
             with mock.patch.object(Session, 'get', return_value=mock_sls_response):
                 sls_api.get_management_components_from_sls()
 
-    def test_get_management_components_from_sls_error(self):
+    def test_get_management_components_from_sls_error(self, *_) -> None:
         """
         Tests unsuccessful run of the SLS get_management_components_from_sls function because of bad response.
         """
@@ -79,7 +79,7 @@ class TestSLSApi:
                     sls_api.get_management_components_from_sls()
 
 
-    def test_get_xname(self):
+    def test_get_xname(self, *_) -> None:
         """
         Tests response from the SLS get_xname function.
         """
@@ -96,7 +96,7 @@ class TestSLSApi:
                 ret_xname = sls_api.get_xname('ncn-w001')
                 assert ret_xname == 'xname1'
 
-    def test_get_xname_bad_xname(self):
+    def test_get_xname_bad_xname(self, *_) -> None:
         """
         Tests the SLS get_xname function given bad hostname.
         """
@@ -112,7 +112,7 @@ class TestSLSApi:
                 with pytest.raises(Exception):
                     sls_api.get_xname('ncn-BAD')
 
-    def test_get_xname_invalid_resonse(self):
+    def test_get_xname_invalid_resonse(self, *_) -> None:
         """
         Tests the SLS get_xname function given bad hostname.
         """

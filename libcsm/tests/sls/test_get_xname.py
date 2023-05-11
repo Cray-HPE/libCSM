@@ -43,7 +43,7 @@ class MockHTTPResponse:
     def json(self):
         return self.json_data
 
-
+@mock.patch('kubernetes.config.load_kube_config')
 class TestSLSApi:
 
     @mock.patch('libcsm.api.Auth', spec=True)
