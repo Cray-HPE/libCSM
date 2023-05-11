@@ -25,11 +25,10 @@
 Tests for the hsm api submodule.
 """
 
+import http
 import pytest
 import mock
-import http
 from requests import Session
-from kubernetes import client
 
 from libcsm import api
 from libcsm.hsm import api as hsmApi
@@ -50,7 +49,7 @@ class TestHsmApi:
     def test_get_components(self, mock_auth):
         """
         Tests successful run of the HSM get_components function.
-        """ 
+        """
         mock_auth._token = "test_token_abc"
         mock_components = { "Components": [
                             { "ID" : "1"},
@@ -69,13 +68,13 @@ class TestHsmApi:
     def test_get_components_bad_subrole(self, mock_auth):
         """
         Tests error is raised when bad role_subrole is provided.
-        """  
+        """
         mock_auth._token = "test_token_abc"
         mock_components = { "Components": [
                             { "ID" : "1"},
-                            { "ID" : "2"} 
+                            { "ID" : "2"}
                             ]
-                        } 
+                        }
         mock_status = http.HTTPStatus.OK
         mock_response = MockHTTPResponse(mock_components, mock_status)
         hsm_api = hsmApi.API()
@@ -89,13 +88,13 @@ class TestHsmApi:
     def test_get_components_bad_response(self, mock_auth):
         """
         Tests error is raised when a bad response is recieved from session.get() function.
-        """  
+        """
         mock_auth._token = "test_token_abc"
         mock_components = { "Components": [
                             { "ID" : "1"},
-                            { "ID" : "2"} 
+                            { "ID" : "2"}
                             ]
-                        } 
+                        }
         mock_status = http.HTTPStatus.UNAUTHORIZED
         mock_response = MockHTTPResponse(mock_components, mock_status)
         hsm_api = hsmApi.API()

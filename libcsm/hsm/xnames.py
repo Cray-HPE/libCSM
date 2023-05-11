@@ -22,12 +22,15 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Function to get xnames by subrole from HSM
+Function to get xnames from HSM.
 """
 
 from libcsm.hsm import api
 
 def get_by_role_subrole(role_subrole: str):
+    """
+    Function to get xnames by subrole from HSM.
+    """
     hsm_api = api.API()
     components_response = hsm_api.get_components(role_subrole)
     xnames = []

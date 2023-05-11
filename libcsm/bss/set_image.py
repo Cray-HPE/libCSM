@@ -22,7 +22,7 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Function for setting boot-image in BSS
+Function to set the boot-image in BSS for a NCN node(s).
 """
 
 import sys
@@ -74,7 +74,7 @@ def main():
     try:
         image_dict = images.get_s3_image_info(args.bucket, args.image_id, args.endpoint_url)
     except Exception as error:
-        print('ERROR was unable to get image info for {} {}. {}'.format(args.bucket, args.image_id, error))
+        print(f'ERROR was unable to get image info for {args.bucket} {args.image_id}. {error}')
         sys.exit(1)
 
     bss_api=api.API()
@@ -83,5 +83,5 @@ def main():
         try:
             bss_api.set_bss_image(component, image_dict)
         except Exception as error:
-            print('ERROR was unable to set image in bss for {}. {}'.format(component, error))
+            print(f'ERROR was unable to set image in bss for {component}. {error}')
             sys.exit(1)

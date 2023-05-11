@@ -25,9 +25,9 @@
 Tests for the hsm get_xnames_by_subrole submodule.
 """
 
+import http
 import pytest
 import mock
-import http
 
 from requests import Session
 from libcsm import api
@@ -55,7 +55,7 @@ class TestSLSApi:
                         ]
         mock_status = http.HTTPStatus.OK
         mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-        
+
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
             sls_api = slsApi.API()
             with mock.patch.object(Session, 'get', return_value=mock_sls_response):
@@ -71,8 +71,8 @@ class TestSLSApi:
                         ]
         mock_status = http.HTTPStatus.UNAUTHORIZED
         mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-        
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):      
+
+        with mock.patch.object(api.Auth, 'refresh_token', return_value=None): 
             sls_api = slsApi.API()
             with mock.patch.object(Session, 'get', return_value=mock_sls_response):
                 with pytest.raises(Exception):
@@ -89,7 +89,7 @@ class TestSLSApi:
                           ]
         mock_status = http.HTTPStatus.OK
         mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-        
+
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
             sls_api = slsApi.API()
             with mock.patch.object(sls_api, 'get_management_components_from_sls', return_value=mock_sls_response):

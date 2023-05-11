@@ -57,7 +57,7 @@ class TestGetS3ImageInfo:
 
     @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
     @mock.patch('libcsm.s3.s3object.S3Object.get_object')
-    def test_good_get_image_info(self, mock_get_object, mock_verify_bucket_exists) -> None:
+    def test_good_get_image_info(self, mock_get_object, *_) -> None:
         """
         Verify get_s3_image_info runs smoothly when a good repsonse is recieved from .
         """

@@ -25,9 +25,9 @@
 Tests for the hsm get_xnames_by_subrole submodule.
 """
 
+import http
 import pytest
 import mock
-import http
 
 from requests import Session
 from libcsm import api
@@ -49,7 +49,7 @@ class TestBssApi:
     def test_get_bss_bootparameters(self, *_) -> None:
         """
         Tests successful run of the BSS get_bss_bootparameters function.
-        """ 
+        """
         mock_components = [
                             { "ID" : "1"},
                             { "ID" : "2"}
@@ -103,7 +103,7 @@ class TestBssApi:
         """
         mock_components = [
                             { "ID" : "1"},
-                            { "ID" : "2"} 
+                            { "ID" : "2"}
                           ]
         mock_status = http.HTTPStatus.UNAUTHORIZED
         mock_bss_response = MockHTTPResponse(mock_components, mock_status)
@@ -123,7 +123,7 @@ class TestBssApi:
             "rootfs" : "rootfs_image",
             "kernel" : "kernel_image"
         }
-        
+
         mocked_boot_params = {
             "initrd" : "pre_initrd",
             "kernel" : "pre_kernel",
@@ -158,7 +158,7 @@ class TestBssApi:
             "rootfs" : "rootfs_image",
             "kernel" : "kernel_image"
         }
-        
+
         mocked_boot_params = {
             "XX-bad" : "pre_initrd",
             "kernel" : "pre_kernel",
@@ -170,7 +170,7 @@ class TestBssApi:
                 bss_api.set_bss_image("xname", image_dict)
 
     @mock.patch('libcsm.api.Auth', spec=True)
-    def test_set_bss_image_bad_boot_params2(self, mock_auth):
+    def test_set_bss_image_bad_boot_params2(self, *_):
         """
         Tests successful set_bss_iamge function.
         """
@@ -179,7 +179,7 @@ class TestBssApi:
             "rootfs" : "rootfs_image",
             "kernel" : "kernel_image"
         }
-        
+
         mocked_boot_params = {
             "initrd" : "pre_initrd",
             "kernel" : "pre_kernel",

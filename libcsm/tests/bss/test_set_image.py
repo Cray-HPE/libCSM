@@ -73,15 +73,10 @@ class TestSetImage:
     @mock.patch('libcsm.bss.api.API.set_bss_image', spec=True)
     @mock.patch('libcsm.s3.images.get_s3_image_info', spec=True)
     @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
-    def test_set_image_with_role_subrole(self, *_) -> None:
+    def test_set_image_with_bad_role_subrole(self, *_) -> None:
         """
         Verify invalid run with bad hsm_role_subrole provided.
         """
-        mocked_image_info = {
-            "initrd":"inidrd_image",
-            "kernel":"kernel_image",
-            "rootfs":"rootfs_image"
-            }
         with mock.patch("sys.argv", ["main", "--image_id", "image123", "--hsm_role_subrole", "Management_BAD"]):
             with pytest.raises(SystemExit):
                 set_image.main()
