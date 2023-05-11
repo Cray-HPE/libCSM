@@ -35,6 +35,10 @@ S3_READ_TIMEOUT=1
 
 class S3Object:
 
+    """
+    Class for getting s3 object infomation given a bucket and bject name.  
+    """
+
     def __init__(self, bucket: str, object_name: str):
         self.bucket = bucket
         self.object_name = object_name
@@ -44,51 +48,51 @@ class S3Object:
         self.verify_bucket_exists()
 
     def verify_bucket_exists(self) -> None:
+        """
+        Verify the bucket provided exists in s3.
+        """
         result = run_command(['radosgw-admin', 'bucket', 'list', '--bucket', self.bucket])
         if result.return_code != 0:
-            raise Exception("{}".format(result.stderr))
+            raise Exception(f"{result.stderr}")
+
 
     def get_object_owner(self) -> None:
+        """
+        Get the owner of an object.
+        """
         result = run_command(['radosgw-admin', 'object', 'stat', '--object', self.object_name, '--bucket', self.bucket])
         if result.return_code != 0:
-            raise Exception("{}".format(result.stderr))
+            raise Exception(f"{result.stderr}")
         info = json.loads(result.stdout)
         owner = info['policy']['owner']['id']
         self.owner = owner
 
     def get_creds(self) -> None:
+        """
+        Get the credentials to access the object based on the owner.
+        """
         if self.owner is None:
             self.get_object_owner()
         result = run_command(['radosgw-admin', 'user', 'info', '--uid', self.owner])
         if result.return_code != 0:
-            raise Exception("{}".format(result.stderr))
+            raise Exception(f"{result.stderr}")
         info = json.loads(result.stdout)
         self._a_key = info['keys'][0]['access_key']
         self._s_key = info['keys'][0]['secret_key']
 
     def get_object(self, endpoint_url="http://rgw-vip"):
-        if self.a_key is None or self.s_key is None:
+        """
+        Get the object from s3. Returns a bob3.resource.Object.
+        """
+        if self._a_key is None or self._s_key is None:
             self.get_creds()
         s3_config = Config(connect_timeout=S3_CONNECT_TIMEOUT,
                             read_timeout=S3_READ_TIMEOUT)
         s3_resource = boto3.resource('s3',
                             endpoint_url=endpoint_url,
-                            aws_access_key_id=self.a_key,
-                            aws_secret_access_key=self.s_key,
+                            aws_access_key_id=self._a_key,
+                            aws_secret_access_key=self._s_key,
                             config=s3_config)
 
         return s3_resource.Object(self.bucket, self.object_name).get()
 
-    @property
-    def a_key(self) -> str:
-        """
-        Get object access key.
-        """
-        return self._a_key
-
-    @property
-    def s_key(self) -> str:
-        """
-        Get object secret key.
-        """
-        return self._s_key

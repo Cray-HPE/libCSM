@@ -25,14 +25,10 @@
 Tests for the hsm get_xnames_by_subrole submodule.
 """
 
-import pytest
-import mock
 import http
+import mock
 
-from requests import Session
 from click.testing import CliRunner
-from libcsm import api
-from libcsm.sls import api as slsApi
 from libcsm.sls import get_xname
 
 class MockHTTPResponse:
@@ -44,7 +40,7 @@ class MockHTTPResponse:
         return self.json_data
 
 @mock.patch('kubernetes.config.load_kube_config')
-class TestSLSApi:
+class TestGetXname:
 
     @mock.patch('libcsm.api.Auth', spec=True)
     @mock.patch('libcsm.sls.api.API.get_management_components_from_sls', spec=True)
@@ -59,8 +55,8 @@ class TestSLSApi:
         mock_status = http.HTTPStatus.OK
         mock_sls_response = MockHTTPResponse(mock_components, mock_status)
         mock_management_components.return_value = mock_sls_response
-        cliRunner = CliRunner()
-        result = cliRunner.invoke(get_xname.main, ["--hostname", "ncn-w001"])
+        cli_runner = CliRunner()
+        result = cli_runner.invoke(get_xname.main, ["--hostname", "ncn-w001"])
         assert result.exit_code == 0
 
     @mock.patch('libcsm.api.Auth', spec=True)
@@ -76,6 +72,6 @@ class TestSLSApi:
         mock_status = http.HTTPStatus.OK
         mock_sls_response = MockHTTPResponse(mock_components, mock_status)
         mock_management_components.return_value = mock_sls_response
-        cliRunner = CliRunner()
-        result = cliRunner.invoke(get_xname.main, ["--hostname", "bad-hostname"])
+        cli_runner = CliRunner()
+        result = cli_runner.invoke(get_xname.main, ["--hostname", "bad-hostname"])
         assert result.exit_code == 1

@@ -65,7 +65,7 @@ class TestXnames:
         """
         Tests unsuccessful run of the HSM get_xnames_by_role_subrole function by providing a bad subrole.
         """
-        hsm_role_subrole = "Management_bad_subrole"    
+        hsm_role_subrole = "Management_bad_subrole"
         mock_auth._token = "test_token_abc"
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
             with pytest.raises(KeyError):
@@ -76,12 +76,13 @@ class TestXnames:
     def test_xnames_with_no_components(self, mock_auth):
         """
         Tests get run of HSM get_xnames_by_role_subrole where no components are returned
-        """  
-        hsm_role_subrole = "Management_Storage"  
+        """
+        hsm_role_subrole = "Management_Storage"
         mock_components = { "Components": []
-                        }  
+                        }
         mock_auth._token = "test_token_abc"
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
             with mock.patch.object(hsmApi.API, 'get_components', return_value=MockHTTPResponse(mock_components, 200)):
                 xnames_arr = xnames.get_by_role_subrole(hsm_role_subrole)
-                assert xnames_arr == []
+                # check that xnames_arr is empty
+                assert not xnames_arr

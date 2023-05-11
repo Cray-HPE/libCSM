@@ -22,27 +22,34 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Function to get xnames by subrole from HSM
+Submodule for interacting with CSM SLS.
 """
 
 import http
-import requests
-import json
-import certifi
 from os import getenv
+import requests
+import certifi
 from libcsm import api
 
 
 class API:
+
+    """
+    Class for providing API to interact with SLS.
+    """
+
     def __init__(self, api_gateway_address="api-gw-service-nmn.local"):
 
         self.api_gateway_address = api_gateway_address
-        self.sls_url = 'https://{}/apis/sls/v1/'.format(self.api_gateway_address)
+        self.sls_url = f'https://{self.api_gateway_address}/apis/sls/v1/'
         self._auth = api.Auth()
         self._auth.refresh_token()
         self._crt_path = getenv("REQUESTS_CA_BUNDLE", certifi.where())
 
     def get_management_components_from_sls(self):
+        """
+        Function to retrieve all management components from SLS.
+        """
         # get session
         session = requests.Session()
         session.verify = self._crt_path
@@ -50,14 +57,16 @@ class API:
             components_response = session.get(self.sls_url + 'search/hardware?extra_properties.Role=Management',
                 headers={'Authorization': 'Bearer {}'.format(self._auth.token)})
         except requests.exceptions.RequestException as ex:
-            raise Exception(f'ERROR exception: {type(ex).__name__} when trying to get management components from SLS')
+            raise Exception(f'ERROR exception: {type(ex).__name__} when trying to get management components from SLS') from ex
         if components_response.status_code != http.HTTPStatus.OK:
-            raise Exception('ERROR Bad response recieved from SLS. Recived: {}'.format(components_response))
+            raise Exception(f'ERROR Bad response recieved from SLS. Recived: {components_response}')
 
         return components_response
 
     def get_xname(self, hostname: str):
-
+        """
+        Function to get the xname of a node from SLS based on a provided hostname.
+        """
         components_response = self.get_management_components_from_sls()
 
         for node in components_response.json():
@@ -65,6 +74,6 @@ class API:
                 if hostname in node['ExtraProperties']['Aliases']:
                     return node['Xname']
             except KeyError as error:
-                raise KeyError('ERROR [ExtraProperties][Aliases] was not in the response from sls. \
-                These fields are expected in the json response. The resonponse was {}'.format(components_response.json()))
+                raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the response from sls. \
+                These fields are expected in the json response. The resonponse was {components_response.json()}') from error
         raise Exception(f'ERROR hostname:{hostname} was not found in management nodes.')
