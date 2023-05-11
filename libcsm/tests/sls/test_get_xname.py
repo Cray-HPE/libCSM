@@ -30,6 +30,7 @@ import mock
 import http
 
 from requests import Session
+from click.testing import CliRunner
 from libcsm import api
 from libcsm.sls import api as slsApi
 from libcsm.sls import get_xname
@@ -58,9 +59,9 @@ class TestSLSApi:
         mock_status = http.HTTPStatus.OK
         mock_sls_response = MockHTTPResponse(mock_components, mock_status)
         mock_management_components.return_value = mock_sls_response
-        sls_api = slsApi.API()
-        with mock.patch("sys.argv", ["main", "--hostname", "ncn-w001"]):
-            get_xname.main()
+        cliRunner = CliRunner()
+        result = cliRunner.invoke(get_xname.main, ["--hostname", "ncn-w001"])
+        assert result.exit_code == 0
 
     @mock.patch('libcsm.api.Auth', spec=True)
     @mock.patch('libcsm.sls.api.API.get_management_components_from_sls', spec=True)
@@ -75,9 +76,6 @@ class TestSLSApi:
         mock_status = http.HTTPStatus.OK
         mock_sls_response = MockHTTPResponse(mock_components, mock_status)
         mock_management_components.return_value = mock_sls_response
-        sls_api = slsApi.API()
-        with mock.patch("sys.argv", ["main", "--hostname", "bad-hostname"]):
-            with pytest.raises(SystemExit):
-                get_xname.main()
-
-
+        cliRunner = CliRunner()
+        result = cliRunner.invoke(get_xname.main, ["--hostname", "bad-hostname"])
+        assert result.exit_code == 1
