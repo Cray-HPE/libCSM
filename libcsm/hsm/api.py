@@ -65,5 +65,4 @@ class API:
             print(f'ERROR exception: {type(ex).__name__} when trying to get components')
         if components_response.status_code != http.HTTPStatus.OK:
             raise Exception(f'ERROR Failed to get components with subrole {subrole}')
-        
         return components_response

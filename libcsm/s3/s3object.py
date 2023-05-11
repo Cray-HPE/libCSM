@@ -95,4 +95,3 @@ class S3Object:
                             config=s3_config)
 
         return s3_resource.Object(self.bucket, self.object_name).get()
-

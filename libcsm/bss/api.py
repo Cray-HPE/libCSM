@@ -27,9 +27,9 @@ Submodule for interacting with CSM BSS.
 
 import json
 import http
+from os import getenv
 import requests
 import certifi
-from os import getenv
 from libcsm import api
 
 
@@ -42,7 +42,7 @@ class API:
     def __init__(self, api_gateway_address="api-gw-service-nmn.local"):
 
         self.api_gateway_address = api_gateway_address
-        self.bootparams_url = 'https://{}/apis/bss/boot/v1/bootparameters'.format(self.api_gateway_address)
+        self.bootparams_url = f'https://{self.api_gateway_address}/apis/bss/boot/v1/bootparameters'
         self._auth = api.Auth()
         self._auth.refresh_token()
         self._crt_path = getenv("REQUESTS_CA_BUNDLE", certifi.where())
@@ -64,7 +64,6 @@ class API:
             print(f'ERROR exception: {type(ex).__name__} when trying to get bootparameters')
         if bss_response.status_code != http.HTTPStatus.OK:
             raise Exception(f'ERROR Failed to get BSS bootparameters for {xname}')
-            return None
         return bss_response.json()[0]
 
 
@@ -85,7 +84,7 @@ class API:
         print('BSS entry patched')
 
     def set_bss_image(self, xname: str, image_dict: dict):
-        
+
         """
         Set the images in BSS for a specific xname.
         The inputs are the node's xname and a dictionary containing initrd, kernel, and roofs
@@ -115,7 +114,7 @@ class API:
         self.patch_bss_bootparams(xname, bss_json)
 
         # verify images in BSS
-        print("New images in BSS for {} are:".format(xname))
+        print(f"New images in BSS for {xname} are:")
         new_bss_json = self.get_bss_bootparams(xname)
         print("  Metal.server image: ", new_bss_json['params'].split("metal.server=", 1)[1].split(" ",1)[0])
         print("  Initrd image:       ", new_bss_json['initrd'])

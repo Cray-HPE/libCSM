@@ -35,7 +35,7 @@ from libcsm.sls import api
 def main(hostname, api_gateway_address):
 
     """Get the Xname of a NCN given a hostname. This queries SLS for management nodes' information."""
-    
+
     sls_api = api.API(api_gateway_address)
     try:
         print(sls_api.get_xname(hostname))
