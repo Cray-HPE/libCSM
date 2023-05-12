@@ -27,7 +27,7 @@ Tests for the sls get_hostname function.
 
 import http
 import mock
-import click
+
 from click.testing import CliRunner
 from libcsm.sls import get_hostname
 

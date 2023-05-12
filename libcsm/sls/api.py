@@ -86,7 +86,7 @@ class API:
         
         for node in components_response.json():
             try:
-                if xname is node['Xname']:
+                if xname == node['Xname']:
                     # assumes the hostname is the first entry in ['ExtraProperties']['Aliases']
                     return node['ExtraProperties']['Aliases'][0]
             except KeyError as error:
