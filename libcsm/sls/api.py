@@ -63,7 +63,7 @@ class API:
 
         return components_response
 
-    def get_xname(self, hostname: str):
+    def get_xname(self, hostname: str) -> str:
         """
         Function to get the xname of a node from SLS based on a provided hostname.
         """
@@ -77,3 +77,19 @@ class API:
                 raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the response from sls. \
                 These fields are expected in the json response. The resonponse was {components_response.json()}') from error
         raise Exception(f'ERROR hostname:{hostname} was not found in management nodes.')
+
+    def get_hostname(self, xname: str) -> str:
+        """
+        Function to get the hostname of a management node from SLS based on a provided xname.
+        """
+        components_response = self.get_management_components_from_sls()
+        
+        for node in components_response.json():
+            try:
+                if xname is node['Xname']:
+                    # assumes the hostname is the first entry in ['ExtraProperties']['Aliases']
+                    return node['ExtraProperties']['Aliases'][0]
+            except KeyError as error:
+                raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the response from sls. \
+                These fields are expected in the json response. The resonponse was {components_response.json()}') from error
+        raise Exception(f'ERROR xname:{xname} was not found in management nodes.')
