@@ -47,7 +47,7 @@ class API:
         self._crt_path = getenv("REQUESTS_CA_BUNDLE", certifi.where())
 
 
-    def get_components(self, role_subrole: str):
+    def get_components(self, role_subrole: str) -> requests.Response:
         """
         Function to get management components from HSM based on their role and subrole.
         """

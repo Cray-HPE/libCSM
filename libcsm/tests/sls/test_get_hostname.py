@@ -49,9 +49,9 @@ class TestGetHostname:
         Tests successful run of get_hostname main function.
         """
         mock_components = [
-                            {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
-                            {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}}
-                          ]
+            {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
+            {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}},
+        ]
         mock_status = http.HTTPStatus.OK
         mock_sls_response = MockHTTPResponse(mock_components, mock_status)
         mock_management_components.return_value = mock_sls_response
@@ -66,9 +66,9 @@ class TestGetHostname:
         Tests unsuccessful run of get_hostname main function.
         """
         mock_components = [
-                            {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
-                            {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}}
-                          ]
+            {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
+            {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}},
+        ]
         mock_status = http.HTTPStatus.OK
         mock_sls_response = MockHTTPResponse(mock_components, mock_status)
         mock_management_components.return_value = mock_sls_response

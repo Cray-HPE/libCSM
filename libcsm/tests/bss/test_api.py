@@ -51,9 +51,9 @@ class TestBssApi:
         Tests successful run of the BSS get_bss_bootparameters function.
         """
         mock_components = [
-                            { "ID" : "1"},
-                            { "ID" : "2"}
-                        ]
+            { "ID" : "1"},
+            { "ID" : "2"},
+        ]
         mock_status = http.HTTPStatus.OK
         mock_bss_response = MockHTTPResponse(mock_components, mock_status)
         bss_api = bssApi.API()
@@ -68,9 +68,9 @@ class TestBssApi:
         Tests bad response from the BSS get_bss_bootparameters function.
         """
         mock_components = [
-                            { "ID" : "1"},
-                            { "ID" : "2"}
-                          ]
+            { "ID" : "1"},
+            { "ID" : "2"},
+        ]
         mock_status = http.HTTPStatus.UNAUTHORIZED
         mock_bss_response = MockHTTPResponse(mock_components, mock_status)
         bss_api = bssApi.API()
@@ -86,9 +86,9 @@ class TestBssApi:
         Tests successful run of the BSS get_patch_bootparameters function.
         """
         mock_components = [
-                            { "ID" : "1"},
-                            { "ID" : "2"}
-                          ]
+            { "ID" : "1"},
+            { "ID" : "2"},
+        ]
         mock_status = http.HTTPStatus.OK
         mock_bss_response = MockHTTPResponse(mock_components, mock_status)
         bss_api = bssApi.API()
@@ -102,9 +102,9 @@ class TestBssApi:
         Tests bad response from the BSS patch_bss_bootparameters function.
         """
         mock_components = [
-                            { "ID" : "1"},
-                            { "ID" : "2"}
-                          ]
+            { "ID" : "1"},
+            { "ID" : "2"},
+        ]
         mock_status = http.HTTPStatus.UNAUTHORIZED
         mock_bss_response = MockHTTPResponse(mock_components, mock_status)
         bss_api = bssApi.API()
@@ -121,13 +121,13 @@ class TestBssApi:
         image_dict = {
             "initrd" : "initrd_image",
             "rootfs" : "rootfs_image",
-            "kernel" : "kernel_image"
+            "kernel" : "kernel_image",
         }
 
         mocked_boot_params = {
             "initrd" : "pre_initrd",
             "kernel" : "pre_kernel",
-            "params" : "abc metal.server=pre_rootfs xyz"
+            "params" : "abc metal.server=pre_rootfs xyz",
         }
         bss_api = bssApi.API()
         with mock.patch.object(bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):
@@ -142,7 +142,7 @@ class TestBssApi:
         image_dict = {
             "XX_bad_XX" : "initrd_image",
             "rootfs" : "rootfs_image",
-            "kernel" : "kernel_image"
+            "kernel" : "kernel_image",
         }
         bss_api = bssApi.API()
         with pytest.raises(Exception):
@@ -156,13 +156,13 @@ class TestBssApi:
         image_dict = {
             "initrd" : "initrd_image",
             "rootfs" : "rootfs_image",
-            "kernel" : "kernel_image"
+            "kernel" : "kernel_image",
         }
 
         mocked_boot_params = {
             "XX-bad" : "pre_initrd",
             "kernel" : "pre_kernel",
-            "params" : "abc metal.server=pre_rootfs xyz"
+            "params" : "abc metal.server=pre_rootfs xyz",
         }
         bss_api = bssApi.API()
         with mock.patch.object(bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):
@@ -177,13 +177,13 @@ class TestBssApi:
         image_dict = {
             "initrd" : "initrd_image",
             "rootfs" : "rootfs_image",
-            "kernel" : "kernel_image"
+            "kernel" : "kernel_image",
         }
 
         mocked_boot_params = {
             "initrd" : "pre_initrd",
             "kernel" : "pre_kernel",
-            "params" : "abc metal.sXXX=pre_rootfs xyz"
+            "params" : "abc metal.sXXX=pre_rootfs xyz",
         }
         bss_api = bssApi.API()
         with mock.patch.object(bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):

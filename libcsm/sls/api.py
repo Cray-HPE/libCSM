@@ -46,7 +46,7 @@ class API:
         self._auth.refresh_token()
         self._crt_path = getenv("REQUESTS_CA_BUNDLE", certifi.where())
 
-    def get_management_components_from_sls(self):
+    def get_management_components_from_sls(self) -> requests.Response:
         """
         Function to retrieve all management components from SLS.
         """

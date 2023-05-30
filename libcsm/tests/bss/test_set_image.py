@@ -25,58 +25,56 @@
 import pytest
 import mock
 
+from click.testing import CliRunner
 from libcsm.bss import set_image
 from libcsm.hsm import xnames
+import traceback
 
-
+@mock.patch('libcsm.api.Auth', spec=True)
+@mock.patch('libcsm.bss.api.API.set_bss_image', spec=True)
+@mock.patch('libcsm.s3.images.get_s3_image_info', spec=True)
+@mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
 class TestSetImage:
 
     """
     Tests for the bss set image main function.
     """
-    @mock.patch('libcsm.api.Auth', spec=True)
-    @mock.patch('libcsm.bss.api.API.set_bss_image', spec=True)
-    @mock.patch('libcsm.s3.images.get_s3_image_info', spec=True)
-    @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
+
     def test_set_image(self, *_) -> None:
         """
         Verify clean run, this mocks every function used.
         """
-        with mock.patch("sys.argv", ["main", "--image_id", "image123", "--xname", "xname1"]):
-            set_image.main()
+        cli_runner = CliRunner()
+        result = cli_runner.invoke(set_image.main, ["--image-id", "image123", "--xnames", "xname1"])
+        traceback.print_exception(*result.exc_info)
+        assert result.exit_code == 0
 
-    @mock.patch('libcsm.api.Auth', spec=True)
-    @mock.patch('libcsm.bss.api.API.set_bss_image', spec=True)
-    @mock.patch('libcsm.s3.images.get_s3_image_info', spec=True)
-    @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
     def test_set_image_bad_inputs(self, *_) -> None:
         """
         Verify invalid inputs raises exceptions, this mocks every function used.
         """
-        with mock.patch("sys.argv", ["main", "--image_id", "image123"]):
-            with pytest.raises(SystemExit):
-                set_image.main()
+        cli_runner = CliRunner()
+        result = cli_runner.invoke(set_image.main, ["--image-id", "image123"])
+        assert result.exit_code == 1
 
-    @mock.patch('libcsm.api.Auth', spec=True)
-    @mock.patch('libcsm.bss.api.API.set_bss_image', spec=True)
-    @mock.patch('libcsm.s3.images.get_s3_image_info', spec=True)
-    @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
-    def test_set_image_with_role_subrole(self, *_) -> None:
+    @mock.patch('libcsm.hsm.xnames.get_by_role_subrole', spec=True)
+    def test_set_image_with_role_subrole(self, mock_role_subrole, *_) -> None:
         """
         Verify clean run with hsm_role_subrole provided.
         """
-        with mock.patch.object(xnames, 'get_by_role_subrole', return_value=["xname1", "xname2"]):
-            with mock.patch("sys.argv", ["main", "--image_id", "image123", "--hsm_role_subrole", "Management_Storage"]):
-                set_image.main()
+        #with mock.patch.object(xnames, 'get_by_role_subrole', return_value=["xname1", "xname2"]):
+        mock_role_subrole.return_value = ["xname1", "xname2"]
+        cli_runner = CliRunner()
+        result = cli_runner.invoke(set_image.main, ["--image-id", "image123", "--hsm-role-subrole", "Management_Storage"])
+        #assert result.exit_code == 0
+        traceback.print_exception(*result.exc_info)
+        assert not result.exception
 
-    @mock.patch('libcsm.api.Auth', spec=True)
-    @mock.patch('libcsm.bss.api.API.set_bss_image', spec=True)
-    @mock.patch('libcsm.s3.images.get_s3_image_info', spec=True)
-    @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
     def test_set_image_with_bad_role_subrole(self, *_) -> None:
         """
         Verify invalid run with bad hsm_role_subrole provided.
         """
-        with mock.patch("sys.argv", ["main", "--image_id", "image123", "--hsm_role_subrole", "Management_BAD"]):
-            with pytest.raises(SystemExit):
-                set_image.main()
+        cli_runner = CliRunner()
+        result = cli_runner.invoke(set_image.main, ["--image-id", "image123", "--hsm-role-subrole", "Management_BAD"])
+        traceback.print_exception(*result.exc_info)
+        assert result.exit_code == 1

@@ -26,55 +26,52 @@ Function to set the boot-image in BSS for a NCN node(s).
 """
 
 import sys
+import click
 
-from argparse import ArgumentParser
 from libcsm.s3 import images
-from libcsm.hsm import xnames
+from libcsm.hsm import xnames as hsm_xnames
 from libcsm.bss import api
 
-def main():
 
-    # parse arguments
-    parser = ArgumentParser(description='Set BSS image utility.')
-    parser.add_argument('--hsm_role_subrole', action='store',
-                        help='HSM role and subrole of nodes to set BSS image \
-                        (e.g. Management_Master, Management_Storage).')
-    parser.add_argument('--xnames', action='store',
-                        help='Xnames of nodes to set BSS image of in comma separated list.')
-    parser.add_argument('--image_id', action='store',
-                        required=True, help='image_id of image to set in BSS for specified nodes.')
-    parser.add_argument('--bucket', action='store', default='boot-images',
-                        help='s3 bucket where the image is located.')
-    parser.add_argument('--api_gateway_address', action='store', default='api-gw-service-nmn.local',
-                        help='Address of the API gateway.')
-    parser.add_argument('--endpoint_url', action='store', default='http://rgw-vip',
-                        help='Address of the Rados-gateway endpoint.')
-    args = parser.parse_args()
+@click.command()
+@click.option('--hsm-role-subrole', required=False, type=str, default=None,
+               help='HSM role and subrole of nodes to set BSS image (e.g. Management_Master, Management_Storage).')
+@click.option('--xnames', required=False, type=str, default=None,
+                help='Xnames of nodes to set BSS image of in comma separated list.')
+@click.option('--image-id', type=str, required=True,
+                help='image-id of image to set in BSS for specified nodes.')
+@click.option('--bucket', required=False, type=str, default='boot-images',
+               help='s3 bucket where the image is located. Defaults to "boot-images".')
+@click.option('--api-gateway-address', required=False, type=str, default='api-gw-service-nmn.local',
+               help='API gateway address.')
+@click.option('--endpoint-url', required=False, type=str, default='http://rgw-vip',
+               help='Address of the Rados-gateway endpoint.')
+def main(hsm_role_subrole, xnames, image_id, bucket, api_gateway_address, endpoint_url) -> None:
 
     # check inputs
-    if args.hsm_role_subrole is None and args.xnames is None:
-        print("Input Error: --hsm_role_subrole or --xnames must be specified.")
+    if hsm_role_subrole is None and xnames is None:
+        print("Input Error: --hsm-role-subrole or --xnames must be specified.")
         sys.exit(1)
 
     comp_xnames = []
-    if args.hsm_role_subrole is not None:
+    if hsm_role_subrole is not None:
         try:
-            comp_xnames += xnames.get_by_role_subrole(args.hsm_role_subrole)
+            comp_xnames += hsm_xnames.get_by_role_subrole(hsm_role_subrole)
         except Exception as error:
             print(f'{error}')
             sys.exit(1)
 
-    if args.xnames is not None:
-        xnames_arr = args.xnames.split(",")
+    if xnames is not None:
+        xnames_arr = xnames.split(",")
         for xname in xnames_arr:
             if xname not in comp_xnames:
                 comp_xnames.append(xname)
 
     # get the image-id info
     try:
-        image_dict = images.get_s3_image_info(args.bucket, args.image_id, args.endpoint_url)
+        image_dict = images.get_s3_image_info(bucket, image_id, endpoint_url)
     except Exception as error:
-        print(f'ERROR was unable to get image info for {args.bucket} {args.image_id}. {error}')
+        print(f'ERROR was unable to get image info for {bucket} {image_id}. {error}')
         sys.exit(1)
 
     bss_api=api.API()

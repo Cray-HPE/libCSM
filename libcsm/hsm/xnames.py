@@ -24,10 +24,10 @@
 """
 Function to get xnames from HSM.
 """
-
+from typing import List
 from libcsm.hsm import api
 
-def get_by_role_subrole(role_subrole: str):
+def get_by_role_subrole(role_subrole: str) -> List[str]:
     """
     Function to get xnames by subrole from HSM.
     """

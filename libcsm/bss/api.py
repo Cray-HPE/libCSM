@@ -50,7 +50,7 @@ class API:
         self.session.verify = self._crt_path
 
 
-    def get_bss_bootparams(self, xname: str):
+    def get_bss_bootparams(self, xname: str) -> str:
         """
         Get bootparameters from BSS for a specifed xname.
         """
@@ -67,7 +67,7 @@ class API:
         return bss_response.json()[0]
 
 
-    def patch_bss_bootparams(self, xname : str, bss_json):
+    def patch_bss_bootparams(self, xname : str, bss_json) -> None:
         """
         Patch the bootparameters in BSS for a specified xname.
         """
@@ -83,7 +83,7 @@ class API:
             raise Exception(f'ERROR Failed to patch BSS bootparameters for {xname}')
         print('BSS entry patched')
 
-    def set_bss_image(self, xname: str, image_dict: dict):
+    def set_bss_image(self, xname: str, image_dict: dict) -> None:
 
         """
         Set the images in BSS for a specific xname.

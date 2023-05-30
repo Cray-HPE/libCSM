@@ -62,10 +62,11 @@ class TestGetS3ImageInfo:
         Verify get_s3_image_info runs smoothly when a good repsonse is recieved from .
         """
         mock_get_object.return_value = 0
-        mocked_images = [ {"type" : "initrd", "link": {"path": "initrd_path"} },
-                        {"type" : "kernel", "link": {"path": "kernel_path"} },
-                        {"type" : "rootfs", "link": {"path": "rootfs_path"} }
-                    ]
+        mocked_images = [ 
+            {"type" : "initrd", "link": {"path": "initrd_path"} },
+            {"type" : "kernel", "link": {"path": "kernel_path"} },
+            {"type" : "rootfs", "link": {"path": "rootfs_path"} },
+        ]
         mock_object = MockS3Object(mocked_images)
         with mock.patch.object(s3object.S3Object, 'get_object', return_value=mock_object.mock_response):
             image_dict = images.get_s3_image_info("bucket", "image", "info")
@@ -80,10 +81,11 @@ class TestGetS3ImageInfo:
         Verify get_s3_image_info runs smoothly.
         """
         mock_get_object.return_value = 0
-        mocked_images = [ {"type" : "XX-bad-XX", "link": {"path": "initrd_path"} },
-                        {"type" : "kernel", "link": {"path": "kernel_path"} },
-                        {"type" : "rootfs", "link": {"path": "rootfs_path"} }
-                    ]
+        mocked_images = [ 
+            {"type" : "XX-bad-XX", "link": {"path": "initrd_path"} },
+            {"type" : "kernel", "link": {"path": "kernel_path"} },
+            {"type" : "rootfs", "link": {"path": "rootfs_path"} },
+        ]
         mock_object = MockS3Object(mocked_images)
         with mock.patch.object(s3object.S3Object, 'get_object', return_value=mock_object.mock_response):
             with pytest.raises(Exception):

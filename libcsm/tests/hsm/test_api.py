@@ -28,6 +28,7 @@ Tests for the hsm api submodule.
 import http
 import pytest
 import mock
+from dataclasses import dataclass
 from requests import Session
 
 from libcsm import api
@@ -43,43 +44,44 @@ class MockHTTPResponse:
         return self.json_data
 
 
+@dataclass()
+class MockSetup:
+    """
+    A setup function for the HSM tests. 
+    """
+    mock_components = { 
+        "Components": [
+            { "ID" : "1"},
+            { "ID" : "2"},
+        ]
+    }
+    mock_status = http.HTTPStatus.OK
+    mock_response = MockHTTPResponse(mock_components, mock_status)
+
+
 class TestHsmApi:
 
     @mock.patch('libcsm.api.Auth', spec=True)
-    def test_get_components(self, mock_auth):
+    def test_get_components(self, *_):
         """
         Tests successful run of the HSM get_components function.
         """
-        mock_auth._token = "test_token_abc"
-        mock_components = { "Components": [
-                            { "ID" : "1"},
-                            { "ID" : "2"}
-                            ]
-                        }
-        mock_status = http.HTTPStatus.OK
-        mock_response = MockHTTPResponse(mock_components, mock_status)
+        mock_setup = MockSetup
         hsm_api = hsmApi.API()
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            with mock.patch.object(Session, 'get', return_value=mock_response):
+            with mock.patch.object(Session, 'get', return_value=mock_setup.mock_response):
                 components = hsm_api.get_components('Management_Master')
-                assert components == mock_response
+                assert components == mock_setup.mock_response
 
     @mock.patch('libcsm.api.Auth', spec=True)
     def test_get_components_bad_subrole(self, mock_auth):
         """
         Tests error is raised when bad role_subrole is provided.
         """
-        mock_auth._token = "test_token_abc"
-        mock_components = { "Components": [
-                            { "ID" : "1"},
-                            { "ID" : "2"}
-                            ]
-                        }
-        mock_status = http.HTTPStatus.OK
-        mock_response = MockHTTPResponse(mock_components, mock_status)
+        mock_setup = MockSetup
         hsm_api = hsmApi.API()
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            with mock.patch.object(Session, 'get', return_value=mock_response):
+            with mock.patch.object(Session, 'get', return_value=mock_setup.mock_response):
                 with pytest.raises(KeyError):
                     hsm_api.get_components('Management_bad_subrole')
 
@@ -89,12 +91,12 @@ class TestHsmApi:
         """
         Tests error is raised when a bad response is recieved from session.get() function.
         """
-        mock_auth._token = "test_token_abc"
-        mock_components = { "Components": [
-                            { "ID" : "1"},
-                            { "ID" : "2"}
-                            ]
-                        }
+        mock_components = { 
+            "Components": [
+                { "ID" : "1"},
+                { "ID" : "2"},
+            ]
+        }
         mock_status = http.HTTPStatus.UNAUTHORIZED
         mock_response = MockHTTPResponse(mock_components, mock_status)
         hsm_api = hsmApi.API()
