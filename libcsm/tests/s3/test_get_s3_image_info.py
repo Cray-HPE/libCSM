@@ -48,14 +48,13 @@ class MockS3Object:
 
         self.mock_response = {'Body': body_stream}
 
-
+@mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
 class TestGetS3ImageInfo:
 
     """
     Tests for the get_s3_image_info function.
     """
 
-    @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
     @mock.patch('libcsm.s3.s3object.S3Object.get_object')
     def test_good_get_image_info(self, mock_get_object, *_) -> None:
         """
@@ -74,7 +73,6 @@ class TestGetS3ImageInfo:
             assert image_dict['kernel'] == "kernel_path"
             assert image_dict['rootfs'] == "rootfs_path"
 
-    @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
     @mock.patch('libcsm.s3.s3object.S3Object.get_object')
     def test_bad_get_image_info(self, mock_get_object, *_) -> None:
         """

@@ -43,10 +43,12 @@ from libcsm.bss import api
 @click.option('--bucket', required=False, type=str, default='boot-images',
                help='s3 bucket where the image is located. Defaults to "boot-images".')
 @click.option('--api-gateway-address', required=False, type=str, default='api-gw-service-nmn.local',
-               help='API gateway address.')
+               help='API gateway address. Default is \'api-gw-service-nmn.local\'.')
 @click.option('--endpoint-url', required=False, type=str, default='http://rgw-vip',
                help='Address of the Rados-gateway endpoint.')
 def main(hsm_role_subrole, xnames, image_id, bucket, api_gateway_address, endpoint_url) -> None:
+
+    """Set the kernel, rootfs, and initrd images in BSS for specified node(s) given an image-id."""
 
     # check inputs
     if hsm_role_subrole is None and xnames is None:
