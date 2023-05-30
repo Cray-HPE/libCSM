@@ -47,60 +47,48 @@ class MockHTTPResponse:
 @dataclass()
 class MockSetup:
     """
-    A setup function for the HSM tests. 
+    Setup variables that are reused in tests
     """
-    mock_components = { 
-        "Components": [
-            { "ID" : "1"},
-            { "ID" : "2"},
-        ]
-    }
-    mock_status = http.HTTPStatus.OK
-    mock_response = MockHTTPResponse(mock_components, mock_status)
+    mock_components = [
+        { "ID" : "1"},
+        { "ID" : "2"},
+    ]
+    ok_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.OK)
+    unauth_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.UNAUTHORIZED)
 
-
+@mock.patch('libcsm.api.Auth', spec=True)
 class TestHsmApi:
 
-    @mock.patch('libcsm.api.Auth', spec=True)
+    hsm_api = None
+    mock_setup = MockSetup
+
+    def setup_method(self, _) -> None:
+        """
+        Setup HSM API to be used in tests
+        """
+        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
+            self.hsm_api = hsmApi.API()
+
     def test_get_components(self, *_):
         """
         Tests successful run of the HSM get_components function.
         """
-        mock_setup = MockSetup
-        hsm_api = hsmApi.API()
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            with mock.patch.object(Session, 'get', return_value=mock_setup.mock_response):
-                components = hsm_api.get_components('Management_Master')
-                assert components == mock_setup.mock_response
+        with mock.patch.object(Session, 'get', return_value=self.mock_setup.ok_mock_http_response):
+            components = self.hsm_api.get_components('Management_Master')
+            assert components == self.mock_setup.ok_mock_http_response
 
-    @mock.patch('libcsm.api.Auth', spec=True)
     def test_get_components_bad_subrole(self, mock_auth):
         """
         Tests error is raised when bad role_subrole is provided.
         """
-        mock_setup = MockSetup
-        hsm_api = hsmApi.API()
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            with mock.patch.object(Session, 'get', return_value=mock_setup.mock_response):
-                with pytest.raises(KeyError):
-                    hsm_api.get_components('Management_bad_subrole')
+        with mock.patch.object(Session, 'get', return_value=self.mock_setup.ok_mock_http_response):
+            with pytest.raises(KeyError):
+                self.hsm_api.get_components('Management_bad_subrole')
 
-
-    @mock.patch('libcsm.api.Auth', spec=True)
     def test_get_components_bad_response(self, mock_auth):
         """
         Tests error is raised when a bad response is recieved from session.get() function.
         """
-        mock_components = { 
-            "Components": [
-                { "ID" : "1"},
-                { "ID" : "2"},
-            ]
-        }
-        mock_status = http.HTTPStatus.UNAUTHORIZED
-        mock_response = MockHTTPResponse(mock_components, mock_status)
-        hsm_api = hsmApi.API()
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            with mock.patch.object(Session, 'get', return_value=mock_response):
-                with pytest.raises(Exception):
-                    hsm_api.get_components('Management_Worker')
+        with mock.patch.object(Session, 'get', return_value=self.mock_setup.unauth_mock_http_response):
+            with pytest.raises(Exception):
+                self.hsm_api.get_components('Management_Worker')

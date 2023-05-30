@@ -62,12 +62,10 @@ class TestSetImage:
         """
         Verify clean run with hsm_role_subrole provided.
         """
-        #with mock.patch.object(xnames, 'get_by_role_subrole', return_value=["xname1", "xname2"]):
         mock_role_subrole.return_value = ["xname1", "xname2"]
         cli_runner = CliRunner()
         result = cli_runner.invoke(set_image.main, ["--image-id", "image123", "--hsm-role-subrole", "Management_Storage"])
-        #assert result.exit_code == 0
-        traceback.print_exception(*result.exc_info)
+        assert result.exit_code == 0
         assert not result.exception
 
     def test_set_image_with_bad_role_subrole(self, *_) -> None:

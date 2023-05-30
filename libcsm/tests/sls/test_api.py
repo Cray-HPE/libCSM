@@ -29,6 +29,7 @@ import http
 import pytest
 import mock
 
+from dataclasses import dataclass
 from requests import Session
 from libcsm import api
 from libcsm.sls import api as slsApi
@@ -42,137 +43,96 @@ class MockHTTPResponse:
     def json(self):
         return self.json_data
 
+@dataclass()
+class MockSetup:
+    """
+    Setup variables that are reused in tests
+    """
+    mock_components = [
+        {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
+        {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}},
+    ]
+    ok_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.OK)
+    unauth_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.UNAUTHORIZED)
+    bad_mock_components = [
+        {'Parent': 'par1', 'Xname': 'xname1',  'No_extra_properties': {'Aliases': ['ncn-w001'], 'A': 100}},
+        {'Parent': 'par2', 'Xname': 'xname2',  'No_extra_properties': {'Aliases': ['ncn-s002'], 'A': 101}},
+    ]
+    bad_mock_http_response=MockHTTPResponse(bad_mock_components, http.HTTPStatus.OK)
+
+
 @mock.patch('kubernetes.config.load_kube_config')
 class TestSLSApi:
+
+    mock_setup = MockSetup
+    sls_api = None
+
+    def setup_method(self, _) -> None:
+        """
+        Setup SLS API to be used in tests
+        """
+        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
+            self.sls_api = slsApi.API()
 
     def test_get_management_components_from_sls(self, *_) -> None:
         """
         Tests successful run of the SLS get_management_components_from_sls function.
         """
-        mock_components = [
-            { "ID" : "1"},
-            { "ID" : "2"},
-        ]
-        mock_status = http.HTTPStatus.OK
-        mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            sls_api = slsApi.API()
-            with mock.patch.object(Session, 'get', return_value=mock_sls_response):
-                sls_api.get_management_components_from_sls()
+        with mock.patch.object(Session, 'get', return_value=self.mock_setup.ok_mock_http_response):
+            self.sls_api.get_management_components_from_sls()
 
     def test_get_management_components_from_sls_error(self, *_) -> None:
         """
         Tests unsuccessful run of the SLS get_management_components_from_sls function because of bad response.
         """
-        mock_components = [
-            { "ID" : "1"},
-            { "ID" : "2"},
-        ]
-        mock_status = http.HTTPStatus.UNAUTHORIZED
-        mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None): 
-            sls_api = slsApi.API()
-            with mock.patch.object(Session, 'get', return_value=mock_sls_response):
-                with pytest.raises(Exception):
-                    sls_api.get_management_components_from_sls()
-
+        with mock.patch.object(Session, 'get', return_value=self.mock_setup.unauth_mock_http_response):
+            with pytest.raises(Exception):
+                self.sls_api.get_management_components_from_sls()
 
     def test_get_xname(self, *_) -> None:
         """
         Tests response from the SLS get_xname function.
         """
-        mock_components = [
-            {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
-            {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}},
-        ]
-        mock_status = http.HTTPStatus.OK
-        mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            sls_api = slsApi.API()
-            with mock.patch.object(sls_api, 'get_management_components_from_sls', return_value=mock_sls_response):
-                ret_xname = sls_api.get_xname('ncn-w001')
-                assert ret_xname == 'xname1'
+        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.ok_mock_http_response):
+            ret_xname = self.sls_api.get_xname('ncn-w001')
+            assert ret_xname == 'xname1'
 
     def test_get_xname_bad_xname(self, *_) -> None:
         """
         Tests the SLS get_xname function given bad hostname.
         """
-        mock_components = [
-            {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
-            {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}},
-        ]
-        mock_status = http.HTTPStatus.OK
-        mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            sls_api = slsApi.API()
-            with mock.patch.object(sls_api, 'get_management_components_from_sls', return_value=mock_sls_response):
-                with pytest.raises(Exception):
-                    sls_api.get_xname('ncn-BAD')
+        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.ok_mock_http_response):
+            with pytest.raises(Exception):
+                self.sls_api.get_xname('ncn-BAD')
 
     def test_get_xname_invalid_response(self, *_) -> None:
         """
-        Tests the SLS get_xname function given bad hostname.
+        Tests the SLS get_xname function given bad component response.
         """
-        mock_components = [
-            {'Parent': 'par1', 'Xname': 'xname1',  'No_extra_properties': {'Aliases': ['ncn-w001'], 'A': 100}},
-            {'Parent': 'par2', 'Xname': 'xname2',  'No_extra_properties': {'Aliases': ['ncn-s002'], 'A': 101}},
-        ]
-        mock_status = http.HTTPStatus.OK
-        mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            sls_api = slsApi.API()
-            with mock.patch.object(sls_api, 'get_management_components_from_sls', return_value=mock_sls_response):
-                with pytest.raises(KeyError):
-                    sls_api.get_xname('ncn-w001')
+        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.bad_mock_http_response):
+            with pytest.raises(KeyError):
+                self.sls_api.get_xname('ncn-w001')
 
     def test_get_hostname(self, *_) -> None:
         """
         Tests response from the SLS get_hostname function.
         """
-        mock_components = [
-            {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
-            {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}},
-        ]
-        mock_status = http.HTTPStatus.OK
-        mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            sls_api = slsApi.API()
-            with mock.patch.object(sls_api, 'get_management_components_from_sls', return_value=mock_sls_response):
-                ret_hostname = sls_api.get_hostname('xname1')
-                assert ret_hostname == 'ncn-w001'
+        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.ok_mock_http_response):
+            ret_hostname = self.sls_api.get_hostname('xname1')
+            assert ret_hostname == 'ncn-w001'
 
     def test_get_hostname_bad_xname(self, *_) -> None:
         """
         Tests the SLS get_hostname function given bad xname.
         """
-        mock_components = [
-            {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
-            {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}},
-        ]
-        mock_status = http.HTTPStatus.OK
-        mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            sls_api = slsApi.API()
-            with mock.patch.object(sls_api, 'get_management_components_from_sls', return_value=mock_sls_response):
-                with pytest.raises(Exception):
-                    sls_api.get_hostname('badXname')
+        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.ok_mock_http_response):
+            with pytest.raises(Exception):
+                self.sls_api.get_hostname('badXname')
 
     def test_get_hostname_invalid_response(self, *_) -> None:
         """
         Tests the SLS get_xname function with an invalid response from sls.get_management_components_from_sls.
         """
-        mock_components = [
-            {'Parent': 'par1', 'Xname': 'xname1',  'No_extra_properties': {'Aliases': ['ncn-w001'], 'A': 100}},
-            {'Parent': 'par2', 'Xname': 'xname2',  'No_extra_properties': {'Aliases': ['ncn-s002'], 'A': 101}},
-        ]
-        mock_status = http.HTTPStatus.OK
-        mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            sls_api = slsApi.API()
-            with mock.patch.object(sls_api, 'get_management_components_from_sls', return_value=mock_sls_response):
-                with pytest.raises(KeyError):
-                    sls_api.get_hostname('xname2')
+        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.bad_mock_http_response):
+            with pytest.raises(KeyError):
+                self.sls_api.get_hostname('xname2')

@@ -45,147 +45,114 @@ class MockHTTPResponse:
 
 class TestBssApi:
 
-    @mock.patch('libcsm.api.Auth', spec=True)
+    # setup variables that are reused in tests
+    bss_api = None
+    mock_components = [
+        { "ID" : "1"},
+        { "ID" : "2"},
+    ]
+    ok_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.OK)
+    unauth_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.UNAUTHORIZED)
+    image_dict = {
+        "initrd" : "initrd_image",
+        "rootfs" : "rootfs_image",
+        "kernel" : "kernel_image",
+    }
+    mocked_boot_params = {
+        "initrd" : "pre_initrd",
+        "kernel" : "pre_kernel",
+        "params" : "abc metal.server=pre_rootfs xyz",
+    }
+
+    def setup_method(self, _) -> None:
+        """
+        Setup BSS API to be used in tests
+        """
+        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
+            self.bss_api = bssApi.API()
+
     def test_get_bss_bootparameters(self, *_) -> None:
         """
         Tests successful run of the BSS get_bss_bootparameters function.
         """
-        mock_components = [
-            { "ID" : "1"},
-            { "ID" : "2"},
-        ]
-        mock_status = http.HTTPStatus.OK
-        mock_bss_response = MockHTTPResponse(mock_components, mock_status)
-        bss_api = bssApi.API()
+        mock_bss_response = self.ok_mock_http_response
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
             with mock.patch.object(Session, 'get', return_value=mock_bss_response):
-                boot_params = bss_api.get_bss_bootparams('some_xname')
-                assert boot_params == mock_components[0]
+                boot_params = self.bss_api.get_bss_bootparams('some_xname')
+                assert boot_params == self.mock_components[0]
 
-    @mock.patch('libcsm.api.Auth', spec=True)
     def test_get_bss_bootparameters_bad_response(self, *_) -> None:
         """
         Tests bad response from the BSS get_bss_bootparameters function.
         """
-        mock_components = [
-            { "ID" : "1"},
-            { "ID" : "2"},
-        ]
-        mock_status = http.HTTPStatus.UNAUTHORIZED
-        mock_bss_response = MockHTTPResponse(mock_components, mock_status)
-        bss_api = bssApi.API()
+        mock_bss_response = self.unauth_mock_http_response
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
             with mock.patch.object(Session, 'get', return_value=mock_bss_response):
                 with pytest.raises(Exception):
-                    bss_api.get_bss_bootparams('some_xname')
+                    self.bss_api.get_bss_bootparams('some_xname')
 
 
-    @mock.patch('libcsm.api.Auth', spec=True)
     def test_patch_bss_bootparameters(self, *_) -> None:
         """
         Tests successful run of the BSS get_patch_bootparameters function.
         """
-        mock_components = [
-            { "ID" : "1"},
-            { "ID" : "2"},
-        ]
-        mock_status = http.HTTPStatus.OK
-        mock_bss_response = MockHTTPResponse(mock_components, mock_status)
-        bss_api = bssApi.API()
+        mock_bss_response = self.ok_mock_http_response
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
             with mock.patch.object(Session, 'patch', return_value=mock_bss_response):
-                bss_api.patch_bss_bootparams('some_xname', [{'json_key': 'json_value'}])
+                self.bss_api.patch_bss_bootparams('some_xname', [{'json_key': 'json_value'}])
 
-    @mock.patch('libcsm.api.Auth', spec=True)
     def test_patch_bss_bootparameters_bad_response(self, *_) -> None:
         """
         Tests bad response from the BSS patch_bss_bootparameters function.
         """
-        mock_components = [
-            { "ID" : "1"},
-            { "ID" : "2"},
-        ]
-        mock_status = http.HTTPStatus.UNAUTHORIZED
-        mock_bss_response = MockHTTPResponse(mock_components, mock_status)
-        bss_api = bssApi.API()
+        mock_bss_response = self.unauth_mock_http_response
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
             with mock.patch.object(Session, 'get', return_value=mock_bss_response):
                 with pytest.raises(Exception):
-                    bss_api.patch_bss_bootparams('some_xname', [{'json_key': 'json_value'}])
+                    self.bss_api.patch_bss_bootparams('some_xname', [{'json_key': 'json_value'}])
 
-    @mock.patch('libcsm.api.Auth', spec=True)
     def test_set_bss_image(self, *_) -> None:
         """
-        Tests successful set_bss_iamge function.
+        Tests successful set_bss_image function.
         """
-        image_dict = {
-            "initrd" : "initrd_image",
-            "rootfs" : "rootfs_image",
-            "kernel" : "kernel_image",
-        }
+        with mock.patch.object(self.bss_api, 'get_bss_bootparams', return_value=self.mocked_boot_params):
+            with mock.patch.object(self.bss_api, 'patch_bss_bootparams', return_value=None):
+                self.bss_api.set_bss_image("xname", self.image_dict)
 
-        mocked_boot_params = {
-            "initrd" : "pre_initrd",
-            "kernel" : "pre_kernel",
-            "params" : "abc metal.server=pre_rootfs xyz",
-        }
-        bss_api = bssApi.API()
-        with mock.patch.object(bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):
-            with mock.patch.object(bss_api, 'patch_bss_bootparams', return_value=None):
-                bss_api.set_bss_image("xname", image_dict)
-
-    @mock.patch('libcsm.api.Auth', spec=True)
     def test_set_bss_image_bad_inputs(self, *_) -> None:
         """
-        Tests bad run of set_bss_iamge function because of invalid image_dict passed in.
+        Tests bad run of set_bss_image function because of invalid image_dict passed in.
         """
         image_dict = {
             "XX_bad_XX" : "initrd_image",
             "rootfs" : "rootfs_image",
             "kernel" : "kernel_image",
         }
-        bss_api = bssApi.API()
         with pytest.raises(Exception):
-            bss_api.set_bss_image("xname", image_dict)
+            self.bss_api.set_bss_image("xname", image_dict)
 
-    @mock.patch('libcsm.api.Auth', spec=True)
     def test_set_bss_image_bad_boot_params1(self, *_) -> None:
         """
-        Tests successful set_bss_iamge function.
+        Tests set_bss_image failure when bad boot params function.
         """
-        image_dict = {
-            "initrd" : "initrd_image",
-            "rootfs" : "rootfs_image",
-            "kernel" : "kernel_image",
-        }
-
         mocked_boot_params = {
             "XX-bad" : "pre_initrd",
             "kernel" : "pre_kernel",
             "params" : "abc metal.server=pre_rootfs xyz",
         }
-        bss_api = bssApi.API()
-        with mock.patch.object(bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):
+        with mock.patch.object(self.bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):
             with pytest.raises(Exception):
-                bss_api.set_bss_image("xname", image_dict)
+                self.bss_api.set_bss_image("xname", self.image_dict)
 
-    @mock.patch('libcsm.api.Auth', spec=True)
     def test_set_bss_image_bad_boot_params2(self, *_):
         """
-        Tests successful set_bss_iamge function.
+        Tests set_bss_image failure when bad boot params function.
         """
-        image_dict = {
-            "initrd" : "initrd_image",
-            "rootfs" : "rootfs_image",
-            "kernel" : "kernel_image",
-        }
-
         mocked_boot_params = {
             "initrd" : "pre_initrd",
             "kernel" : "pre_kernel",
             "params" : "abc metal.sXXX=pre_rootfs xyz",
         }
-        bss_api = bssApi.API()
-        with mock.patch.object(bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):
+        with mock.patch.object(self.bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):
             with pytest.raises(Exception):
-                bss_api.set_bss_image("xname", image_dict)
+                self.bss_api.set_bss_image("xname", self.image_dict)

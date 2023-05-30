@@ -28,6 +28,7 @@ Tests for the sls get_xnames function.
 import http
 import mock
 
+from dataclasses import dataclass
 from click.testing import CliRunner
 from libcsm.sls import get_xname
 
@@ -39,39 +40,42 @@ class MockHTTPResponse:
     def json(self):
         return self.json_data
 
+
+@dataclass()
+class MockSetup:
+    """
+    Setup variables that are reused in tests
+    """
+    mock_components = [
+        {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
+        {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}},
+    ]
+    mock_status = http.HTTPStatus.OK
+    mock_http_response = MockHTTPResponse(mock_components, mock_status)
+
+
 @mock.patch('kubernetes.config.load_kube_config')
+@mock.patch('libcsm.api.Auth', spec=True)
 class TestGetXname:
 
-    @mock.patch('libcsm.api.Auth', spec=True)
+    mock_setup = MockSetup
+
     @mock.patch('libcsm.sls.api.API.get_management_components_from_sls', spec=True)
     def test_get_management_components_from_sls(self, mock_management_components, *_) -> None:
         """
         Tests successful run of get_xname main function.
         """
-        mock_components = [
-            {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
-            {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}},
-        ]
-        mock_status = http.HTTPStatus.OK
-        mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-        mock_management_components.return_value = mock_sls_response
+        mock_management_components.return_value = self.mock_setup.mock_http_response
         cli_runner = CliRunner()
         result = cli_runner.invoke(get_xname.main, ["--hostname", "ncn-w001"])
         assert result.exit_code == 0
 
-    @mock.patch('libcsm.api.Auth', spec=True)
     @mock.patch('libcsm.sls.api.API.get_management_components_from_sls', spec=True)
     def test_get_management_components_from_sls_error(self, mock_management_components, *_) -> None:
         """
         Tests unsuccessful run of get_xname main function.
         """
-        mock_components = [
-            {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
-            {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}},
-        ]
-        mock_status = http.HTTPStatus.OK
-        mock_sls_response = MockHTTPResponse(mock_components, mock_status)
-        mock_management_components.return_value = mock_sls_response
+        mock_management_components.return_value = self.mock_setup.mock_http_response
         cli_runner = CliRunner()
         result = cli_runner.invoke(get_xname.main, ["--hostname", "bad-hostname"])
         assert result.exit_code == 1
