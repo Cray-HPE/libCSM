@@ -56,11 +56,11 @@ class MockSetup:
 
 @mock.patch('kubernetes.config.load_kube_config')
 @mock.patch('libcsm.api.Auth', spec=True)
+@mock.patch('libcsm.sls.api.API.get_management_components_from_sls', spec=True)
 class TestGetXname:
 
     mock_setup = MockSetup
 
-    @mock.patch('libcsm.sls.api.API.get_management_components_from_sls', spec=True)
     def test_get_management_components_from_sls(self, mock_management_components, *_) -> None:
         """
         Tests successful run of get_xname main function.
@@ -69,8 +69,8 @@ class TestGetXname:
         cli_runner = CliRunner()
         result = cli_runner.invoke(get_xname.main, ["--hostname", "ncn-w001"])
         assert result.exit_code == 0
+        assert result.output == 'xname1\n'
 
-    @mock.patch('libcsm.sls.api.API.get_management_components_from_sls', spec=True)
     def test_get_management_components_from_sls_error(self, mock_management_components, *_) -> None:
         """
         Tests unsuccessful run of get_xname main function.

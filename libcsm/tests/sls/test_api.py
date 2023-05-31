@@ -99,7 +99,7 @@ class TestSLSApi:
 
     def test_get_xname_bad_xname(self, *_) -> None:
         """
-        Tests the SLS get_xname function given bad hostname.
+        Tests the SLS get_xname function fails given bad hostname.
         """
         with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.ok_mock_http_response):
             with pytest.raises(Exception):
@@ -107,7 +107,7 @@ class TestSLSApi:
 
     def test_get_xname_invalid_response(self, *_) -> None:
         """
-        Tests the SLS get_xname function given bad component response.
+        Tests the SLS get_xname function fails given bad component response.
         """
         with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.bad_mock_http_response):
             with pytest.raises(KeyError):
@@ -123,7 +123,7 @@ class TestSLSApi:
 
     def test_get_hostname_bad_xname(self, *_) -> None:
         """
-        Tests the SLS get_hostname function given bad xname.
+        Tests the SLS get_hostname function fails given bad xname.
         """
         with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.ok_mock_http_response):
             with pytest.raises(Exception):

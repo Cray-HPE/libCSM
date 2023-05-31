@@ -67,8 +67,9 @@ class TestGetHostname:
         """
         mock_management_components.return_value = self.mock_setup.mock_http_response
         cli_runner = CliRunner()
-        result = cli_runner.invoke(get_hostname.main, ["--xname", "xname1"])
+        result = cli_runner.invoke(get_hostname.main, ["--xname", "xname2"])
         assert result.exit_code == 0
+        assert result.output == "ncn-s002\n"
 
     @mock.patch('libcsm.sls.api.API.get_management_components_from_sls', spec=True)
     def test_get_hostname_bad_xname(self, mock_management_components, *_) -> None:

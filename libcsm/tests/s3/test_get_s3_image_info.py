@@ -58,7 +58,7 @@ class TestGetS3ImageInfo:
     @mock.patch('libcsm.s3.s3object.S3Object.get_object')
     def test_good_get_image_info(self, mock_get_object, *_) -> None:
         """
-        Verify get_s3_image_info runs smoothly when a good repsonse is recieved from .
+        Verify get_s3_image_info runs smoothly when a good repsonse is recieved from s3.
         """
         mock_get_object.return_value = 0
         mocked_images = [ 
@@ -76,7 +76,7 @@ class TestGetS3ImageInfo:
     @mock.patch('libcsm.s3.s3object.S3Object.get_object')
     def test_bad_get_image_info(self, mock_get_object, *_) -> None:
         """
-        Verify get_s3_image_info runs smoothly.
+        Verify get_s3_image_info fails when invalid image format is recieved.
         """
         mock_get_object.return_value = 0
         mocked_images = [ 

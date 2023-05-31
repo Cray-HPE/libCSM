@@ -29,6 +29,7 @@ import http
 import pytest
 import mock
 
+from dataclasses import dataclass
 from requests import Session
 from libcsm import api
 from libcsm.bss import api as bssApi
@@ -43,10 +44,11 @@ class MockHTTPResponse:
         return self.json_data
 
 
-class TestBssApi:
-
-    # setup variables that are reused in tests
-    bss_api = None
+@dataclass()
+class MockSetup:
+    """
+    Setup variables that are reused in tests
+    """
     mock_components = [
         { "ID" : "1"},
         { "ID" : "2"},
@@ -58,11 +60,19 @@ class TestBssApi:
         "rootfs" : "rootfs_image",
         "kernel" : "kernel_image",
     }
-    mocked_boot_params = {
+    mock_boot_params = {
         "initrd" : "pre_initrd",
         "kernel" : "pre_kernel",
         "params" : "abc metal.server=pre_rootfs xyz",
     }
+
+@mock.patch('kubernetes.config.load_kube_config')
+@mock.patch('libcsm.api.Auth', spec=True)
+class TestBssApi:
+
+    # setup variables that are reused in tests
+    bss_api = None
+    mock_setup = MockSetup
 
     def setup_method(self, _) -> None:
         """
@@ -75,49 +85,45 @@ class TestBssApi:
         """
         Tests successful run of the BSS get_bss_bootparameters function.
         """
-        mock_bss_response = self.ok_mock_http_response
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            with mock.patch.object(Session, 'get', return_value=mock_bss_response):
-                boot_params = self.bss_api.get_bss_bootparams('some_xname')
-                assert boot_params == self.mock_components[0]
+        mock_bss_response = self.mock_setup.ok_mock_http_response
+        with mock.patch.object(Session, 'get', return_value=mock_bss_response):
+            boot_params = self.bss_api.get_bss_bootparams('some_xname')
+            assert boot_params == self.mock_setup.mock_components[0]
 
     def test_get_bss_bootparameters_bad_response(self, *_) -> None:
         """
         Tests bad response from the BSS get_bss_bootparameters function.
         """
-        mock_bss_response = self.unauth_mock_http_response
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            with mock.patch.object(Session, 'get', return_value=mock_bss_response):
-                with pytest.raises(Exception):
-                    self.bss_api.get_bss_bootparams('some_xname')
+        mock_bss_response = self.mock_setup.unauth_mock_http_response
+        with mock.patch.object(Session, 'get', return_value=mock_bss_response):
+            with pytest.raises(Exception):
+                self.bss_api.get_bss_bootparams('some_xname')
 
 
     def test_patch_bss_bootparameters(self, *_) -> None:
         """
         Tests successful run of the BSS get_patch_bootparameters function.
         """
-        mock_bss_response = self.ok_mock_http_response
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            with mock.patch.object(Session, 'patch', return_value=mock_bss_response):
-                self.bss_api.patch_bss_bootparams('some_xname', [{'json_key': 'json_value'}])
+        mock_bss_response = self.mock_setup.ok_mock_http_response
+        with mock.patch.object(Session, 'patch', return_value=mock_bss_response):
+            self.bss_api.patch_bss_bootparams('some_xname', [{'json_key': 'json_value'}])
 
     def test_patch_bss_bootparameters_bad_response(self, *_) -> None:
         """
         Tests bad response from the BSS patch_bss_bootparameters function.
         """
-        mock_bss_response = self.unauth_mock_http_response
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            with mock.patch.object(Session, 'get', return_value=mock_bss_response):
-                with pytest.raises(Exception):
-                    self.bss_api.patch_bss_bootparams('some_xname', [{'json_key': 'json_value'}])
+        mock_bss_response = self.mock_setup.unauth_mock_http_response
+        with mock.patch.object(Session, 'get', return_value=mock_bss_response):
+            with pytest.raises(Exception):
+                self.bss_api.patch_bss_bootparams('some_xname', [{'json_key': 'json_value'}])
 
     def test_set_bss_image(self, *_) -> None:
         """
         Tests successful set_bss_image function.
         """
-        with mock.patch.object(self.bss_api, 'get_bss_bootparams', return_value=self.mocked_boot_params):
+        with mock.patch.object(self.bss_api, 'get_bss_bootparams', return_value=self.mock_setup.mock_boot_params):
             with mock.patch.object(self.bss_api, 'patch_bss_bootparams', return_value=None):
-                self.bss_api.set_bss_image("xname", self.image_dict)
+                self.bss_api.set_bss_image("xname", self.mock_setup.image_dict)
 
     def test_set_bss_image_bad_inputs(self, *_) -> None:
         """
@@ -135,24 +141,24 @@ class TestBssApi:
         """
         Tests set_bss_image failure when bad boot params function.
         """
-        mocked_boot_params = {
+        bad_mock_boot_params = {
             "XX-bad" : "pre_initrd",
             "kernel" : "pre_kernel",
             "params" : "abc metal.server=pre_rootfs xyz",
         }
-        with mock.patch.object(self.bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):
+        with mock.patch.object(self.bss_api, 'get_bss_bootparams', return_value=bad_mock_boot_params):
             with pytest.raises(Exception):
-                self.bss_api.set_bss_image("xname", self.image_dict)
+                self.bss_api.set_bss_image("xname", self.mock_setup.image_dict)
 
     def test_set_bss_image_bad_boot_params2(self, *_):
         """
         Tests set_bss_image failure when bad boot params function.
         """
-        mocked_boot_params = {
+        bad_mock_boot_params = {
             "initrd" : "pre_initrd",
             "kernel" : "pre_kernel",
             "params" : "abc metal.sXXX=pre_rootfs xyz",
         }
-        with mock.patch.object(self.bss_api, 'get_bss_bootparams', return_value=mocked_boot_params):
+        with mock.patch.object(self.bss_api, 'get_bss_bootparams', return_value=bad_mock_boot_params):
             with pytest.raises(Exception):
-                self.bss_api.set_bss_image("xname", self.image_dict)
+                self.bss_api.set_bss_image("xname", self.mock_setup.image_dict)

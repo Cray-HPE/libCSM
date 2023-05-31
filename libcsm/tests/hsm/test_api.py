@@ -56,6 +56,7 @@ class MockSetup:
     ok_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.OK)
     unauth_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.UNAUTHORIZED)
 
+@mock.patch('kubernetes.config.load_kube_config')
 @mock.patch('libcsm.api.Auth', spec=True)
 class TestHsmApi:
 
