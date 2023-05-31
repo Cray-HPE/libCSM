@@ -28,7 +28,6 @@ Tests for the hsm get_xnames_by_subrole submodule.
 import pytest
 import mock
 
-from libcsm import api
 from libcsm.hsm import api as hsmApi
 from  libcsm.hsm import xnames
 
@@ -48,7 +47,7 @@ class TestXnames:
         Tests successful run of the HSM get_xnames_by_role_subrole function.
         """
         hsm_role_subrole = "Management_Worker"
-        mock_components = { 
+        mock_components = {
             "Components": [
                 { "ID" : "1"},
                 { "ID" : "2"},

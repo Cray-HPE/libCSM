@@ -83,7 +83,7 @@ class API:
         Function to get the hostname of a management node from SLS based on a provided xname.
         """
         components_response = self.get_management_components_from_sls()
-        
+
         for node in components_response.json():
             try:
                 if xname == node['Xname']:

@@ -76,7 +76,7 @@ def main(hsm_role_subrole, xnames, image_id, bucket, api_gateway_address, endpoi
         print(f'ERROR was unable to get image info for {bucket} {image_id}. {error}')
         sys.exit(1)
 
-    bss_api=api.API()
+    bss_api=api.API(api_gateway_address)
     print("Editing BSS data for components: ", comp_xnames)
     for component in comp_xnames:
         try:

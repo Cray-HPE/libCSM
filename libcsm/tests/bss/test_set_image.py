@@ -22,13 +22,11 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 
-import pytest
 import mock
 
 from click.testing import CliRunner
 from libcsm.bss import set_image
 from libcsm.hsm import xnames
-import traceback
 
 @mock.patch('libcsm.api.Auth', spec=True)
 @mock.patch('libcsm.bss.api.API.set_bss_image', spec=True)
@@ -46,7 +44,6 @@ class TestSetImage:
         """
         cli_runner = CliRunner()
         result = cli_runner.invoke(set_image.main, ["--image-id", "image123", "--xnames", "xname1"])
-        traceback.print_exception(*result.exc_info)
         assert result.exit_code == 0
 
     def test_set_image_bad_inputs(self, *_) -> None:
@@ -74,5 +71,4 @@ class TestSetImage:
         """
         cli_runner = CliRunner()
         result = cli_runner.invoke(set_image.main, ["--image-id", "image123", "--hsm-role-subrole", "Management_BAD"])
-        traceback.print_exception(*result.exc_info)
         assert result.exit_code == 1

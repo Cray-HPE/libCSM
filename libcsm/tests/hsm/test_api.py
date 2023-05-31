@@ -26,12 +26,11 @@ Tests for the hsm api submodule.
 """
 
 import http
+from dataclasses import dataclass
 import pytest
 import mock
-from dataclasses import dataclass
 from requests import Session
 
-from libcsm import api
 from libcsm.hsm import api as hsmApi
 
 

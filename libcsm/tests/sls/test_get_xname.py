@@ -26,9 +26,8 @@ Tests for the sls get_xnames function.
 """
 
 import http
-import mock
-
 from dataclasses import dataclass
+import mock
 from click.testing import CliRunner
 from libcsm.sls import get_xname
 

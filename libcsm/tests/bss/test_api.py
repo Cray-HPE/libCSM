@@ -26,12 +26,11 @@ Tests for the hsm get_xnames_by_subrole submodule.
 """
 
 import http
+from dataclasses import dataclass
 import pytest
 import mock
 
-from dataclasses import dataclass
 from requests import Session
-from libcsm import api
 from libcsm.bss import api as bssApi
 
 

@@ -61,7 +61,7 @@ class TestGetS3ImageInfo:
         Verify get_s3_image_info runs smoothly when a good repsonse is recieved from s3.
         """
         mock_get_object.return_value = 0
-        mocked_images = [ 
+        mocked_images = [
             {"type" : "initrd", "link": {"path": "initrd_path"} },
             {"type" : "kernel", "link": {"path": "kernel_path"} },
             {"type" : "rootfs", "link": {"path": "rootfs_path"} },
@@ -79,7 +79,7 @@ class TestGetS3ImageInfo:
         Verify get_s3_image_info fails when invalid image format is recieved.
         """
         mock_get_object.return_value = 0
-        mocked_images = [ 
+        mocked_images = [
             {"type" : "XX-bad-XX", "link": {"path": "initrd_path"} },
             {"type" : "kernel", "link": {"path": "kernel_path"} },
             {"type" : "rootfs", "link": {"path": "rootfs_path"} },
