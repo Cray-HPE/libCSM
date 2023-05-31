@@ -62,6 +62,7 @@ class MockSetup:
 
 
 @mock.patch('kubernetes.config.load_kube_config')
+@mock.patch('kubernetes.client.CoreV1Api')
 class TestSLSApi:
 
     mock_setup = MockSetup
