@@ -56,21 +56,20 @@ class MockSetup:
     ok_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.OK)
     unauth_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.UNAUTHORIZED)
 
-@mock.patch('kubernetes.config.load_kube_config')
-@mock.patch('libcsm.api.Auth', spec=True)
 class TestHsmApi:
 
     hsm_api = None
     mock_setup = MockSetup
 
-    def setup_method(self, _) -> None:
+    @mock.patch('kubernetes.config.load_kube_config')
+    @mock.patch('libcsm.api.Auth', spec=True)
+    def setup_method(self, *_) -> None:
         """
         Setup HSM API to be used in tests
         """
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            self.hsm_api = hsmApi.API()
+        self.hsm_api = hsmApi.API()
 
-    def test_get_components(self, *_):
+    def test_get_components(self, *_) -> None:
         """
         Tests successful run of the HSM get_components function.
         """
@@ -78,7 +77,7 @@ class TestHsmApi:
             components = self.hsm_api.get_components('Management_Master')
             assert components == self.mock_setup.ok_mock_http_response
 
-    def test_get_components_bad_subrole(self, mock_auth):
+    def test_get_components_bad_subrole(self, *_) -> None:
         """
         Tests error is raised when bad role_subrole is provided.
         """
@@ -86,7 +85,7 @@ class TestHsmApi:
             with pytest.raises(KeyError):
                 self.hsm_api.get_components('Management_bad_subrole')
 
-    def test_get_components_bad_response(self, mock_auth):
+    def test_get_components_bad_response(self, *_) -> None:
         """
         Tests error is raised when a bad response is recieved from session.get() function.
         """

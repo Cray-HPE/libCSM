@@ -66,20 +66,20 @@ class MockSetup:
         "params" : "abc metal.server=pre_rootfs xyz",
     }
 
-@mock.patch('kubernetes.config.load_kube_config')
-@mock.patch('libcsm.api.Auth', spec=True)
+
 class TestBssApi:
 
     # setup variables that are reused in tests
     bss_api = None
     mock_setup = MockSetup
 
-    def setup_method(self, _) -> None:
+    @mock.patch('kubernetes.config.load_kube_config')
+    @mock.patch('libcsm.api.Auth', spec=True)
+    def setup_method(self, *_) -> None:
         """
         Setup BSS API to be used in tests
         """
-        with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
-            self.bss_api = bssApi.API()
+        self.bss_api = bssApi.API()
 
     def test_get_bss_bootparameters(self, *_) -> None:
         """

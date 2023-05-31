@@ -61,14 +61,14 @@ class MockSetup:
     bad_mock_http_response=MockHTTPResponse(bad_mock_components, http.HTTPStatus.OK)
 
 
-@mock.patch('kubernetes.config.load_kube_config')
-@mock.patch('kubernetes.client.CoreV1Api')
 class TestSLSApi:
 
     mock_setup = MockSetup
     sls_api = None
 
-    def setup_method(self, _) -> None:
+    @mock.patch('kubernetes.config.load_kube_config')
+    @mock.patch('libcsm.api.Auth', spec=True)
+    def setup_method(self, *_) -> None:
         """
         Setup SLS API to be used in tests
         """
