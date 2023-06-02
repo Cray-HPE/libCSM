@@ -33,6 +33,15 @@ from libcsm.os import run_command
 S3_CONNECT_TIMEOUT=60
 S3_READ_TIMEOUT=1
 
+class RGWAdminException(Exception):
+
+    """
+    An exception for problems running radosgw-admin commands.
+    """
+    def __init__(self, message) -> None:
+        self.message = message
+        super().__init__(self.message)
+
 class S3Object:
 
     """
@@ -53,16 +62,17 @@ class S3Object:
         """
         result = run_command(['radosgw-admin', 'bucket', 'list', '--bucket', self.bucket])
         if result.return_code != 0:
-            raise Exception(f"{result.stderr}")
+            raise RGWAdminException(f"Error when executing radosgw-admin command: {result.stderr}")
 
 
     def get_object_owner(self) -> None:
         """
         Get the owner of an object.
         """
-        result = run_command(['radosgw-admin', 'object', 'stat', '--object', self.object_name, '--bucket', self.bucket])
+        result = run_command(['radosgw-admin', 'object', 'stat', '--object', self.object_name, \
+            '--bucket', self.bucket])
         if result.return_code != 0:
-            raise Exception(f"{result.stderr}")
+            raise RGWAdminException(f"Error when executing radosgw-admin command: {result.stderr}")
         info = json.loads(result.stdout)
         owner = info['policy']['owner']['id']
         self.owner = owner
@@ -75,7 +85,7 @@ class S3Object:
             self.get_object_owner()
         result = run_command(['radosgw-admin', 'user', 'info', '--uid', self.owner])
         if result.return_code != 0:
-            raise Exception(f"{result.stderr}")
+            raise RGWAdminException(f"Error when executing radosgw-admin command: {result.stderr}")
         info = json.loads(result.stdout)
         self._a_key = info['keys'][0]['access_key']
         self._s_key = info['keys'][0]['secret_key']

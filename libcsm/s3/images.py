@@ -28,6 +28,17 @@ Function to return rootfs,kernel,initrd image path given an image ID.
 import json
 from libcsm.s3 import s3object
 
+class ImageFormatException(Exception):
+
+    """
+    An exception for problems getting "initrd", "kernel", "rootfs"
+    image paths from an image in S3.
+    """
+    def __init__(self, message) -> None:
+        self.message = message
+        super().__init__(self.message)
+
+
 def get_s3_image_info(bucket_name, image_id, endpoint_url) -> dict:
     """
     Function to get the initrd, rootfs, and kernel image paths given an s3 bucket and image ID.
@@ -52,9 +63,9 @@ def get_s3_image_info(bucket_name, image_id, endpoint_url) -> dict:
                 break
         try:
             if image_dict[image_type] is None:
-                raise Exception(f"ERROR could not find image for {image_type}")
+                raise ImageFormatException(f"ERROR could not find image for {image_type}")
         except Exception as exc:
-            raise Exception(f"ERROR could not find image for {image_type}") from exc
+            raise ImageFormatException(f"ERROR could not find image for {image_type}") from exc
 
     print("Using images: ", image_dict)
     return image_dict

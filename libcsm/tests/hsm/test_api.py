@@ -32,16 +32,7 @@ import mock
 from requests import Session
 
 from libcsm.hsm import api as hsmApi
-
-
-class MockHTTPResponse:
-    def __init__(self, data, status_code):
-        self.json_data = data
-        self.status_code = status_code
-
-    def json(self):
-        return self.json_data
-
+from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 
 @dataclass()
 class MockSetup:
@@ -56,7 +47,9 @@ class MockSetup:
     unauth_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.UNAUTHORIZED)
 
 class TestHsmApi:
-
+    """
+    Testing the hsm api submodule.
+    """
     hsm_api = None
     mock_setup = MockSetup
 
@@ -88,6 +81,7 @@ class TestHsmApi:
         """
         Tests error is raised when a bad response is recieved from session.get() function.
         """
-        with mock.patch.object(Session, 'get', return_value=self.mock_setup.unauth_mock_http_response):
+        with mock.patch.object(Session, 'get', \
+            return_value=self.mock_setup.unauth_mock_http_response):
             with pytest.raises(Exception):
                 self.hsm_api.get_components('Management_Worker')

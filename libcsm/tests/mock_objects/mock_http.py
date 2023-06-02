@@ -22,28 +22,15 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Function for setting boot-image in BSS
+Reusable mocks for HTTP requests.
 """
 
-import sys
-import click
-from libcsm.sls import api
+class MockHTTPResponse:
+    """ Class for a mocked HTTP response """
+    def __init__(self, data, status_code):
+        self.json_data = data
+        self.status_code = status_code
 
-@click.command()
-@click.option('--xname', required=True, type=str, \
-    help='xname of the node whose hostname should be returned.')
-@click.option('--api-gateway-address', required=False, type=str, default='api-gw-service-nmn.local',
-    help='API gateway address. Default is \'api-gw-service-nmn.local\'.')
-def main(xname, api_gateway_address) -> None:
-
-    """
-    Get the hostname of a NCN given an Xname.
-    This queries SLS for management nodes' information.
-    """
-
-    sls_api = api.API(api_gateway_address)
-    try:
-        print(sls_api.get_hostname(xname))
-    except (requests.exceptions.RequestException, KeyError, ValueError) as error:
-        print(f'{error}')
-        sys.exit(1)
+    def json(self):
+        """ Return json data from the exception """
+        return self.json_data

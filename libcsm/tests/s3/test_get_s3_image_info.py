@@ -21,6 +21,9 @@
 #  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
+"""
+Testing geting image information from an image in s3.
+"""
 
 import json
 import io
@@ -67,7 +70,8 @@ class TestGetS3ImageInfo:
             {"type" : "rootfs", "link": {"path": "rootfs_path"} },
         ]
         mock_object = MockS3Object(mocked_images)
-        with mock.patch.object(s3object.S3Object, 'get_object', return_value=mock_object.mock_response):
+        with mock.patch.object(s3object.S3Object, 'get_object', \
+            return_value=mock_object.mock_response):
             image_dict = images.get_s3_image_info("bucket", "image", "info")
             assert image_dict['initrd'] == "initrd_path"
             assert image_dict['kernel'] == "kernel_path"
@@ -85,6 +89,7 @@ class TestGetS3ImageInfo:
             {"type" : "rootfs", "link": {"path": "rootfs_path"} },
         ]
         mock_object = MockS3Object(mocked_images)
-        with mock.patch.object(s3object.S3Object, 'get_object', return_value=mock_object.mock_response):
+        with mock.patch.object(s3object.S3Object, 'get_object', \
+            return_value=mock_object.mock_response):
             with pytest.raises(Exception):
                 images.get_s3_image_info("bucket", "image", "info")

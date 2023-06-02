@@ -26,20 +26,11 @@ Tests for the sls get_hostname function.
 """
 
 import http
-import mock
-
 from dataclasses import dataclass
+import mock
 from click.testing import CliRunner
 from libcsm.sls import get_hostname
-
-class MockHTTPResponse:
-    def __init__(self, data, status_code):
-        self.json_data = data
-        self.status_code = status_code
-
-    def json(self):
-        return self.json_data
-
+from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 
 @dataclass()
 class MockSetup:
@@ -47,8 +38,13 @@ class MockSetup:
     Setup variables that are reused in tests
     """
     mock_components = [
-        {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
-        {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}},
+        {
+            'Parent': 'par1', 'Xname': 'xname1',
+            'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}
+        }, {
+            'Parent': 'par2', 'Xname': 'xname2',
+            'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}
+        },
     ]
     mock_status = http.HTTPStatus.OK
     mock_http_response = MockHTTPResponse(mock_components, mock_status)
@@ -57,6 +53,9 @@ class MockSetup:
 @mock.patch('kubernetes.config.load_kube_config')
 @mock.patch('libcsm.api.Auth', spec=True)
 class TestGetHostname:
+    """
+    Testing the sls get_hostname function.
+    """
 
     mock_setup = MockSetup
 

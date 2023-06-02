@@ -22,7 +22,7 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Tests for the hsm get_xnames_by_subrole submodule.
+Tests for the SLS API submodule.
 """
 
 import http
@@ -33,15 +33,7 @@ import mock
 from requests import Session
 from libcsm import api
 from libcsm.sls import api as slsApi
-
-
-class MockHTTPResponse:
-    def __init__(self, data, status_code):
-        self.json_data = data
-        self.status_code = status_code
-
-    def json(self):
-        return self.json_data
+from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 
 @dataclass()
 class MockSetup:
@@ -49,19 +41,32 @@ class MockSetup:
     Setup variables that are reused in tests
     """
     mock_components = [
-        {'Parent': 'par1', 'Xname': 'xname1',  'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}},
-        {'Parent': 'par2', 'Xname': 'xname2',  'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}},
+        {
+            'Parent': 'par1', 'Xname': 'xname1',
+            'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}
+        }, {
+            'Parent': 'par2', 'Xname': 'xname2',
+            'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}
+        },
     ]
     ok_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.OK)
     unauth_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.UNAUTHORIZED)
     bad_mock_components = [
-        {'Parent': 'par1', 'Xname': 'xname1',  'No_extra_properties': {'Aliases': ['ncn-w001'], 'A': 100}},
-        {'Parent': 'par2', 'Xname': 'xname2',  'No_extra_properties': {'Aliases': ['ncn-s002'], 'A': 101}},
+        {
+            'Parent': 'par1', 'Xname': 'xname1',
+            'No_extra_properties': {'Aliases': ['ncn-w001'], 'A': 100}
+        }, {
+            'Parent': 'par2', 'Xname': 'xname2',  
+            'No_extra_properties': {'Aliases': ['ncn-s002'], 'A': 101}
+        },
     ]
     bad_mock_http_response=MockHTTPResponse(bad_mock_components, http.HTTPStatus.OK)
 
 
 class TestSLSApi:
+    """
+    Testing the SLS API submodule.
+    """
 
     mock_setup = MockSetup
     sls_api = None
@@ -77,16 +82,20 @@ class TestSLSApi:
 
     def test_get_management_components_from_sls(self, *_) -> None:
         """
-        Tests successful run of the SLS get_management_components_from_sls function.
+        Tests successful run of the SLS get_management_components_from_sls 
+        function.
         """
-        with mock.patch.object(Session, 'get', return_value=self.mock_setup.ok_mock_http_response):
+        with mock.patch.object(Session, 'get', \
+            return_value=self.mock_setup.ok_mock_http_response):
             self.sls_api.get_management_components_from_sls()
 
     def test_get_management_components_from_sls_error(self, *_) -> None:
         """
-        Tests unsuccessful run of the SLS get_management_components_from_sls function because of bad response.
+        Tests unsuccessful run of the SLS get_management_components_from_sls 
+        function because of bad response.
         """
-        with mock.patch.object(Session, 'get', return_value=self.mock_setup.unauth_mock_http_response):
+        with mock.patch.object(Session, 'get', \
+            return_value=self.mock_setup.unauth_mock_http_response):
             with pytest.raises(Exception):
                 self.sls_api.get_management_components_from_sls()
 
@@ -94,7 +103,8 @@ class TestSLSApi:
         """
         Tests response from the SLS get_xname function.
         """
-        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.ok_mock_http_response):
+        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', \
+            return_value=self.mock_setup.ok_mock_http_response):
             ret_xname = self.sls_api.get_xname('ncn-w001')
             assert ret_xname == 'xname1'
 
@@ -102,7 +112,8 @@ class TestSLSApi:
         """
         Tests the SLS get_xname function fails given bad hostname.
         """
-        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.ok_mock_http_response):
+        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', \
+            return_value=self.mock_setup.ok_mock_http_response):
             with pytest.raises(Exception):
                 self.sls_api.get_xname('ncn-BAD')
 
@@ -110,7 +121,8 @@ class TestSLSApi:
         """
         Tests the SLS get_xname function fails given bad component response.
         """
-        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.bad_mock_http_response):
+        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', \
+            return_value=self.mock_setup.bad_mock_http_response):
             with pytest.raises(KeyError):
                 self.sls_api.get_xname('ncn-w001')
 
@@ -118,7 +130,8 @@ class TestSLSApi:
         """
         Tests response from the SLS get_hostname function.
         """
-        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.ok_mock_http_response):
+        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', \
+            return_value=self.mock_setup.ok_mock_http_response):
             ret_hostname = self.sls_api.get_hostname('xname1')
             assert ret_hostname == 'ncn-w001'
 
@@ -126,14 +139,17 @@ class TestSLSApi:
         """
         Tests the SLS get_hostname function fails given bad xname.
         """
-        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.ok_mock_http_response):
+        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', \
+            return_value=self.mock_setup.ok_mock_http_response):
             with pytest.raises(Exception):
                 self.sls_api.get_hostname('badXname')
 
     def test_get_hostname_invalid_response(self, *_) -> None:
         """
-        Tests the SLS get_xname function with an invalid response from sls.get_management_components_from_sls.
+        Tests the SLS get_xname function with an invalid response 
+        from sls.get_management_components_from_sls.
         """
-        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', return_value=self.mock_setup.bad_mock_http_response):
+        with mock.patch.object(self.sls_api, 'get_management_components_from_sls', \
+            return_value=self.mock_setup.bad_mock_http_response):
             with pytest.raises(KeyError):
                 self.sls_api.get_hostname('xname2')

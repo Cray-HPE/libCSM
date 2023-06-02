@@ -21,7 +21,9 @@
 #  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
-
+"""
+Testing s3object functions.
+"""
 import pytest
 import mock
 
@@ -98,7 +100,8 @@ class TestS3Object:
         obj = s3object.S3Object("a_bucket", "b_object")
 
         mock_run_command.return_value.return_code = 0
-        mock_run_command.return_value.stdout = '{"keys":[{"access_key":"test_access", "secret_key":"test_secret"}]}'
+        mock_run_command.return_value.stdout = \
+        '{"keys":[{"access_key":"test_access", "secret_key":"test_secret"}]}'
         obj.get_creds()
         assert obj._a_key == "test_access"
         assert obj._s_key == "test_secret"

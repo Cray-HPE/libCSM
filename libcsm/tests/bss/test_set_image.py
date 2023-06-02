@@ -21,12 +21,13 @@
 #  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
-
+"""
+Tests for the bss set image main function.
+"""
 import mock
 
 from click.testing import CliRunner
 from libcsm.bss import set_image
-from libcsm.hsm import xnames
 
 @mock.patch('libcsm.api.Auth', spec=True)
 @mock.patch('libcsm.bss.api.API.set_bss_image', spec=True)
@@ -35,7 +36,7 @@ from libcsm.hsm import xnames
 class TestSetImage:
 
     """
-    Tests for the bss set image main function.
+    Testing the the bss set image main function.
     """
 
     def test_set_image(self, *_) -> None:
@@ -61,7 +62,8 @@ class TestSetImage:
         """
         mock_role_subrole.return_value = ["xname1", "xname2"]
         cli_runner = CliRunner()
-        result = cli_runner.invoke(set_image.main, ["--image-id", "image123", "--hsm-role-subrole", "Management_Storage"])
+        result = cli_runner.invoke(set_image.main, ["--image-id", "image123", \
+            "--hsm-role-subrole", "Management_Storage"])
         assert result.exit_code == 0
         assert not result.exception
 
@@ -70,5 +72,6 @@ class TestSetImage:
         Verify invalid run with bad hsm_role_subrole provided.
         """
         cli_runner = CliRunner()
-        result = cli_runner.invoke(set_image.main, ["--image-id", "image123", "--hsm-role-subrole", "Management_BAD"])
+        result = cli_runner.invoke(set_image.main, ["--image-id", "image123", \
+            "--hsm-role-subrole", "Management_BAD"])
         assert result.exit_code == 1

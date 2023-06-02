@@ -22,7 +22,7 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Tests for the hsm get_xnames_by_subrole submodule.
+Tests for the bss api submodule.
 """
 
 import http
@@ -32,16 +32,7 @@ import mock
 
 from requests import Session
 from libcsm.bss import api as bssApi
-
-
-class MockHTTPResponse:
-    def __init__(self, data, status_code):
-        self.json_data = data
-        self.status_code = status_code
-
-    def json(self):
-        return self.json_data
-
+from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 
 @dataclass()
 class MockSetup:
@@ -67,7 +58,9 @@ class MockSetup:
 
 
 class TestBssApi:
-
+    """
+    Testing the bss api submodule.
+    """
     # setup variables that are reused in tests
     bss_api = None
     mock_setup = MockSetup
@@ -120,7 +113,8 @@ class TestBssApi:
         """
         Tests successful set_bss_image function.
         """
-        with mock.patch.object(self.bss_api, 'get_bss_bootparams', return_value=self.mock_setup.mock_boot_params):
+        with mock.patch.object(self.bss_api, 'get_bss_bootparams', \
+            return_value=self.mock_setup.mock_boot_params):
             with mock.patch.object(self.bss_api, 'patch_bss_bootparams', return_value=None):
                 self.bss_api.set_bss_image("xname", self.mock_setup.image_dict)
 
@@ -145,7 +139,8 @@ class TestBssApi:
             "kernel" : "pre_kernel",
             "params" : "abc metal.server=pre_rootfs xyz",
         }
-        with mock.patch.object(self.bss_api, 'get_bss_bootparams', return_value=bad_mock_boot_params):
+        with mock.patch.object(self.bss_api, 'get_bss_bootparams', \
+            return_value=bad_mock_boot_params):
             with pytest.raises(Exception):
                 self.bss_api.set_bss_image("xname", self.mock_setup.image_dict)
 
@@ -158,6 +153,7 @@ class TestBssApi:
             "kernel" : "pre_kernel",
             "params" : "abc metal.sXXX=pre_rootfs xyz",
         }
-        with mock.patch.object(self.bss_api, 'get_bss_bootparams', return_value=bad_mock_boot_params):
+        with mock.patch.object(self.bss_api, 'get_bss_bootparams', \
+            return_value=bad_mock_boot_params):
             with pytest.raises(Exception):
                 self.bss_api.set_bss_image("xname", self.mock_setup.image_dict)

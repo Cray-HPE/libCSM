@@ -27,15 +27,17 @@ Function to set the boot-image in BSS for a NCN node(s).
 
 import sys
 import click
+import requests
 
-from libcsm.s3 import images
+from libcsm.s3 import images, s3object
 from libcsm.hsm import xnames as hsm_xnames
 from libcsm.bss import api
 
 
 @click.command()
 @click.option('--hsm-role-subrole', required=False, type=str, default=None,
-               help='HSM role and subrole of nodes to set BSS image (e.g. Management_Master, Management_Storage).')
+               help='HSM role and subrole of nodes to set BSS image \
+               (e.g. Management_Master, Management_Storage).')
 @click.option('--xnames', required=False, type=str, default=None,
                 help='Xnames of nodes to set BSS image of in comma separated list.')
 @click.option('--image-id', type=str, required=True,
@@ -72,15 +74,14 @@ def main(hsm_role_subrole, xnames, image_id, bucket, api_gateway_address, endpoi
     # get the image-id info
     try:
         image_dict = images.get_s3_image_info(bucket, image_id, endpoint_url)
-    except Exception as error:
+    except (images.ImageFormatException, s3object.RGWAdminException) as error:
         print(f'ERROR was unable to get image info for {bucket} {image_id}. {error}')
         sys.exit(1)
-
     bss_api=api.API(api_gateway_address)
     print("Editing BSS data for components: ", comp_xnames)
     for component in comp_xnames:
         try:
             bss_api.set_bss_image(component, image_dict)
-        except Exception as error:
-            print(f'ERROR was unable to set image in bss for {component}. {error}')
+        except (requests.exceptions.RequestException, KeyError, ValueError) as error:
+            print(f'ERROR setting image for {component}. {error}')
             sys.exit(1)

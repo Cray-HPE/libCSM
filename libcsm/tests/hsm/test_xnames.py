@@ -30,17 +30,13 @@ import mock
 
 from libcsm.hsm import api as hsmApi
 from  libcsm.hsm import xnames
-
-class MockHTTPResponse:
-    def __init__(self, data, status_code):
-        self.json_data = data
-        self.status_code = status_code
-
-    def json(self):
-        return self.json_data
+from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 
 @mock.patch('libcsm.api.Auth', spec=True)
 class TestXnames:
+    """
+    Testing the hsm get_xnames_by_subrole submodule.
+    """
 
     def test_xnames(self, *_) -> None:
         """
@@ -53,14 +49,16 @@ class TestXnames:
                 { "ID" : "2"},
             ]
         }
-        with mock.patch.object(hsmApi.API, 'get_components', return_value=MockHTTPResponse(mock_components, 200)):
+        with mock.patch.object(hsmApi.API, 'get_components', \
+            return_value=MockHTTPResponse(mock_components, 200)):
             xnames_arr = xnames.get_by_role_subrole(hsm_role_subrole)
             assert xnames_arr == ['1','2']
 
 
     def test_xnames_bad_subrole(self, *_) -> None:
         """
-        Tests unsuccessful run of the HSM get_xnames_by_role_subrole function by providing a bad subrole.
+        Tests unsuccessful run of the HSM get_xnames_by_role_subrole
+        function by providing a bad subrole.
         """
         hsm_role_subrole = "Management_bad_subrole"
         with pytest.raises(KeyError):
@@ -74,7 +72,8 @@ class TestXnames:
         hsm_role_subrole = "Management_Storage"
         mock_components = { "Components": []
                         }
-        with mock.patch.object(hsmApi.API, 'get_components', return_value=MockHTTPResponse(mock_components, 200)):
+        with mock.patch.object(hsmApi.API, 'get_components', \
+            return_value=MockHTTPResponse(mock_components, 200)):
             xnames_arr = xnames.get_by_role_subrole(hsm_role_subrole)
             # check that xnames_arr is empty
             assert not xnames_arr
