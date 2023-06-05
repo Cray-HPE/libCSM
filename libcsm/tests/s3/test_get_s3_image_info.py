@@ -34,23 +34,19 @@ from botocore.response import StreamingBody
 from libcsm.s3 import images, s3object
 from libcsm.s3.images import ImageFormatException
 
-class MockS3Object:
+def mock_s3_object(mocked_images: dict) -> dict:
     """
-    A mock for kubernetes.client.models.v1_secret.V1Secret
+    Mock s3 objects.
     """
-    def __init__(self, mocked_images):
-        body_json = {
-                'artifacts': mocked_images 
-        }
-
-        body_string = json.dumps(body_json).encode()
-
-        body_stream = StreamingBody(
-            io.BytesIO(body_string),
-            len(body_string)
-        )
-
-        self.mock_response = {'Body': body_stream}
+    body_json = {
+            'artifacts': mocked_images 
+    }
+    body_string = json.dumps(body_json).encode()
+    body_stream = StreamingBody(
+        io.BytesIO(body_string),
+        len(body_string)
+    )
+    return {'Body': body_stream}
 
 @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
 class TestGetS3ImageInfo:
@@ -70,9 +66,9 @@ class TestGetS3ImageInfo:
             {"type" : "kernel", "link": {"path": "kernel_path"} },
             {"type" : "rootfs", "link": {"path": "rootfs_path"} },
         ]
-        mock_object = MockS3Object(mocked_images)
+        mock_object = mock_s3_object(mocked_images)
         with mock.patch.object(s3object.S3Object, 'get_object', \
-            return_value=mock_object.mock_response):
+            return_value=mock_object):
             image_dict = images.get_s3_image_info("bucket", "image", "info")
             assert image_dict['initrd'] == "initrd_path"
             assert image_dict['kernel'] == "kernel_path"
@@ -89,8 +85,8 @@ class TestGetS3ImageInfo:
             {"type" : "kernel", "link": {"path": "kernel_path"} },
             {"type" : "rootfs", "link": {"path": "rootfs_path"} },
         ]
-        mock_object = MockS3Object(mocked_images)
+        mock_object = mock_s3_object(mocked_images)
         with mock.patch.object(s3object.S3Object, 'get_object', \
-            return_value=mock_object.mock_response):
+            return_value=mock_object):
             with pytest.raises(ImageFormatException):
                 images.get_s3_image_info("bucket", "image", "info")

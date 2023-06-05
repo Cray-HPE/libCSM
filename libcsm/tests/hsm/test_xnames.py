@@ -28,7 +28,7 @@ Tests for the hsm get_xnames_by_subrole submodule.
 import pytest
 import mock
 
-from libcsm.hsm import api as hsmApi
+from libcsm.hsm import components
 from  libcsm.hsm import xnames
 from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 
@@ -49,7 +49,7 @@ class TestXnames:
                 { "ID" : "2"},
             ]
         }
-        with mock.patch.object(hsmApi.API, 'get_components', \
+        with mock.patch.object(components, 'get_components', \
             return_value=MockHTTPResponse(mock_components, 200)):
             xnames_arr = xnames.get_by_role_subrole(hsm_role_subrole)
             assert xnames_arr == ['1','2']
@@ -72,7 +72,7 @@ class TestXnames:
         hsm_role_subrole = "Management_Storage"
         mock_components = { "Components": []
                         }
-        with mock.patch.object(hsmApi.API, 'get_components', \
+        with mock.patch.object(components, 'get_components', \
             return_value=MockHTTPResponse(mock_components, 200)):
             xnames_arr = xnames.get_by_role_subrole(hsm_role_subrole)
             # check that xnames_arr is empty

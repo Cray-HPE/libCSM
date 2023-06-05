@@ -32,7 +32,7 @@ import mock
 import requests
 from requests import Session
 
-from libcsm.hsm import api as hsmApi
+from libcsm.hsm import components
 from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 
 @dataclass()
@@ -44,28 +44,21 @@ class MockHSMSetup:
     ok_mock_http_response=MockHTTPResponse(mock_HSM_components, http.HTTPStatus.OK)
     unauth_mock_http_response=MockHTTPResponse(mock_HSM_components, http.HTTPStatus.UNAUTHORIZED)
 
+@mock.patch('kubernetes.config.load_kube_config')
+@mock.patch('libcsm.api.Auth', spec=True)
 class TestHsmApi:
     """
     Testing the hsm api submodule.
     """
-    hsm_api = None
     mock_setup = MockHSMSetup
-
-    @mock.patch('kubernetes.config.load_kube_config')
-    @mock.patch('libcsm.api.Auth', spec=True)
-    def setup_method(self, *_) -> None:
-        """
-        Setup HSM API to be used in tests
-        """
-        self.hsm_api = hsmApi.API()
 
     def test_get_components(self, *_) -> None:
         """
         Tests successful run of the HSM get_components function.
         """
         with mock.patch.object(Session, 'get', return_value=self.mock_setup.ok_mock_http_response):
-            components = self.hsm_api.get_components('Management_Master')
-            assert components == self.mock_setup.ok_mock_http_response
+            components_ret = components.get_components('Management_Master')
+            assert components_ret == self.mock_setup.ok_mock_http_response
 
     def test_get_components_bad_subrole(self, *_) -> None:
         """
@@ -73,7 +66,7 @@ class TestHsmApi:
         """
         with mock.patch.object(Session, 'get', return_value=self.mock_setup.ok_mock_http_response):
             with pytest.raises(KeyError):
-                self.hsm_api.get_components('Management_bad_subrole')
+                components.get_components('Management_bad_subrole')
 
     def test_get_components_bad_response(self, *_) -> None:
         """
@@ -82,4 +75,4 @@ class TestHsmApi:
         with mock.patch.object(Session, 'get', \
             return_value=self.mock_setup.unauth_mock_http_response):
             with pytest.raises(requests.exceptions.RequestException):
-                self.hsm_api.get_components('Management_Worker')
+                components.get_components('Management_Worker')

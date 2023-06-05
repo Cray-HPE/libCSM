@@ -48,9 +48,16 @@ from libcsm.bss import api
                help='API gateway address. Default is \'api-gw-service-nmn.local\'.')
 @click.option('--endpoint-url', required=False, type=str, default='http://rgw-vip',
                help='Address of the Rados-gateway endpoint.')
-def main(hsm_role_subrole, xnames, image_id, bucket, api_gateway_address, endpoint_url) -> None:
+def main(**kwargs) -> None:
 
     """Set the kernel, rootfs, and initrd images in BSS for specified node(s) given an image-id."""
+
+    hsm_role_subrole = kwargs['hsm_role_subrole']
+    xnames = kwargs['xnames']
+    bucket = kwargs['bucket']
+    image_id = kwargs['image_id']
+    endpoint_url = kwargs['endpoint_url']
+    api_gateway_address = kwargs['api_gateway_address']
 
     # check inputs
     if hsm_role_subrole is None and xnames is None:

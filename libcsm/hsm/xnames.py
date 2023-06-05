@@ -25,18 +25,17 @@
 Function to get xnames from HSM.
 """
 from typing import List
-from libcsm.hsm import api
+from libcsm.hsm import components
 
 def get_by_role_subrole(role_subrole: str) -> List[str]:
     """
     Function to get xnames by subrole from HSM.
     """
-    hsm_api = api.API()
-    components_response = hsm_api.get_components(role_subrole)
+    components_response = components.get_components(role_subrole)
     xnames = []
     if components_response is not None:
         for component in components_response.json()['Components']:
             xnames.append(component['ID'])
     else:
-        print(f'ERROR no componenets were found with hsm_role_subrole: {role_subrole}')
+        print(f'ERROR no components were found with hsm_role_subrole: {role_subrole}')
     return xnames

@@ -24,7 +24,9 @@
 """
 Reusable mocks for HTTP requests.
 """
+from dataclasses import dataclass
 
+@dataclass
 class MockHTTPResponse:
     """ Class for a mocked HTTP response """
     def __init__(self, data, status_code):
