@@ -25,14 +25,12 @@
 Tests for the SLS API submodule.
 """
 
-import http
 import pytest
 import mock
 import requests
 from requests import Session
 from libcsm import api
 from libcsm.sls import api as slsApi
-from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 from libcsm.tests.mock_objects.mock_sls import MockSLSResponse
 
 

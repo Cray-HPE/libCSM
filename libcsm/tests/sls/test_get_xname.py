@@ -25,11 +25,9 @@
 Tests for the sls get_xnames function.
 """
 
-import http
 import mock
 from click.testing import CliRunner
 from libcsm.sls import get_xname
-from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 from libcsm.tests.mock_objects.mock_sls import MockSLSResponse
 
 

@@ -77,7 +77,7 @@ class TestSetImage:
             "--hsm-role-subrole", "Management_BAD"])
         assert result.exit_code == 1
 
-    def test_set_image_with_imageFormatException(self, *_) -> None:
+    def test_set_image_with_image_format_exception(self, *_) -> None:
         """
         Verify that set_image catches and ImageFormatException.
         """

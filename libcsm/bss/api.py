@@ -82,7 +82,7 @@ class API:
                                 data=json.dumps(bss_json))
         except requests.exceptions.RequestException as ex:
             raise requests.exceptions.RequestException(f'ERROR exception: \
-            {type(ex).__name__} when trying to patch bootparameters')
+                {type(ex).__name__} when trying to patch bootparameters')
         if patch_response.status_code != http.HTTPStatus.OK:
             raise requests.exceptions.RequestException(f'ERROR Failed to patch BSS \
                 bootparameters for {xname}. Recieved {patch_response.status_code} \

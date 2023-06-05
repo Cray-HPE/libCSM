@@ -54,4 +54,3 @@ class MockSLSResponse:
         },
     ]
     bad_mock_http_response=MockHTTPResponse(bad_mock_components, http.HTTPStatus.OK)
-
