@@ -26,7 +26,6 @@ Submodule for interacting with CSM HSM.
 """
 
 import http
-from os import getenv
 import requests
 from libcsm import api
 from libcsm.requests.session import get_session

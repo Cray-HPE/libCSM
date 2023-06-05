@@ -34,7 +34,7 @@ def get_session(crt_variable="REQUESTS_CA_BUNDLE") -> requests.Session:
     """
     Get a requests.session and set verify with crt_variable.
     """
-    crt_path = getenv("REQUESTS_CA_BUNDLE", certifi.where())
+    crt_path = getenv(crt_variable, certifi.where())
     session = requests.Session()
     session.verify = crt_path
     return session
