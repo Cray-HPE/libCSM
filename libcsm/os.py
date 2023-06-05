@@ -180,11 +180,8 @@ def run_command(
     :param in_shell: Whether to use a shell when invoking the command.
     :param silence: Tells this not to output the command to console.
     """
-    args_string = [str(x) for x in args]
     if not silence:
         LOG.info(
-            'Running sub-command: %s (in shell: %s)',
-            ' '.join(args_string),
-            in_shell
+            'Running sub-command: %s (in shell: %s)', ' '.join(args), in_shell
         )
-    return _CLI(args_string, shell=in_shell)
+    return _CLI(args, shell=in_shell)
