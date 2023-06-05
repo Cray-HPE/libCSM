@@ -65,7 +65,8 @@ class API:
                 {type(ex).__name__} when trying to get bootparameters')
         if bss_response.status_code != http.HTTPStatus.OK:
             raise requests.exceptions.RequestException(f'ERROR Failed to get BSS \
-                bootparameters for {xname}. Recieved http response:{bss_response.status_code} from  BSS.')
+                bootparameters for {xname}. Recieved http response:\
+                {bss_response.status_code} from  BSS.')
         return bss_response.json()[0]
 
 
@@ -81,10 +82,10 @@ class API:
                                 data=json.dumps(bss_json))
         except requests.exceptions.RequestException as ex:
             raise requests.exceptions.RequestException(f'ERROR exception: \
-                {type(ex).__name__} when trying to patch bootparameters')
+            {type(ex).__name__} when trying to patch bootparameters')
         if patch_response.status_code != http.HTTPStatus.OK:
             raise requests.exceptions.RequestException(f'ERROR Failed to patch BSS \
-                bootparameters for {xname}. Recieved {bss_response.status_code} \
+                bootparameters for {xname}. Recieved {patch_response.status_code} \
                 from as BSS response.')
         print('BSS entry patched')
 

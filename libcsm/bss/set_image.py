@@ -61,7 +61,7 @@ def main(hsm_role_subrole, xnames, image_id, bucket, api_gateway_address, endpoi
     if hsm_role_subrole is not None:
         try:
             comp_xnames += hsm_xnames.get_by_role_subrole(hsm_role_subrole)
-        except Exception as error:
+        except (requests.exceptions.RequestException, KeyError) as error:
             print(f'{error}')
             sys.exit(1)
 

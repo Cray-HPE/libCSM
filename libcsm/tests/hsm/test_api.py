@@ -29,29 +29,27 @@ import http
 from dataclasses import dataclass
 import pytest
 import mock
+import requests
 from requests import Session
 
 from libcsm.hsm import api as hsmApi
 from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 
 @dataclass()
-class MockSetup:
+class MockHSMSetup:
     """
     Setup variables that are reused in tests
     """
-    mock_components = [
-        { "ID" : "1"},
-        { "ID" : "2"},
-    ]
-    ok_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.OK)
-    unauth_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.UNAUTHORIZED)
+    mock_HSM_components = []
+    ok_mock_http_response=MockHTTPResponse(mock_HSM_components, http.HTTPStatus.OK)
+    unauth_mock_http_response=MockHTTPResponse(mock_HSM_components, http.HTTPStatus.UNAUTHORIZED)
 
 class TestHsmApi:
     """
     Testing the hsm api submodule.
     """
     hsm_api = None
-    mock_setup = MockSetup
+    mock_setup = MockHSMSetup
 
     @mock.patch('kubernetes.config.load_kube_config')
     @mock.patch('libcsm.api.Auth', spec=True)
@@ -83,5 +81,5 @@ class TestHsmApi:
         """
         with mock.patch.object(Session, 'get', \
             return_value=self.mock_setup.unauth_mock_http_response):
-            with pytest.raises(Exception):
+            with pytest.raises(requests.exceptions.RequestException):
                 self.hsm_api.get_components('Management_Worker')

@@ -93,6 +93,7 @@ class API:
                     # assumes the hostname is the first entry in ['ExtraProperties']['Aliases']
                     return node['ExtraProperties']['Aliases'][0]
             except KeyError as error:
-                raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the response from sls. \
-                These fields are expected in the json response. The resonponse was {components_response.json()}') from error
+                raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the \
+                    response from sls. These fields are expected in the json response. \
+                    The resonponse was {components_response.json()}') from error
         raise ValueError(f'ERROR xname:{xname} was not found in management nodes.')

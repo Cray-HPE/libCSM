@@ -28,6 +28,7 @@ import mock
 
 from click.testing import CliRunner
 from libcsm.bss import set_image
+from libcsm.s3 import images
 
 @mock.patch('libcsm.api.Auth', spec=True)
 @mock.patch('libcsm.bss.api.API.set_bss_image', spec=True)
@@ -75,3 +76,16 @@ class TestSetImage:
         result = cli_runner.invoke(set_image.main, ["--image-id", "image123", \
             "--hsm-role-subrole", "Management_BAD"])
         assert result.exit_code == 1
+
+    def test_set_image_with_imageFormatException(self, *_) -> None:
+        """
+        Verify that set_image catches and ImageFormatException.
+        """
+        image_error = mock.Mock()
+        image_error.side_effect = images.ImageFormatException('test')
+
+        cli_runner = CliRunner()
+        with mock.patch.object(images, 'get_s3_image_info', image_error):
+            result = cli_runner.invoke(set_image.main, ["--image-id", "image123", \
+                "--xnames", "xname1"])
+            assert result.exit_code == 1

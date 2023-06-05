@@ -26,28 +26,11 @@ Tests for the sls get_hostname function.
 """
 
 import http
-from dataclasses import dataclass
 import mock
 from click.testing import CliRunner
 from libcsm.sls import get_hostname
 from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
-
-@dataclass()
-class MockSetup:
-    """
-    Setup variables that are reused in tests
-    """
-    mock_components = [
-        {
-            'Parent': 'par1', 'Xname': 'xname1',
-            'ExtraProperties': {'Aliases': ['ncn-w001'], 'A': 100}
-        }, {
-            'Parent': 'par2', 'Xname': 'xname2',
-            'ExtraProperties': {'Aliases': ['ncn-s002'], 'A': 101}
-        },
-    ]
-    mock_status = http.HTTPStatus.OK
-    mock_http_response = MockHTTPResponse(mock_components, mock_status)
+from libcsm.tests.mock_objects.mock_sls import MockSLSResponse
 
 
 @mock.patch('kubernetes.config.load_kube_config')
@@ -57,7 +40,7 @@ class TestGetHostname:
     Testing the sls get_hostname function.
     """
 
-    mock_setup = MockSetup
+    mock_setup = MockSLSResponse
 
     @mock.patch('libcsm.sls.api.API.get_management_components_from_sls', spec=True)
     def test_get_hostname(self, mock_management_components, *_) -> None:

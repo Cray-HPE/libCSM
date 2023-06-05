@@ -32,6 +32,7 @@ import mock
 from botocore.response import StreamingBody
 
 from libcsm.s3 import images, s3object
+from libcsm.s3.images import ImageFormatException
 
 class MockS3Object:
     """
@@ -91,5 +92,5 @@ class TestGetS3ImageInfo:
         mock_object = MockS3Object(mocked_images)
         with mock.patch.object(s3object.S3Object, 'get_object', \
             return_value=mock_object.mock_response):
-            with pytest.raises(Exception):
+            with pytest.raises(ImageFormatException):
                 images.get_s3_image_info("bucket", "image", "info")

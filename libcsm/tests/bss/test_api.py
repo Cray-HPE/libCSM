@@ -29,22 +29,22 @@ import http
 from dataclasses import dataclass
 import pytest
 import mock
-
+import requests
 from requests import Session
 from libcsm.bss import api as bssApi
 from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 
 @dataclass()
-class MockSetup:
+class MockBssSetup:
     """
     Setup variables that are reused in tests
     """
-    mock_components = [
-        { "ID" : "1"},
-        { "ID" : "2"},
+    mock_bss_components = [
+        { "ID" : "ncn-x001"},
+        { "ID" : "nxn-x002"},
     ]
-    ok_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.OK)
-    unauth_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.UNAUTHORIZED)
+    ok_mock_http_response=MockHTTPResponse(mock_bss_components, http.HTTPStatus.OK)
+    unauth_mock_http_response=MockHTTPResponse(mock_bss_components, http.HTTPStatus.UNAUTHORIZED)
     image_dict = {
         "initrd" : "initrd_image",
         "rootfs" : "rootfs_image",
@@ -63,7 +63,7 @@ class TestBssApi:
     """
     # setup variables that are reused in tests
     bss_api = None
-    mock_setup = MockSetup
+    mock_setup = MockBssSetup
 
     @mock.patch('kubernetes.config.load_kube_config')
     @mock.patch('libcsm.api.Auth', spec=True)
@@ -80,7 +80,7 @@ class TestBssApi:
         mock_bss_response = self.mock_setup.ok_mock_http_response
         with mock.patch.object(Session, 'get', return_value=mock_bss_response):
             boot_params = self.bss_api.get_bss_bootparams('some_xname')
-            assert boot_params == self.mock_setup.mock_components[0]
+            assert boot_params == self.mock_setup.mock_bss_components[0]
 
     def test_get_bss_bootparameters_bad_response(self, *_) -> None:
         """
@@ -88,7 +88,7 @@ class TestBssApi:
         """
         mock_bss_response = self.mock_setup.unauth_mock_http_response
         with mock.patch.object(Session, 'get', return_value=mock_bss_response):
-            with pytest.raises(Exception):
+            with pytest.raises(requests.exceptions.RequestException):
                 self.bss_api.get_bss_bootparams('some_xname')
 
 
@@ -106,7 +106,7 @@ class TestBssApi:
         """
         mock_bss_response = self.mock_setup.unauth_mock_http_response
         with mock.patch.object(Session, 'get', return_value=mock_bss_response):
-            with pytest.raises(Exception):
+            with pytest.raises(requests.exceptions.RequestException):
                 self.bss_api.patch_bss_bootparams('some_xname', [{'json_key': 'json_value'}])
 
     def test_set_bss_image(self, *_) -> None:
@@ -127,7 +127,7 @@ class TestBssApi:
             "rootfs" : "rootfs_image",
             "kernel" : "kernel_image",
         }
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             self.bss_api.set_bss_image("xname", image_dict)
 
     def test_set_bss_image_bad_boot_params1(self, *_) -> None:
@@ -155,5 +155,5 @@ class TestBssApi:
         }
         with mock.patch.object(self.bss_api, 'get_bss_bootparams', \
             return_value=bad_mock_boot_params):
-            with pytest.raises(Exception):
+            with pytest.raises(KeyError):
                 self.bss_api.set_bss_image("xname", self.mock_setup.image_dict)

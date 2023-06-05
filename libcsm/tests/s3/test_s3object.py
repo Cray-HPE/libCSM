@@ -28,6 +28,7 @@ import pytest
 import mock
 
 from libcsm.s3 import s3object
+from libcsm.s3.s3object import RGWAdminException
 
 
 class TestS3Object:
@@ -61,7 +62,7 @@ class TestS3Object:
         Verify verify_bucket_exists raises exception when run_command has error.
         """
         mock_run_command.return_value.return_code = 2
-        with pytest.raises(Exception):
+        with pytest.raises(RGWAdminException):
             s3object.S3Object("a_bucket", "b_object")
 
     @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
@@ -87,7 +88,7 @@ class TestS3Object:
 
         mock_run_command.return_value.return_code = 2
         mock_run_command.return_value.stdout = '{"policy": {"owner": {"id": "owner_id"}}}'
-        with pytest.raises(Exception):
+        with pytest.raises(RGWAdminException):
             obj.get_object_owner()
 
     @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
@@ -116,5 +117,5 @@ class TestS3Object:
         obj = s3object.S3Object("a_bucket", "b_object")
 
         mock_run_command.return_value.return_code = 3
-        with pytest.raises(Exception):
+        with pytest.raises(RGWAdminException):
             obj.get_creds()
