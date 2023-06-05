@@ -22,29 +22,19 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Function for setting boot-image in BSS
+Common functions for working with requests.session in libCSM.
 """
 
-import sys
-import click
+from os import getenv
 import requests
-from libcsm.sls import api
+import certifi
 
-@click.command()
-@click.option('--xname', required=True, type=str, \
-    help='xname of the node whose hostname should be returned.')
-@click.option('--api-gateway-address', required=False, type=str, default='api-gw-service-nmn.local',
-    help='API gateway address. Default is \'api-gw-service-nmn.local\'.')
-def main(xname, api_gateway_address) -> None:
 
+def get_session(crt_variable="REQUESTS_CA_BUNDLE") -> requests.Session:
     """
-    Get the hostname of a NCN given an Xname.
-    This queries SLS for management nodes' information.
+    Get a requests.session and set verify with crt_variable.
     """
-
-    sls_api = api.API(api_gateway_address)
-    try:
-        print(sls_api.get_hostname(xname))
-    except (requests.exceptions.RequestException, KeyError, ValueError) as error:
-        print(f'{error}')
-        sys.exit(1)
+    crt_path = getenv("REQUESTS_CA_BUNDLE", certifi.where())
+    session = requests.Session()
+    session.verify = crt_path
+    return session

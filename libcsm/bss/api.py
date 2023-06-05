@@ -29,8 +29,8 @@ import json
 import http
 from os import getenv
 import requests
-import certifi
 from libcsm import api
+from libcsm.requests.session import get_session
 
 
 class API:
@@ -45,10 +45,7 @@ class API:
         self.bootparams_url = f'https://{self.api_gateway_address}/apis/bss/boot/v1/bootparameters'
         self._auth = api.Auth()
         self._auth.refresh_token()
-        self._crt_path = getenv("REQUESTS_CA_BUNDLE", certifi.where())
-        self.session = requests.Session()
-        self.session.verify = self._crt_path
-
+        self.session = get_session()
 
     def get_bss_bootparams(self, xname: str) -> str:
         """
@@ -78,7 +75,6 @@ class API:
             patch_response = self.session.patch(self.bootparams_url,
                                 headers={'Authorization': f'Bearer {self._auth.token}',
                                         "Content-Type": "application/json"},
-                                verify=self._crt_path,
                                 data=json.dumps(bss_json))
         except requests.exceptions.RequestException as ex:
             raise requests.exceptions.RequestException(f'ERROR exception: \

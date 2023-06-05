@@ -28,8 +28,8 @@ Submodule for interacting with CSM SLS.
 import http
 from os import getenv
 import requests
-import certifi
 from libcsm import api
+from libcsm.requests.session import get_session
 
 
 class API:
@@ -44,14 +44,12 @@ class API:
         self.sls_url = f'https://{self.api_gateway_address}/apis/sls/v1/'
         self._auth = api.Auth()
         self._auth.refresh_token()
-        self._crt_path = getenv("REQUESTS_CA_BUNDLE", certifi.where())
 
     def get_management_components_from_sls(self) -> requests.Response:
         """
         Function to retrieve all management components from SLS.
         """
-        session = requests.Session()
-        session.verify = self._crt_path
+        session = get_session()
         try:
             components_response = session.get(self.sls_url + \
                 'search/hardware?extra_properties.Role=Management',

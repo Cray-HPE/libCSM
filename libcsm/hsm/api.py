@@ -28,8 +28,8 @@ Submodule for interacting with CSM HSM.
 import http
 from os import getenv
 import requests
-import certifi
 from libcsm import api
+from libcsm.requests.session import get_session
 
 ROLE_SUBROLES = ["Management_Master", "Management_Worker", "Management_Storage"]
 
@@ -45,16 +45,12 @@ class API:
             apis/smd/hsm/v2/State/Components'
         self._auth = api.Auth()
         self._auth.refresh_token()
-        self._crt_path = getenv("REQUESTS_CA_BUNDLE", certifi.where())
-
 
     def get_components(self, role_subrole: str) -> requests.Response:
         """
         Function to get management components from HSM based on their role and subrole.
         """
-        # get session
-        session = requests.Session()
-        session.verify = self._crt_path
+        session = get_session()
         # get components
         if role_subrole not in ROLE_SUBROLES:
             raise KeyError(f'ERROR {role_subrole} is not a valid role_subrole')
