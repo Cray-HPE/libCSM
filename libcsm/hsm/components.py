@@ -32,12 +32,13 @@ from libcsm.requests.session import get_session
 
 ROLE_SUBROLES = ["Management_Master", "Management_Worker", "Management_Storage"]
 
-def get_components(role_subrole: str, api_gateway_address="api-gw-service-nmn.local") -> requests.Response:
+def get_components(role_subrole: str, api_gateway_address="api-gw-service-nmn.local") \
+    -> requests.Response:
     """
     Function to get management components from HSM based on their role and subrole.
     """
     auth = api.Auth()
-    auth.refresh_token()   
+    auth.refresh_token()
     session = get_session()
     hsm_components_url = f'https://{api_gateway_address}/\
         apis/smd/hsm/v2/State/Components'
