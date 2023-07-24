@@ -135,6 +135,7 @@ phonies+=rpm
 phonies+=rpm_build
 phonies+=rpm_build_source
 phonies+=rpm_package_source
+phonies+=ruff
 phonies+=synk
 
 all : prepare rpm
@@ -198,8 +199,11 @@ snyk:
 	$(MAKE) -s image | xargs --verbose -n 1 snyk container test
 
 # Quick run shellspec to do a one off test
-test:
+test: ruff
 	$(SHELLSPEC)
+
+ruff:
+	ruff check libcsm/
 
 # Run tests against all the shell intepreters in SHELLS
 test-all:
