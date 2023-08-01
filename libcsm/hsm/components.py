@@ -52,8 +52,8 @@ def get_components(role_subrole: str, api_gateway_address="api-gw-service-nmn.lo
             headers={'Authorization': f'Bearer {auth.token}'})
     except requests.exceptions.RequestException as ex:
         raise requests.exceptions.RequestException(f'ERROR exception: \
-            {type(ex).__name__} when trying to get components')
+{type(ex).__name__} when trying to get components')
     if components_response.status_code != http.HTTPStatus.OK:
         raise requests.exceptions.RequestException(f'ERROR Failed \
-            to get components with subrole {subrole}')
+to get components with subrole {subrole}')
     return components_response

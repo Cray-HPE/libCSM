@@ -55,10 +55,10 @@ class API:
                 headers={'Authorization': f'Bearer {self._auth.token}'})
         except requests.exceptions.RequestException as ex:
             raise requests.exceptions.RequestException(f'ERROR exception: {type(ex).__name__} \
-                when trying to get management components from SLS') from ex
+when trying to get management components from SLS') from ex
         if components_response.status_code != http.HTTPStatus.OK:
             raise requests.exceptions.RequestException(f'ERROR Bad response \
-                recieved from SLS. Recived: {components_response}')
+recieved from SLS. Recived: {components_response}')
 
         return components_response
 
@@ -74,8 +74,8 @@ class API:
                     return node['Xname']
             except KeyError as error:
                 raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the \
-                response from sls. These fields are expected in the json response. \
-                The resonponse was {components_response.json()}') from error
+response from sls. These fields are expected in the json response. \
+The resonponse was {components_response.json()}') from error
         raise ValueError(f'ERROR hostname:{hostname} was not found in management nodes.')
 
     def get_hostname(self, xname: str) -> str:
@@ -91,6 +91,6 @@ class API:
                     return node['ExtraProperties']['Aliases'][0]
             except KeyError as error:
                 raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the \
-                    response from sls. These fields are expected in the json response. \
-                    The resonponse was {components_response.json()}') from error
+response from sls. These fields are expected in the json response. \
+The resonponse was {components_response.json()}') from error
         raise ValueError(f'ERROR xname:{xname} was not found in management nodes.')

@@ -86,9 +86,15 @@ class _CLI:
             self._return_code = error.errno
             LOG.error('Could not find command for given args: %s', self.args)
         else:
-            self._stdout = stdout.decode('utf8')
-            self._stderr = stderr.decode('utf8')
-            self._return_code = command.returncode
+            try:
+                self._stdout = stdout.decode('utf8')
+                self._stderr = stderr.decode('utf8')
+                self._return_code = command.returncode
+            except UnicodeDecodeError as error:
+                self._stderr = error
+                self._return_code = 1
+                LOG.error('Could not decode stdout or stderr recieved from given args: %s. \
+stdout: %s, stderr %s', self.args, stdout, stderr)
         self._duration = time() - start_time
         if self._return_code and self._duration:
             LOG.info(

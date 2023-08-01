@@ -25,6 +25,8 @@
 Tests for the ``os`` module.
 """
 from os import getcwd
+from subprocess import Popen
+import mock
 
 from libcsm.os import run_command
 from libcsm.os import chdir
@@ -51,6 +53,19 @@ class TestCLI:
                        command_result]:
             assert result.duration > 0.0
             assert isinstance(result.return_code, int)
+            assert result.stdout or result.stderr
+
+    def test_run_command_unicode_error(self) -> None:
+        """
+        Assert that UnicodeDecodeErrors are caught by the run_command 
+        and a non-zero return code is recieved.
+        """
+        # test with an invalid utf-8 byte
+        byte_string = b'\x9c'
+        with mock.patch.object(Popen, 'communicate', return_value=(byte_string, '')):
+            result = run_command(['ls','-l'])
+            assert type(result.stderr) == UnicodeDecodeError
+            assert result.return_code == 1
             assert result.stdout or result.stderr
 
     def test_chdir(self) -> None:
