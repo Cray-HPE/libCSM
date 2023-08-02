@@ -64,7 +64,7 @@ class TestCLI:
         byte_string = b'\x9c'
         with mock.patch.object(Popen, 'communicate', return_value=(byte_string, '')):
             result = run_command(['ls','-l'])
-            assert type(result.stderr) == UnicodeDecodeError
+            assert isinstance(result.stderr, UnicodeDecodeError) 
             assert result.return_code == 1
             assert result.stdout or result.stderr
 
