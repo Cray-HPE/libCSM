@@ -41,7 +41,7 @@ def get_components(role_subrole: str, api_gateway_address="api-gw-service-nmn.lo
     auth.refresh_token()
     session = get_session()
     hsm_components_url = f'https://{api_gateway_address}/\
-        apis/smd/hsm/v2/State/Components'
+apis/smd/hsm/v2/State/Components'
     # get components
     if role_subrole not in ROLE_SUBROLES:
         raise KeyError(f'ERROR {role_subrole} is not a valid role_subrole')
