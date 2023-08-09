@@ -26,9 +26,9 @@ Function for setting boot-image in BSS
 """
 
 import sys
+from json import JSONDecodeError
 import click
 import requests
-from json import JSONDecodeError
 from libcsm.sls import api
 
 @click.command()

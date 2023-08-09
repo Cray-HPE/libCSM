@@ -26,10 +26,10 @@ Submodule for interacting with CSM SLS.
 """
 
 import http
+from json import JSONDecodeError
 import requests
 from libcsm import api
 from libcsm.requests.session import get_session
-from json import JSONDecodeError
 
 
 class API:
@@ -68,9 +68,10 @@ recieved from SLS. Recived: {components_response}')
         Function to get the xname of a node from SLS based on a provided hostname.
         """
         try:
-          components_response = self.get_management_components_from_sls().json()
+            components_response = (self.get_management_components_from_sls()).json()
         except JSONDecodeError as error:
-          raise JSONDecodeError(f'ERROR did not get valid json for management components from sls. {error}')
+            raise JSONDecodeError(f'ERROR did not get valid json for management components \
+from sls. {error}') from error
 
         for node in components_response:
             try:
@@ -87,9 +88,10 @@ The response was {components_response}') from error
         Function to get the hostname of a management node from SLS based on a provided xname.
         """
         try:
-          components_response = self.get_management_components_from_sls().json()
-        except JSONDecodeError:
-          raise JSONDecodeError(f'ERROR did not get valid json for management components from sls. {error}')
+            components_response = (self.get_management_components_from_sls()).json()
+        except JSONDecodeError as error:
+            raise JSONDecodeError(f'ERROR did not get valid json for management components \
+from sls. {error}') from error
 
         for node in components_response:
             try:
