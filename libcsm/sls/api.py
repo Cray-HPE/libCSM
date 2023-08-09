@@ -29,6 +29,7 @@ import http
 import requests
 from libcsm import api
 from libcsm.requests.session import get_session
+from json import JSONDecodeError
 
 
 class API:
@@ -66,25 +67,31 @@ recieved from SLS. Recived: {components_response}')
         """
         Function to get the xname of a node from SLS based on a provided hostname.
         """
-        components_response = self.get_management_components_from_sls()
+        try:
+          components_response = self.get_management_components_from_sls().json()
+        except JSONDecodeError as error:
+          raise JSONDecodeError(f'ERROR did not get valid json for management components from sls. {error}')
 
-        for node in components_response.json():
+        for node in components_response:
             try:
                 if hostname in node['ExtraProperties']['Aliases']:
                     return node['Xname']
             except KeyError as error:
                 raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the \
 response from sls. These fields are expected in the json response. \
-The resonponse was {components_response.json()}') from error
+The resonponse was {components_response}') from error
         raise ValueError(f'ERROR hostname:{hostname} was not found in management nodes.')
 
     def get_hostname(self, xname: str) -> str:
         """
         Function to get the hostname of a management node from SLS based on a provided xname.
         """
-        components_response = self.get_management_components_from_sls()
+        try:
+          components_response = self.get_management_components_from_sls().json()
+        except JSONDecodeError:
+          raise JSONDecodeError(f'ERROR did not get valid json for management components from sls. {error}')
 
-        for node in components_response.json():
+        for node in components_response:
             try:
                 if xname == node['Xname']:
                     # assumes the hostname is the first entry in ['ExtraProperties']['Aliases']
@@ -92,5 +99,5 @@ The resonponse was {components_response.json()}') from error
             except KeyError as error:
                 raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the \
 response from sls. These fields are expected in the json response. \
-The resonponse was {components_response.json()}') from error
+The resonponse was {components_response}') from error
         raise ValueError(f'ERROR xname:{xname} was not found in management nodes.')

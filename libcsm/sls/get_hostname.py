@@ -28,6 +28,7 @@ Function for setting boot-image in BSS
 import sys
 import click
 import requests
+from json import JSONDecodeError
 from libcsm.sls import api
 
 @click.command()
@@ -45,6 +46,6 @@ def main(xname, api_gateway_address) -> None:
     sls_api = api.API(api_gateway_address)
     try:
         print(sls_api.get_hostname(xname))
-    except (requests.exceptions.RequestException, KeyError, ValueError) as error:
+    except (requests.exceptions.RequestException, KeyError, ValueError, JSONDecodeError) as error:
         print(f'{error}')
         sys.exit(1)
