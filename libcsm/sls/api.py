@@ -79,7 +79,7 @@ recieved from SLS. Recived: {components_response}')
             except KeyError as error:
                 raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the \
 response from sls. These fields are expected in the json response. \
-The resonponse was {components_response}') from error
+The response was {components_response}') from error
         raise ValueError(f'ERROR hostname:{hostname} was not found in management nodes.')
 
     def get_hostname(self, xname: str) -> str:
@@ -99,5 +99,5 @@ The resonponse was {components_response}') from error
             except KeyError as error:
                 raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the \
 response from sls. These fields are expected in the json response. \
-The resonponse was {components_response}') from error
+The response was {components_response}') from error
         raise ValueError(f'ERROR xname:{xname} was not found in management nodes.')
