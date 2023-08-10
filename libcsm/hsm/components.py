@@ -40,8 +40,8 @@ def get_components(role_subrole: str, api_gateway_address="api-gw-service-nmn.lo
     auth = api.Auth()
     auth.refresh_token()
     session = get_session()
-    hsm_components_url = f'https://{api_gateway_address}/\
-apis/smd/hsm/v2/State/Components'
+    hsm_components_url = f'https://{api_gateway_address}/'\
+        f'apis/smd/hsm/v2/State/Components'
     # get components
     if role_subrole not in ROLE_SUBROLES:
         raise KeyError(f'ERROR {role_subrole} is not a valid role_subrole')
@@ -51,9 +51,9 @@ apis/smd/hsm/v2/State/Components'
             f'?role=Management&subrole={subrole}',
             headers={'Authorization': f'Bearer {auth.token}'})
     except requests.exceptions.RequestException as ex:
-        raise requests.exceptions.RequestException(f'ERROR exception: \
-{type(ex).__name__} when trying to get components')
+        raise requests.exceptions.RequestException(f'ERROR exception:' \
+            f'{type(ex).__name__} when trying to get components')
     if components_response.status_code != http.HTTPStatus.OK:
-        raise requests.exceptions.RequestException(f'ERROR Failed \
-to get components with subrole {subrole}')
+        raise requests.exceptions.RequestException(f'ERROR Failed' \
+            f'to get components with subrole {subrole}')
     return components_response
