@@ -45,8 +45,8 @@ class _CLI:
     An object to abstract the return result from ``run_command``.
 
     """
-    _stdout = ''
-    _stderr = ''
+    _stdout = b''
+    _stderr = b''
     _return_code = None
     _duration = None
 
@@ -86,9 +86,15 @@ class _CLI:
             self._return_code = error.errno
             LOG.error('Could not find command for given args: %s', self.args)
         else:
-            self._stdout = stdout.decode('utf8')
-            self._stderr = stderr.decode('utf8')
-            self._return_code = command.returncode
+            try:
+                self._stdout = stdout
+                self._stderr = stderr
+                self._return_code = command.returncode
+            except UnicodeDecodeError as error:
+                self._stderr = error
+                self._return_code = 1
+                LOG.error('Could not decode stdout or stderr recieved from given args: %s. \
+stdout: %s, stderr %s', self.args, stdout, stderr)
         self._duration = time() - start_time
         if self._return_code and self._duration:
             LOG.info(
@@ -99,14 +105,14 @@ class _CLI:
             )
 
     @property
-    def stdout(self) -> str:
+    def stdout(self) -> [str, bytes]:
         """
         ``stdout`` from the command.
         """
         return self._stdout
 
     @property
-    def stderr(self) -> str:
+    def stderr(self) -> [str, bytes]:
         """
         ``stderr`` from the command.
         """
@@ -125,6 +131,26 @@ class _CLI:
         The duration of the running command.
         """
         return self._duration
+
+    def decode(self, charset: str) -> None:
+        """
+        Decodes ``self._stdout`` and ``self._stderr`` with the given ``charset``.
+        :param charset: The character set to decode with.
+        """
+        if not isinstance(self._stdout, str):
+            try:
+                self._stdout = self._stdout.decode(charset)
+            except ValueError as error:
+                LOG.error("Command output was requested to be decoded as"
+                          " %s but failed: %s", charset, error)
+                raise error
+        if not isinstance(self._stderr, str):
+            try:
+                self._stderr = self._stderr.decode(charset)
+            except ValueError as error:
+                LOG.error("Command output was requested to be decoded as"
+                          " %s but failed: %s", charset, error)
+                raise error
 
 
 @contextmanager
@@ -165,7 +191,9 @@ def chdir(directory: str, create: bool = False) -> None:
 def run_command(
     args: [list, str],
     in_shell: bool = False,
-    silence: bool = False, ) -> _CLI:
+    silence: bool = False,
+    charset: str = None,
+) -> _CLI:
     """
     Runs a given command or list of commands by instantiating a ``CLI`` object.
 
@@ -179,6 +207,9 @@ def run_command(
     :param args: List of arguments to run, can also be a string. If a string,
     :param in_shell: Whether to use a shell when invoking the command.
     :param silence: Tells this not to output the command to console.
+    :param charset: Returns the command ``stdout`` and ``stderr`` as a
+                    string instead of bytes, and decoded with the given
+                    ``charset``.
     """
     args_string = [str(x) for x in args]
     if not silence:
@@ -187,4 +218,7 @@ def run_command(
             ' '.join(args_string),
             in_shell
         )
-    return _CLI(args_string, shell=in_shell)
+    result = _CLI(args_string, shell=in_shell)
+    if charset:
+        result.decode(charset)
+    return result

@@ -25,6 +25,10 @@
 Tests for the ``os`` module.
 """
 from os import getcwd
+from subprocess import Popen
+
+import pytest
+import mock
 
 from libcsm.os import run_command
 from libcsm.os import chdir
@@ -52,6 +56,49 @@ class TestCLI:
             assert result.duration > 0.0
             assert isinstance(result.return_code, int)
             assert result.stdout or result.stderr
+
+    def test_run_command_decode(self) -> None:
+        """
+        Assert that a ``_CLI`` object successfully decodes its ``stdout`` and
+        ``stderr``.
+        """
+        command = ['ls', '-l']
+        shell_command = 'ls -l'
+        bad_command = 'foo!!!'
+        no_shell_result = run_command(shell_command)
+        shell_result = run_command(
+            shell_command,
+            in_shell=True,
+            charset='utf-8'
+        )
+        bad_result = run_command(bad_command)
+        command_result = run_command(command)
+        for result in [no_shell_result, shell_result, bad_result,
+                       command_result]:
+            assert result.duration > 0.0
+            assert isinstance(result.return_code, int)
+            assert result.stdout or result.stderr
+
+    def test_run_command_decode_unicode_error(self) -> None:
+        """
+        Assert that ``UnicodeDecodeErrors`` are caught by the ``run_command``
+        and a non-zero return code is received.
+        """
+        # Test using a CP1252 (windows ostensibly) character "œ"
+        byte_string = b'\x9c'
+        with mock.patch.object(
+            Popen,
+            'communicate',
+            return_value=(byte_string, byte_string)
+        ):
+            result = run_command(['ls', '-l'])
+            assert result.duration > 0.0
+            assert isinstance(result.return_code, int)
+            assert result.stdout or result.stderr
+            assert isinstance(result.stdout, bytes)
+            assert isinstance(result.stderr, bytes)
+            with pytest.raises(UnicodeDecodeError):
+                run_command(['ls', '-l'], charset='utf-8')
 
     def test_chdir(self) -> None:
         """

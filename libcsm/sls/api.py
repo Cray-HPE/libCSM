@@ -54,11 +54,11 @@ class API:
                 'search/hardware?extra_properties.Role=Management',
                 headers={'Authorization': f'Bearer {self._auth.token}'})
         except requests.exceptions.RequestException as ex:
-            raise requests.exceptions.RequestException(f'ERROR exception: {type(ex).__name__} \
-                when trying to get management components from SLS') from ex
+            raise requests.exceptions.RequestException(f'ERROR exception: {type(ex).__name__}' \
+                f'when trying to get management components from SLS') from ex
         if components_response.status_code != http.HTTPStatus.OK:
-            raise requests.exceptions.RequestException(f'ERROR Bad response \
-                recieved from SLS. Recived: {components_response}')
+            raise requests.exceptions.RequestException(f'ERROR Bad response' \
+                f'recieved from SLS. Recived: {components_response}')
 
         return components_response
 
@@ -66,31 +66,39 @@ class API:
         """
         Function to get the xname of a node from SLS based on a provided hostname.
         """
-        components_response = self.get_management_components_from_sls()
+        try:
+            components_response = (self.get_management_components_from_sls()).json()
+        except ValueError as error:
+            raise ValueError(f'ERROR did not get valid json for management components' \
+                f'from sls. {error}') from error
 
-        for node in components_response.json():
+        for node in components_response:
             try:
                 if hostname in node['ExtraProperties']['Aliases']:
                     return node['Xname']
             except KeyError as error:
-                raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the \
-                response from sls. These fields are expected in the json response. \
-                The resonponse was {components_response.json()}') from error
+                raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the' \
+                    f'response from sls. These fields are expected in the json response.' \
+                    f'The response was {components_response}') from error
         raise ValueError(f'ERROR hostname:{hostname} was not found in management nodes.')
 
     def get_hostname(self, xname: str) -> str:
         """
         Function to get the hostname of a management node from SLS based on a provided xname.
         """
-        components_response = self.get_management_components_from_sls()
+        try:
+            components_response = (self.get_management_components_from_sls()).json()
+        except ValueError as error:
+            raise ValueError(f'ERROR did not get valid json for management components' \
+                f'from sls. {error}') from error
 
-        for node in components_response.json():
+        for node in components_response:
             try:
                 if xname == node['Xname']:
                     # assumes the hostname is the first entry in ['ExtraProperties']['Aliases']
                     return node['ExtraProperties']['Aliases'][0]
             except KeyError as error:
-                raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the \
-                    response from sls. These fields are expected in the json response. \
-                    The resonponse was {components_response.json()}') from error
+                raise KeyError(f'ERROR [ExtraProperties][Aliases] was not in the' \
+                    f'response from sls. These fields are expected in the json response.' \
+                    f'The response was {components_response}') from error
         raise ValueError(f'ERROR xname:{xname} was not found in management nodes.')
