@@ -26,7 +26,6 @@ Submodule for interacting with CSM SLS.
 """
 
 import http
-from json import JSONDecodeError
 import requests
 from libcsm import api
 from libcsm.requests.session import get_session
@@ -69,8 +68,8 @@ recieved from SLS. Recived: {components_response}')
         """
         try:
             components_response = (self.get_management_components_from_sls()).json()
-        except JSONDecodeError as error:
-            raise JSONDecodeError(f'ERROR did not get valid json for management components \
+        except ValueError as error:
+            raise ValueError(f'ERROR did not get valid json for management components \
 from sls. {error}') from error
 
         for node in components_response:
@@ -89,8 +88,8 @@ The response was {components_response}') from error
         """
         try:
             components_response = (self.get_management_components_from_sls()).json()
-        except JSONDecodeError as error:
-            raise JSONDecodeError(f'ERROR did not get valid json for management components \
+        except ValueError as error:
+            raise ValueError(f'ERROR did not get valid json for management components \
 from sls. {error}') from error
 
         for node in components_response:
