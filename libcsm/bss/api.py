@@ -33,7 +33,6 @@ from libcsm.requests.session import get_session
 
 
 class API:
-
     """
     Class for providing API to interact with BSS.
     """
@@ -65,7 +64,6 @@ class API:
                 f'{bss_response.status_code} from  BSS.')
         return bss_response.json()[0]
 
-
     def patch_bss_bootparams(self, xname : str, bss_json) -> None:
         """
         Patch the bootparameters in BSS for a specified xname.
@@ -85,13 +83,12 @@ class API:
         print('BSS entry patched')
 
     def set_bss_image(self, xname: str, image_dict: dict) -> None:
-
         """
         Set the images in BSS for a specific xname.
+
         The inputs are the node's xname and a dictionary containing initrd, kernel, and roofs
         image paths that will be set in BSS.
         """
-
         if 'initrd' not in image_dict or 'kernel' not in image_dict or 'rootfs' not in image_dict:
             raise ValueError(f"ERROR set_bss_image has inputs 'xname' and 'image_dictonary' where" \
                 f"'image_dictionary' is a dictionary containing values for 'initrd', 'kernel', " \

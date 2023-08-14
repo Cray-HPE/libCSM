@@ -33,10 +33,10 @@ from libcsm.s3.s3object import RGWAdminException
 
 
 class TestS3Object:
-
     """
     Tests for the s3object submodule.
     """
+
     @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
     def test_object(self, *_) -> None:
         """

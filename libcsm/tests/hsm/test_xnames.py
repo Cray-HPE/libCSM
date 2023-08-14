@@ -67,7 +67,7 @@ class TestXnames:
 
     def test_xnames_with_no_components(self, *_) -> None:
         """
-        Tests get run of HSM get_xnames_by_role_subrole where no components are returned
+        Tests get run of HSM get_xnames_by_role_subrole where no components are returned.
         """
         hsm_role_subrole = "Management_Storage"
         mock_components = { "Components": []

@@ -66,6 +66,8 @@ lint = [
 ]
 test = [
     'coverage~=7.1',
+    'pytest~=7.2',
+    'pytest-cov~=4.0',
     'ruff~=0.0.280',
     'mock~=5.0',
 ]
@@ -95,15 +97,14 @@ universal = false # This app is not compatible with Python2.
 
 [tool.ruff]
 # Enable pycodestyle (`E`), Pyflakes (`F`), docstrings (`D`)
-select = ["E", "F", "D"]
+select = ["E", "F", "D", "PL"]
 ignore = [
+  "D104", # Missing docstring in public package
   "D107", # Missing docstring in `__init__`
   "D200", # One-line docstring should fit on one line
   "D203", # 1 blank line required before class docstring
   "D205", # 1 blank line required between summary line and description
-  "D211", # No blank lines allowed before class docstring
-  "D212", # Multi-line docstring summary should start at the first line
-  "E501", # Line too long
+  "D212"  # Multi-line docstring summary should start at the first line
   ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
@@ -136,15 +137,7 @@ exclude = [
     "venv",
 ]
 
-# Same as Black.
-line-length = 88
+line-length = 120
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-# Assume Python 3.11.
-target-version = "py311"
-
-[tool.ruff.mccabe]
-# Unlike Flake8, default to a complexity level of 10.
-max-complexity = 10

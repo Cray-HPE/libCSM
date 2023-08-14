@@ -39,6 +39,8 @@ class TestCLI:
     Test class for the ``os`` module.
     """
 
+    init = 0.0
+
     def test_run_command(self) -> None:
         """
         Assert that we can run a command and that if it isn't found an
@@ -53,7 +55,7 @@ class TestCLI:
         command_result = run_command(command)
         for result in [no_shell_result, shell_result, bad_result,
                        command_result]:
-            assert result.duration > 0.0
+            assert result.duration > self.init
             assert isinstance(result.return_code, int)
             assert result.stdout or result.stderr
 
@@ -75,7 +77,7 @@ class TestCLI:
         command_result = run_command(command)
         for result in [no_shell_result, shell_result, bad_result,
                        command_result]:
-            assert result.duration > 0.0
+            assert result.duration > self.init
             assert isinstance(result.return_code, int)
             assert result.stdout or result.stderr
 
@@ -92,7 +94,7 @@ class TestCLI:
             return_value=(byte_string, byte_string)
         ):
             result = run_command(['ls', '-l'])
-            assert result.duration > 0.0
+            assert result.duration > self.init
             assert isinstance(result.return_code, int)
             assert result.stdout or result.stderr
             assert isinstance(result.stdout, bytes)
@@ -104,6 +106,7 @@ class TestCLI:
         """
         Assert that our context manager will change directories and
         change back to our original directory.
+
         """
         original = getcwd()
         with chdir('/'):

@@ -40,8 +40,9 @@ from libcsm import api
 @dataclass()
 class MockV1Secret:
     """
-    A mock for kubernetes.client.models.v1_secret.V1Secret
+    A mock for kubernetes.client.models.v1_secret.V1Secret.
     """
+
     id = b'foo-client'
     secret = b'2fb9d9ad-3333-2222-1111-000000000000'
     endpoint = b'https://example.com'
@@ -55,7 +56,6 @@ class MockV1Secret:
 @mock.patch('kubernetes.config.load_kube_config')
 @mock.patch('kubernetes.client.CoreV1Api')
 class TestApi:
-
     """
     Tests for the API submodule.
     """

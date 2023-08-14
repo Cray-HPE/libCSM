@@ -35,7 +35,6 @@ from libcsm.s3 import images
 @mock.patch('libcsm.s3.images.get_s3_image_info', spec=True)
 @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
 class TestSetImage:
-
     """
     Testing the the bss set image main function.
     """

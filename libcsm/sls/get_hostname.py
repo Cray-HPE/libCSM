@@ -22,7 +22,7 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Function for setting boot-image in BSS
+Function for setting boot-image in BSS.
 """
 
 import sys
@@ -30,18 +30,18 @@ import click
 import requests
 from libcsm.sls import api
 
+
 @click.command()
 @click.option('--xname', required=True, type=str, \
     help='xname of the node whose hostname should be returned.')
 @click.option('--api-gateway-address', required=False, type=str, default='api-gw-service-nmn.local',
     help='API gateway address. Default is \'api-gw-service-nmn.local\'.')
 def main(xname, api_gateway_address) -> None:
-
     """
-    Get the hostname of a NCN given an Xname.
+    Get the hostname of an NCN for a given Xname.
+
     This queries SLS for management nodes' information.
     """
-
     sls_api = api.API(api_gateway_address)
     try:
         print(sls_api.get_hostname(xname))

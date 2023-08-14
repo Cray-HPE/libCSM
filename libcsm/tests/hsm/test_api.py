@@ -38,8 +38,9 @@ from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 @dataclass()
 class MockHSMSetup:
     """
-    Setup variables that are reused in tests
+    Setup variables that are reused in tests.
     """
+
     mock_HSM_components = []
     ok_mock_http_response=MockHTTPResponse(mock_HSM_components, http.HTTPStatus.OK)
     unauth_mock_http_response=MockHTTPResponse(mock_HSM_components, http.HTTPStatus.UNAUTHORIZED)
@@ -50,6 +51,7 @@ class TestHsmApi:
     """
     Testing the hsm api submodule.
     """
+
     mock_setup = MockHSMSetup
 
     def test_get_components(self, *_) -> None:
