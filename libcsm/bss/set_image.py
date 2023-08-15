@@ -49,9 +49,7 @@ from libcsm.bss import api
 @click.option('--endpoint-url', required=False, type=str, default='http://rgw-vip',
                help='Address of the Rados-gateway endpoint.')
 def main(**kwargs) -> None:
-
     """Set the kernel, rootfs, and initrd images in BSS for specified node(s) given an image-id."""
-
     hsm_role_subrole = kwargs['hsm_role_subrole']
     xnames = kwargs['xnames']
     bucket = kwargs['bucket']

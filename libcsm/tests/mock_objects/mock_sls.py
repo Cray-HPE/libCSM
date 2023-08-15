@@ -28,11 +28,13 @@ from dataclasses import dataclass
 import http
 from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 
+
 @dataclass()
 class MockSLSResponse:
     """
-    Setup testing variables that are reused in tests
+    Setup testing variables that are reused in tests.
     """
+
     mock_components = [
         {
             'Parent': 'par1', 'Xname': 'xname1',
@@ -43,14 +45,20 @@ class MockSLSResponse:
         },
     ]
     mock_http_response = MockHTTPResponse(mock_components, http.HTTPStatus.OK)
-    unauth_mock_http_response=MockHTTPResponse(mock_components, http.HTTPStatus.UNAUTHORIZED)
+    unauth_mock_http_response = MockHTTPResponse(
+        mock_components,
+        http.HTTPStatus.UNAUTHORIZED
+        )
     bad_mock_components = [
         {
             'Parent': 'par1', 'Xname': 'xname1',
             'No_extra_properties': {'Aliases': ['ncn-w001'], 'A': 100}
         }, {
-            'Parent': 'par2', 'Xname': 'xname2',  
+            'Parent': 'par2', 'Xname': 'xname2',
             'No_extra_properties': {'Aliases': ['ncn-s002'], 'A': 101}
         },
     ]
-    bad_mock_http_response=MockHTTPResponse(bad_mock_components, http.HTTPStatus.OK)
+    bad_mock_http_response = MockHTTPResponse(
+        bad_mock_components,
+        http.HTTPStatus.OK
+        )

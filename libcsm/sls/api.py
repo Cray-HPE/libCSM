@@ -32,7 +32,6 @@ from libcsm.requests.session import get_session
 
 
 class API:
-
     """
     Class for providing API to interact with SLS.
     """
@@ -46,7 +45,7 @@ class API:
 
     def get_management_components_from_sls(self) -> requests.Response:
         """
-        Function to retrieve all management components from SLS.
+        Retrieve all management components from SLS.
         """
         session = get_session()
         try:
@@ -64,7 +63,7 @@ class API:
 
     def get_xname(self, hostname: str) -> str:
         """
-        Function to get the xname of a node from SLS based on a provided hostname.
+        Get the xname of a node from SLS based on a provided hostname.
         """
         try:
             components_response = (self.get_management_components_from_sls()).json()
@@ -84,7 +83,7 @@ class API:
 
     def get_hostname(self, xname: str) -> str:
         """
-        Function to get the hostname of a management node from SLS based on a provided xname.
+        Get the hostname of a management node from SLS based on a provided xname.
         """
         try:
             components_response = (self.get_management_components_from_sls()).json()

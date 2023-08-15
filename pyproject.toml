@@ -62,12 +62,13 @@ ci = [
     'nox~=2023.4.22',
 ]
 lint = [
-    'pylint~=2.15',
+    'ruff~=0.0.280',
 ]
 test = [
     'coverage~=7.1',
     'pytest~=7.2',
     'pytest-cov~=4.0',
+    'ruff~=0.0.280',
     'mock~=5.0',
 ]
 
@@ -92,4 +93,51 @@ requires = [
 ]
 
 [tool.distutils.bdist_wheel]
-universal = false # This app. is not compatible with Python2.
+universal = false # This app is not compatible with Python2.
+
+[tool.ruff]
+# Enable pycodestyle (`E`), Pyflakes (`F`), docstrings (`D`)
+select = ["E", "F", "D", "PL"]
+ignore = [
+  "D104", # Missing docstring in public package
+  "D107", # Missing docstring in `__init__`
+  "D200", # One-line docstring should fit on one line
+  "D203", # 1 blank line required before class docstring
+  "D205", # 1 blank line required between summary line and description
+  "D212"  # Multi-line docstring summary should start at the first line
+  ]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+# fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+fixable = ["ALL"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+line-length = 120
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"

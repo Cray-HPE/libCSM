@@ -43,8 +43,8 @@ LOG = Logger(__file__)
 class _CLI:
     """
     An object to abstract the return result from ``run_command``.
-
     """
+
     _stdout = b''
     _stderr = b''
     _return_code = None
@@ -52,10 +52,12 @@ class _CLI:
 
     def __init__(self, args: [str, list], shell: bool = False) -> None:
         """
+        Create a ``Popen`` object.
+
         If shell==True then the arguments will be converted to a string if
         a list was passed.
         The conversion is recommended by Popen's documentation:
-            https://docs.python.org/3/library/subprocess.html
+            https://docs.python.org/3/library/subprocess.html.
 
         :param args: The arguments (as a list or string) to run with Popen.
         :param shell: Whether to run Popen in a shell (default: False)
@@ -69,6 +71,8 @@ class _CLI:
 
     def _run(self) -> None:
         """
+        Invoke the loaded command with ``Popen``.
+
         Run the arguments and set the object's class variables with the
         results.
         """
@@ -121,7 +125,7 @@ stdout: %s, stderr %s', self.args, stdout, stderr)
     @property
     def return_code(self) -> int:
         """
-        return code from the command.
+        Return code from the command.
         """
         return self._return_code
 
@@ -134,6 +138,8 @@ stdout: %s, stderr %s', self.args, stdout, stderr)
 
     def decode(self, charset: str) -> None:
         """
+        Decode ``self.stdout`` and ``self.stderr``.
+
         Decodes ``self._stdout`` and ``self._stderr`` with the given ``charset``.
         :param charset: The character set to decode with.
         """
@@ -156,7 +162,9 @@ stdout: %s, stderr %s', self.args, stdout, stderr)
 @contextmanager
 def chdir(directory: str, create: bool = False) -> None:
     """
-    Changes into a given directory and returns to the original directory on
+    Change directories and run a command.
+
+    Change into a given directory and returns to the original directory on
     exit.
 
     .. note::
@@ -195,7 +203,7 @@ def run_command(
     charset: str = None,
 ) -> _CLI:
     """
-    Runs a given command or list of commands by instantiating a ``CLI`` object.
+    Run a given command or list of commands by instantiating a ``CLI`` object.
 
     .. code-block:: python
 

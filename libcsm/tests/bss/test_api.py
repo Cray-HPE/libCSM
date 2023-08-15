@@ -37,8 +37,9 @@ from libcsm.tests.mock_objects.mock_http import MockHTTPResponse
 @dataclass()
 class MockBssSetup:
     """
-    Setup variables that are reused in tests
+    Setup variables that are reused in tests.
     """
+
     mock_bss_components = [
         { "ID" : "ncn-x001"},
         { "ID" : "nxn-x002"},
@@ -61,6 +62,7 @@ class TestBssApi:
     """
     Testing the bss api submodule.
     """
+
     # setup variables that are reused in tests
     bss_api = None
     mock_setup = MockBssSetup
@@ -69,7 +71,7 @@ class TestBssApi:
     @mock.patch('libcsm.api.Auth', spec=True)
     def setup_method(self, *_) -> None:
         """
-        Setup BSS API to be used in tests
+        Set up BSS API to be used in tests.
         """
         self.bss_api = bssApi.API()
 

@@ -38,6 +38,7 @@ class TestGetXname:
     """
     Testing the sls get_xnames function.
     """
+
     mock_setup = MockSLSResponse
 
     def test_get_management_components_from_sls(self, mock_management_components, *_) -> None:

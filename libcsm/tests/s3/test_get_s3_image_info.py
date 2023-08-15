@@ -34,12 +34,13 @@ from botocore.response import StreamingBody
 from libcsm.s3 import images, s3object
 from libcsm.s3.images import ImageFormatException
 
+
 def mock_s3_object(mocked_images: dict) -> dict:
     """
     Mock s3 objects.
     """
     body_json = {
-            'artifacts': mocked_images 
+        'artifacts': mocked_images
     }
     body_string = json.dumps(body_json).encode()
     body_stream = StreamingBody(
@@ -48,9 +49,9 @@ def mock_s3_object(mocked_images: dict) -> dict:
     )
     return {'Body': body_stream}
 
+
 @mock.patch('libcsm.s3.s3object.S3Object.verify_bucket_exists')
 class TestGetS3ImageInfo:
-
     """
     Tests for the get_s3_image_info function.
     """
@@ -58,17 +59,20 @@ class TestGetS3ImageInfo:
     @mock.patch('libcsm.s3.s3object.S3Object.get_object')
     def test_good_get_image_info(self, mock_get_object, *_) -> None:
         """
-        Verify get_s3_image_info runs smoothly when a good repsonse is recieved from s3.
+        Verify get_s3_image_info runs smoothly when a good repsonse is
+        recieved from s3.
         """
         mock_get_object.return_value = 0
         mocked_images = [
-            {"type" : "initrd", "link": {"path": "initrd_path"} },
-            {"type" : "kernel", "link": {"path": "kernel_path"} },
-            {"type" : "rootfs", "link": {"path": "rootfs_path"} },
+            {"type": "initrd", "link": {"path": "initrd_path"}},
+            {"type": "kernel", "link": {"path": "kernel_path"}},
+            {"type": "rootfs", "link": {"path": "rootfs_path"}},
         ]
         mock_object = mock_s3_object(mocked_images)
-        with mock.patch.object(s3object.S3Object, 'get_object', \
-            return_value=mock_object):
+        with mock.patch.object(
+            s3object.S3Object, 'get_object', \
+            return_value=mock_object
+            ):
             image_dict = images.get_s3_image_info("bucket", "image", "info")
             assert image_dict['initrd'] == "initrd_path"
             assert image_dict['kernel'] == "kernel_path"
@@ -81,12 +85,14 @@ class TestGetS3ImageInfo:
         """
         mock_get_object.return_value = 0
         mocked_images = [
-            {"type" : "XX-bad-XX", "link": {"path": "initrd_path"} },
-            {"type" : "kernel", "link": {"path": "kernel_path"} },
-            {"type" : "rootfs", "link": {"path": "rootfs_path"} },
+            {"type": "XX-bad-XX", "link": {"path": "initrd_path"}},
+            {"type": "kernel", "link": {"path": "kernel_path"}},
+            {"type": "rootfs", "link": {"path": "rootfs_path"}},
         ]
         mock_object = mock_s3_object(mocked_images)
-        with mock.patch.object(s3object.S3Object, 'get_object', \
-            return_value=mock_object):
+        with mock.patch.object(
+            s3object.S3Object, 'get_object', \
+            return_value=mock_object
+            ):
             with pytest.raises(ImageFormatException):
                 images.get_s3_image_info("bucket", "image", "info")

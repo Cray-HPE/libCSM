@@ -26,13 +26,15 @@ Reusable mocks for HTTP requests.
 """
 from dataclasses import dataclass
 
+
 @dataclass
 class MockHTTPResponse:
-    """ Class for a mocked HTTP response """
+    """Class for a mocked HTTP response."""
+
     def __init__(self, data, status_code):
         self.json_data = data
         self.status_code = status_code
 
     def json(self):
-        """ Return json data from the exception """
+        """Return json data from the exception."""
         return self.json_data

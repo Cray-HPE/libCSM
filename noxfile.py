@@ -89,7 +89,7 @@ def lint(session):
     session.install(".[lint]")
     session.install(".[test]")
     session.install(".")
-    session.run("pylint", 'libcsm')
+    session.run("ruff", "check", "libcsm/")
 
 
 @nox.session(python="3")

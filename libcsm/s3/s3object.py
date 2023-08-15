@@ -33,19 +33,20 @@ from libcsm.os import run_command
 S3_CONNECT_TIMEOUT=60
 S3_READ_TIMEOUT=1
 
-class RGWAdminException(Exception):
 
+class RGWAdminException(Exception):
     """
     An exception for problems running radosgw-admin commands.
     """
+
     def __init__(self, message) -> None:
         self.message = message
         super().__init__(self.message)
 
-class S3Object:
 
+class S3Object:
     """
-    Class for getting s3 object infomation given a bucket and bject name.  
+    Class for getting s3 object information given a bucket and bisect name.
     """
 
     def __init__(self, bucket: str, object_name: str):
@@ -63,7 +64,6 @@ class S3Object:
         result = run_command(['radosgw-admin', 'bucket', 'list', '--bucket', self.bucket])
         if result.return_code != 0:
             raise RGWAdminException(f"Error when executing radosgw-admin command: {result.stderr}")
-
 
     def get_object_owner(self) -> None:
         """
@@ -92,7 +92,7 @@ class S3Object:
 
     def get_object(self, endpoint_url="http://rgw-vip"):
         """
-        Get the object from s3. Returns a bob3.resource.Object.
+        Get the object from s3. Returns a ``bob3.resource.Object``.
         """
         if self._a_key is None or self._s_key is None:
             self.get_creds()

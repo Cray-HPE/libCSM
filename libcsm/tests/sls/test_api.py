@@ -46,14 +46,14 @@ class TestSLSApi:
     @mock.patch('libcsm.api.Auth', spec=True)
     def setup_method(self, *_) -> None:
         """
-        Setup SLS API to be used in tests
+        Set up SLS API to be used in tests.
         """
         with mock.patch.object(api.Auth, 'refresh_token', return_value=None):
             self.sls_api = slsApi.API()
 
     def test_get_management_components_from_sls(self, *_) -> None:
         """
-        Tests successful run of the SLS get_management_components_from_sls 
+        Tests successful run of the SLS get_management_components_from_sls
         function.
         """
         with mock.patch.object(Session, 'get', \
@@ -62,7 +62,7 @@ class TestSLSApi:
 
     def test_get_management_components_from_sls_error(self, *_) -> None:
         """
-        Tests unsuccessful run of the SLS get_management_components_from_sls 
+        Tests unsuccessful run of the SLS get_management_components_from_sls
         function because of bad response.
         """
         with mock.patch.object(Session, 'get', \
@@ -117,7 +117,7 @@ class TestSLSApi:
 
     def test_get_hostname_invalid_response(self, *_) -> None:
         """
-        Tests the SLS get_xname function with an invalid response 
+        Tests the SLS get_xname function with an invalid response
         from sls.get_management_components_from_sls.
         """
         with mock.patch.object(self.sls_api, 'get_management_components_from_sls', \

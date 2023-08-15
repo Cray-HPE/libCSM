@@ -34,6 +34,8 @@ LOG_PATH = '/var/log/libcsm.log'
 
 class Logger(logging.Logger):
     """
+    Custom logger.
+
     Inherits from logging.Logger, configuring custom settings on
     initialization.
     """
@@ -44,6 +46,8 @@ class Logger(logging.Logger):
         log_level: int = logging.INFO
     ) -> None:
         """
+        Customize the ``Logger`` object.
+
         :param module_name: Pass __name__ here or whatever name you want to
                             define the Logger as.
         :param log_level: Level of logging (default: INFO).
@@ -60,7 +64,7 @@ class Logger(logging.Logger):
             print(
                 f'Failed to make {os.path.dirname(LOG_PATH)}\n{error}\n'
                 f'writing logs to present working directory.'
-                )
+            )
             handler = RotatingFileHandler(os.path.basename(LOG_PATH))
         handler.setFormatter(formatter)
         self.addHandler(handler)
