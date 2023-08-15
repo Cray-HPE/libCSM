@@ -70,7 +70,7 @@ Cray System Management procedures and operations.
 %{buildroot}%{install_python_dir}/bin/python -m pip uninstall -y pip setuptools wheel
 
 # Fix the virtualenv activation script, ensure VIRTUAL_ENV points to the installed location on the system.
-sed -i -E 's:^(VIRTUAL_ENV=).*:\1'%{install_python_dir}':' %{buildroot}%{install_python_dir}/bin/activate
+find %{buildroot}%{install_python_dir}/bin -type f | xargs -t -i sed -i 's:%{buildroot}%{install_python_dir}:%{install_python_dir}:g' {}
 
 install -d -m 755 %{buildroot}%{doc_example_dir}
 cp -pvr ./examples/* %{buildroot}%{doc_example_dir} | awk '{print $3}' | sed "s/'//g" | sed "s|$RPM_BUILD_ROOT||g" | tee -a INSTALLED_FILES
