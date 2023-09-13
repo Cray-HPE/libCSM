@@ -40,7 +40,7 @@ from libcsm import api
 @dataclass()
 class MockV1Secret:
     """
-    A mock for ``kubernetes.client.models.v1_secret.V1Secret``
+    A mock for ``kubernetes.client.models.v1_secret.V1Secret``.
     """
 
     id = b'foo-client'

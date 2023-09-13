@@ -41,21 +41,42 @@ sys.path.insert(0, os.path.abspath('..'))
 
 project = 'libCSM'
 copyright = '2023, Cray / HPE'
+master_doc = 'index'
 author = 'Russell Bunch, Mitchell Tishmack, Jacob Salmela'
 
 # -- General configuration ---------------------------------------------------
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx_copybutton',
+    'sphinx.ext.autosectionlabel',
     'sphinx_autodoc_typehints',
+    'sphinx_copybutton',
+    'sphinx_rtd_theme',
 ]
-
+autosectionlabel_prefix_document = True
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 html_title = f"{project} Documentation ({version})"
+locale_dirs = ['locale/']   # path is example but recommended.
+language = 'en'
+gettext_compact = False     # optional.
+versioning_conditions = ['text']
+add_function_parentheses = True
+add_module_names = True
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = 'alabaster'
+html_show_sphinx = False
+html_theme = "sphinx_rtd_theme"
+html_theme_options = {
+    'logo_only': False,
+    'navigation_depth': 5,
+}
 html_static_path = ['_static']
 html_favicon = '_static/favicon.ico'
 html_logo = '_static/csm.jpeg'
+html_context = {
+    'display_github': True,
+    'github_user': 'Cray-HPE',
+    'github_repo': 'libCSM',
+    'github_version': 'main',
+}
+

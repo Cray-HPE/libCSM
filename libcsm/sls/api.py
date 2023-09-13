@@ -36,8 +36,11 @@ class API:
     Class for providing API to interact with SLS.
     """
 
-    def __init__(self, api_gateway_address="api-gw-service-nmn.local"):
+    def __init__(self, api_gateway_address: str = "api-gw-service-nmn.local"):
+        """
 
+        :param api_gateway_address: The hostname of the API gateway.
+        """
         self.api_gateway_address = api_gateway_address
         self.sls_url = f'https://{self.api_gateway_address}/apis/sls/v1/'
         self._auth = api.Auth()
@@ -64,6 +67,9 @@ class API:
     def get_xname(self, hostname: str) -> str:
         """
         Get the xname of a node from SLS based on a provided hostname.
+
+        :param hostname: The hostname to lookup.
+        :returns: The XNAME.
         """
         try:
             components_response = (self.get_management_components_from_sls()).json()
@@ -84,6 +90,9 @@ class API:
     def get_hostname(self, xname: str) -> str:
         """
         Get the hostname of a management node from SLS based on a provided xname.
+
+        :param xname: The XNAME to lookup.
+        :returns: The hostname.
         """
         try:
             components_response = (self.get_management_components_from_sls()).json()

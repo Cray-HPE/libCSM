@@ -37,8 +37,10 @@ class API:
     Class for providing API to interact with BSS.
     """
 
-    def __init__(self, api_gateway_address="api-gw-service-nmn.local"):
-
+    def __init__(self, api_gateway_address="api-gw-service-nmn.local") -> None:
+        """
+        :param api_gateway_address: The hostname for the API gateway.
+        """
         self.api_gateway_address = api_gateway_address
         self.bootparams_url = f'https://{self.api_gateway_address}/apis/bss/boot/v1/bootparameters'
         self._auth = api.Auth()
@@ -48,6 +50,8 @@ class API:
     def get_bss_bootparams(self, xname: str) -> str:
         """
         Get bootparameters from BSS for a specifed xname.
+
+        :param xname: The XNAME to fetch boot parameters for.
         """
         body = {'hosts': [xname]}
         try:
@@ -64,9 +68,12 @@ class API:
                 f'{bss_response.status_code} from  BSS.')
         return bss_response.json()[0]
 
-    def patch_bss_bootparams(self, xname : str, bss_json) -> None:
+    def patch_bss_bootparams(self, xname: str, bss_json: dict) -> None:
         """
         Patch the bootparameters in BSS for a specified xname.
+
+        :param xname: The XNAME to patch in BSS.
+        :param bss_json: The JSON to patch with.
         """
         try:
             patch_response = self.session.patch(self.bootparams_url,
@@ -88,6 +95,9 @@ class API:
 
         The inputs are the node's xname and a dictionary containing initrd, kernel, and roofs
         image paths that will be set in BSS.
+
+        :param xname: The XNAME to set images for in BSS.
+        :param image_dict: The image properties to set.
         """
         if 'initrd' not in image_dict or 'kernel' not in image_dict or 'rootfs' not in image_dict:
             raise ValueError(f"ERROR set_bss_image has inputs 'xname' and 'image_dictonary' where" \

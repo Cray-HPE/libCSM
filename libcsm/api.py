@@ -43,7 +43,7 @@ class AuthException(Exception):
 
     def __init__(self, message) -> None:
         """
-        Initializes the Exception.
+
         :param message: Message to include in the Exception.
         """
         self.message = message
@@ -61,7 +61,6 @@ class Auth:
 
     def __init__(self, **kwargs) -> None:
         """
-        Initialize an Auth class.
 
         :param kwargs:
         """

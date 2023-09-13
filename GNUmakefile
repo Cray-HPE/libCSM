@@ -162,7 +162,7 @@ help:
 	@echo '	   docs					Generate Python sphinx documentation.'
 
 clean:
-	rm -rf build dist .ruff_cache
+	rm -rf build dist .ruff_cache docs/_build
 
 docs:
 	sphinx-build -b html ./docs ./docs/_build

@@ -31,6 +31,9 @@ from libcsm.hsm import components
 def get_by_role_subrole(role_subrole: str) -> List[str]:
     """
     Get xnames by subrole from HSM.
+
+    :param: role_subrole: The subrole to fetch components for.
+    :returns: A list of all components for the given ``role_subrole``.
     """
     components_response = components.get_components(role_subrole)
     xnames = []
