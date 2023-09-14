@@ -1,5 +1,5 @@
-libcsm package
-==============
+``libcsm`` package
+==================
 
 Subpackages
 -----------
@@ -31,4 +31,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

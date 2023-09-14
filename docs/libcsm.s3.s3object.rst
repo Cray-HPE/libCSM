@@ -1,5 +1,5 @@
-libcsm.s3.s3object module
-=========================
+``libcsm.s3.s3object`` module
+=============================
 
 Module contents
 ---------------
@@ -8,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

@@ -1,5 +1,5 @@
-libcsm.s3 package
-=================
+``libcsm.s3`` package
+=====================
 
 Submodules
 ----------
@@ -17,4 +17,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

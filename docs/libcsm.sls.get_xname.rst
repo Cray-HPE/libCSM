@@ -1,5 +1,5 @@
-libcsm.sls.get_xname module
-===========================
+``libcsm.sls.get_xname`` module
+===============================
 
 Module contents
 ---------------
@@ -8,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

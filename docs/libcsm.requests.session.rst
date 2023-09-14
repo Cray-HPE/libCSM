@@ -1,5 +1,5 @@
-libcsm.requests.session module
-==============================
+``libcsm.requests.session`` module
+==================================
 
 Module contents
 ---------------
@@ -8,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

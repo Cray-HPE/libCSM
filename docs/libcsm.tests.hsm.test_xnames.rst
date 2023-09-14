@@ -1,6 +1,5 @@
-libcsm.tests.hsm.test_xnames module
-===================================
-
+``libcsm.tests.hsm.test_xnames`` module
+=======================================
 
 Module contents
 ---------------
@@ -9,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

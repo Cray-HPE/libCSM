@@ -1,5 +1,5 @@
-libcsm.hsm.xnames module
-========================
+``libcsm.hsm.xnames`` module
+============================
 
 Module contents
 ---------------
@@ -8,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

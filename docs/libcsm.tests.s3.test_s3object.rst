@@ -1,6 +1,5 @@
-libcsm.tests.s3.test_s3object module
-=====================================
-
+``libcsm.tests.s3.test_s3object`` module
+=========================================
 
 Module contents
 ---------------
@@ -9,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-
