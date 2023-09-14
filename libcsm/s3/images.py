@@ -22,7 +22,7 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Function to return rootfs,kernel,initrd image path given an image ID.
+Function to return ``rootfs``, ``kernel``, and the ``initrd`` image path given an image ID.
 """
 
 import json
@@ -45,11 +45,20 @@ def get_s3_image_info(bucket_name, image_id, endpoint_url) -> dict:
     Retrieve the initrd, rootfs, and kernel image for an S3 bucket and image ID.
 
     This returns a dictionary
+
+    .. code-block:: json
+
         {
-            rootfs: "<rootfs_image_path>"
-            kernel: "<kernal_image_path>"
-            initrd: "<initrd_image_path>"
-        }.
+            "rootfs": "<rootfs_image_path>",
+            "kernel": "<kernal_image_path>",
+            "initrd": "<initrd_image_path>"
+        }
+
+    :param bucket_name: Name of bucket.
+    :param image_id: ID of image.
+    :param endpoint_url: S3 endpoint.
+    :raises ImageFormatException: When an image is not found.
+    :returns: Dictionary of images.
     """
     image_manifest = image_id + "/manifest.json"
     image_object = s3object.S3Object(bucket_name, image_manifest)

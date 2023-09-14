@@ -40,7 +40,7 @@ from libcsm import api
 @dataclass()
 class MockV1Secret:
     """
-    A mock for kubernetes.client.models.v1_secret.V1Secret.
+    A mock for ``kubernetes.client.models.v1_secret.V1Secret``.
     """
 
     id = b'foo-client'
@@ -62,7 +62,7 @@ class TestApi:
 
     def test_object(self, *_) -> None:
         """
-        Verify the Auth object can be created regardless of Kubernetes' state,
+        Verify the ``Auth`` object can be created regardless of Kubernetes' state,
         and that the token is not yet set.
         """
         auth = api.Auth()

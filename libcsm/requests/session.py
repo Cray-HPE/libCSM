@@ -22,7 +22,7 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 """
-Common functions for working with requests.session in libCSM.
+Common functions for working with ``requests.session`` in libCSM.
 """
 
 from os import getenv
@@ -30,9 +30,12 @@ import requests
 import certifi
 
 
-def get_session(crt_variable="REQUESTS_CA_BUNDLE") -> requests.Session:
+def get_session(crt_variable: str = "REQUESTS_CA_BUNDLE") -> requests.Session:
     """
-    Get a requests.session and set verify with crt_variable.
+    Get a ``requests.session`` and set verify with ``crt_variable``.
+
+    :param crt_variable: Variable holding the certificate.
+    :returns: A ``requests.Session`` with the specified certificate.
     """
     crt_path = getenv(crt_variable, certifi.where())
     session = requests.Session()

@@ -36,7 +36,7 @@ S3_READ_TIMEOUT=1
 
 class RGWAdminException(Exception):
     """
-    An exception for problems running radosgw-admin commands.
+    An exception for problems running ``radosgw-admin`` commands.
     """
 
     def __init__(self, message) -> None:
@@ -50,6 +50,10 @@ class S3Object:
     """
 
     def __init__(self, bucket: str, object_name: str):
+        """
+        :param bucket: The bucket to represent from S3.
+        :param object_name: The bisect name of the bucket.
+        """
         self.bucket = bucket
         self.object_name = object_name
         self.owner = None
@@ -60,6 +64,7 @@ class S3Object:
     def verify_bucket_exists(self) -> None:
         """
         Verify the bucket provided exists in s3.
+        :raises RGWAdminException: When the command fails.
         """
         result = run_command(['radosgw-admin', 'bucket', 'list', '--bucket', self.bucket])
         if result.return_code != 0:
@@ -68,6 +73,8 @@ class S3Object:
     def get_object_owner(self) -> None:
         """
         Get the owner of an object.
+
+        :raises RGWAdminException: When the command fails.
         """
         result = run_command(['radosgw-admin', 'object', 'stat', '--object', self.object_name, \
             '--bucket', self.bucket])
@@ -80,6 +87,8 @@ class S3Object:
     def get_creds(self) -> None:
         """
         Get the credentials to access the object based on the owner.
+
+        :raises RGWAdminException: When the command fails.
         """
         if self.owner is None:
             self.get_object_owner()
@@ -90,9 +99,12 @@ class S3Object:
         self._a_key = info['keys'][0]['access_key']
         self._s_key = info['keys'][0]['secret_key']
 
-    def get_object(self, endpoint_url="http://rgw-vip"):
+    def get_object(self, endpoint_url: str = "http://rgw-vip") -> boto3.session.Session:
         """
-        Get the object from s3. Returns a ``bob3.resource.Object``.
+        Get the object from s3. Returns a ``boto3.resource.Object``.
+
+        :param endpoint_url: The endpoint URL to get objects from.
+        :returns: The S3 object.
         """
         if self._a_key is None or self._s_key is None:
             self.get_creds()

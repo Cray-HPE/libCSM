@@ -36,10 +36,13 @@ from libcsm.sls import api
     help='hostname of the node whose Xname should be returned.')
 @click.option('--api-gateway-address', required=False, type=str, default='api-gw-service-nmn.local',
     help='API gateway address. Default is \'api-gw-service-nmn.local\'.')
-def main(hostname, api_gateway_address) -> None:
+def main(hostname: str, api_gateway_address: str) -> None:
     """
     Get the Xname of a NCN given a hostname.
     This queries SLS for management nodes' information.
+
+    :param hostname: The hostname ot lookup.
+    :param api_gateway_address: The hostname of the API gateway.
     """
     sls_api = api.API(api_gateway_address)
     try:

@@ -51,7 +51,7 @@ import nox
 if getattr(sys, "frozen", False) and hasattr(
     sys,
     "_MEIPASS"
-    ):  # pragma: no cover
+):  # pragma: no cover
     project_root = sys._MEIPASS
 else:
     prog = __file__
@@ -59,31 +59,30 @@ else:
 
 COVERAGE_FAIL = 85
 ERROR_ON_GENERATE = True
-locations = "libcsm"
-nox.options.sessions = "test", "lint", "cover"
+locations = 'libcsm'
+nox.options.sessions = 'test', 'docs', 'lint', 'cover'
 
 
-@nox.session(python="3")
+@nox.session(python='3')
 def test(session):
     """Default unit test session."""
-    # Install all test dependencies, then install this package in-place.
-    session.install(".[test]")
-    session.install(".")
+    session.install('.[test]')
+    session.install('.')
 
     # Run pytest against the tests.
     session.run(
-        "pytest",
-        "--quiet",
-        "--cov=libcsm",
-        "--cov-append",
-        "--cov-report=",
-        f"--cov-fail-under={COVERAGE_FAIL}",
+        'pytest',
+        '--quiet',
+        '--cov=libcsm',
+        '--cov-append',
+        '--cov-report=',
+        f'--cov-fail-under={COVERAGE_FAIL}',
         '.',
         success_codes=[0, 5],
     )
 
 
-@nox.session(python="3")
+@nox.session(python='3')
 def lint(session):
     """Run flake8 linter and plugins."""
     session.install(".[lint]")
@@ -92,16 +91,25 @@ def lint(session):
     session.run("ruff", "check", "libcsm/")
 
 
-@nox.session(python="3")
+@nox.session(python='3')
+def docs(session):
+    """Run flake8 linter and plugins."""
+    session.install('setuptools_scm[toml]')
+    session.install('.')
+    session.install('.[docs]')
+    session.run('make', 'docs')
+
+
+@nox.session(python='3')
 def cover(session):
     """Run the final coverage report."""
-    session.install(".[test]")
-    session.install(".")
+    session.install('.[test]')
+    session.install('.')
     session.run(
-        "coverage",
-        "report",
-        "--show-missing",
-        f"--fail-under={COVERAGE_FAIL}",
+        'coverage',
+        'report',
+        '--show-missing',
+        f'--fail-under={COVERAGE_FAIL}',
         success_codes=[0, 5]
     )
-    session.run("coverage", "erase")
+    session.run('coverage', 'erase')
