@@ -30,19 +30,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v4
       - name: Install dependencies
         run: |
           pip install setuptools_scm[toml]
           pip install .[docs]
+          pip install .
       - name: Sphinx build
         run: |
           make docs
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         with:
           # Upload entire repository
           path: 'docs/_build/'
