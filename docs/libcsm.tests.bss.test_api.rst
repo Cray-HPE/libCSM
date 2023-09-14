@@ -1,6 +1,5 @@
-libcsm.tests.bss.test_api module
-================================
-
+``libcsm.tests.bss.test_api`` module
+====================================
 
 Module contents
 ---------------
@@ -9,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

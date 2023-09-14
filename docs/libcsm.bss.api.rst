@@ -1,5 +1,5 @@
-libcsm.bss.api module
-=====================
+``libcsm.bss.api`` module
+=========================
 
 Module contents
 ---------------
@@ -8,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

@@ -1,5 +1,5 @@
-libcsm.requests package
-=======================
+``libcsm.requests`` package
+===========================
 
 Submodules
 ----------
@@ -16,5 +16,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-
-

@@ -1,5 +1,5 @@
-libcsm.tests.mock_objects package
-=================================
+``libcsm.tests.mock_objects`` package
+=====================================
 
 Submodules
 ----------
@@ -17,4 +17,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

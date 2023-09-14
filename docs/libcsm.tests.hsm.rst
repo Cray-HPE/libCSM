@@ -1,5 +1,5 @@
-libcsm.tests.hsm package
-========================
+``libcsm.tests.hsm`` package
+============================
 
 Submodules
 ----------
@@ -17,4 +17,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

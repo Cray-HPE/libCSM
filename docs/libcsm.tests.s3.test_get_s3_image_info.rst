@@ -1,6 +1,5 @@
-libcsm.tests.s3.test_get_s3_image_info module
-=============================================
-
+``libcsm.tests.s3.test_get_s3_image_info`` module
+=================================================
 
 Module contents
 ---------------
@@ -9,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

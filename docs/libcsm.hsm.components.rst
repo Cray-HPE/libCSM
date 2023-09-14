@@ -1,5 +1,5 @@
-libcsm.hsm.components module
-============================
+``libcsm.hsm.components`` module
+================================
 
 Module contents
 ---------------
@@ -8,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

@@ -1,5 +1,5 @@
-libcsm.hsm package
-==================
+``libcsm.hsm`` package
+======================
 
 Submodules
 ----------
@@ -17,4 +17,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

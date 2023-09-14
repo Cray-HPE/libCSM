@@ -1,5 +1,5 @@
-libcsm.bss.set_image module
-===========================
+``libcsm.bss.set_image`` module
+===============================
 
 Module contents
 ---------------
@@ -8,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

@@ -1,6 +1,5 @@
-libcsm.tests.bss.test_set_image module
-======================================
-
+``libcsm.tests.bss.test_set_image`` module
+==========================================
 
 Module contents
 ---------------
@@ -9,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

@@ -1,6 +1,5 @@
-libcsm.tests.mock_objects.mock_sls module
-=========================================
-
+``libcsm.tests.mock_objects.mock_sls`` module
+=============================================
 
 Module contents
 ---------------
@@ -9,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

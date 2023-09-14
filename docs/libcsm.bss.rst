@@ -1,5 +1,5 @@
-libcsm.bss package
-==================
+``libcsm.bss`` package
+======================
 
 Submodules
 ----------
@@ -17,4 +17,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

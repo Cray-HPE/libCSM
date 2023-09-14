@@ -1,5 +1,5 @@
-libcsm.s3.images module
-=======================
+``libcsm.s3.images`` module
+===========================
 
 Module contents
 ---------------
@@ -8,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

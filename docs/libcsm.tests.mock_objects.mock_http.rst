@@ -1,6 +1,5 @@
-libcsm.tests.mock_objects.mock_http module
-==========================================
-
+``libcsm.tests.mock_objects.mock_http`` module
+==============================================
 
 Module contents
 ---------------
@@ -9,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

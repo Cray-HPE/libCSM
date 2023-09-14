@@ -1,6 +1,5 @@
-libcsm.tests.sls.test_get_xname module
-======================================
-
+``libcsm.tests.sls.test_get_xname`` module
+==========================================
 
 Module contents
 ---------------
@@ -9,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

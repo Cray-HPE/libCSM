@@ -1,6 +1,5 @@
-libcsm.tests.sls.test_get_hostname module
-=========================================
-
+``libcsm.tests.sls.test_get_hostname`` module
+=============================================
 
 Module contents
 ---------------
@@ -9,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-

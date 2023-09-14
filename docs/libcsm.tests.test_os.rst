@@ -1,5 +1,5 @@
-libcsm.tests.test_os module
-===========================
+``libcsm.tests.test_os`` module
+===============================
 
 Module contents
 ---------------
@@ -8,4 +8,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-
