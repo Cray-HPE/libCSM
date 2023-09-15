@@ -28,9 +28,6 @@ on: [push]
 jobs:
   lint:
     name: Lint
-    strategy:
-      matrix:
-        version: ['3.11', '3.10']
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -38,8 +35,6 @@ jobs:
         fetch-depth: 0 # Also fetch git-tags
     - name: Set up Python
       uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.version }}
     - name: nox
       env:
         GIT_REPO_NAME: "${GITHUB_REPOSITORY#*/}"
