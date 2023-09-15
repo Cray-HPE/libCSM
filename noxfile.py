@@ -73,7 +73,7 @@ def test(session):
     session.run(
         'pytest',
         '--quiet',
-        '--cov=libcsm',
+        f'--cov={locations}',
         '--cov-append',
         '--cov-report=',
         f'--cov-fail-under={COVERAGE_FAIL}',
@@ -88,17 +88,7 @@ def lint(session):
     session.install(".[lint]")
     session.install(".[test]")
     session.install(".")
-    session.run("ruff", "check", "libcsm/")
-
-
-@nox.session(python='3')
-def docs(session):
-    """Run flake8 linter and plugins."""
-    session.install('setuptools_scm[toml]')
-    session.install('.')
-    session.install('.[docs]')
-    session.run('make', 'docs')
-
+    session.run("ruff", "check", f"{locations}/")
 
 @nox.session(python='3')
 def cover(session):
