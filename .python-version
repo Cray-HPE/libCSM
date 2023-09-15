@@ -1,0 +1,2 @@
+# This file tells GitHub's setup-python action which Python version to use.
+3.11
