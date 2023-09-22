@@ -125,13 +125,13 @@ zypper --plus-repo=https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stab
 +
 [source,bash]
 ----
-source /usr/lib/libcsm/python/bin/activate
+source /usr/lib/libcsm/libcsm-venv/bin/activate
 ----
 - Use the package ad-hoc in a Python interpreter:
 +
 [source,bash]
 ----
-/usr/lib/libcsm/python/bin/python
+/usr/lib/libcsm/libcsm-venv/bin/python
 ----
 +
 [source,python]
