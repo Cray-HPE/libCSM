@@ -42,7 +42,7 @@ BuildArch: %(echo $ARCH)
 License: MIT License
 Summary: A library for providing common functions to Cray System Management procedures and operations.
 Version: %(echo $VERSION)
-Release: 1
+Release: %(echo $RELEASE)
 Source: %{name}-%{version}.tar.bz2
 Vendor: Hewlett Packard Enterprise Development LP
 Obsoletes: %{python_flavor}-%{name}
