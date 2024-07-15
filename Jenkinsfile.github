@@ -1,7 +1,7 @@
 /*
  MIT License
 
- (C) Copyright 2023 Hewlett Packard Enterprise Development LP
+ (C) Copyright 2024 Hewlett Packard Enterprise Development LP
 
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
@@ -66,7 +66,7 @@ pipeline {
                     docker {
                         args '-v /home/jenkins/.ssh:/home/jenkins/.ssh'
                         reuseNode true
-                        image "${pythonImage}:${PYTHON_VERSION}"
+                        image "${pythonImage}:${DOCKER_TAG}"
                     }
                 }
 
@@ -78,14 +78,15 @@ pipeline {
                     }
 
                     axis {
-                        name 'PYTHON_VERSION'
-                        values '3.11', '3.10', '3.9', '3.6'
+                        name 'DOCKER_TAG'
+                        values '3.11-SLES15.6', '3.11-SLES15.5', '3.10', '3.9', '3.6'
                     }
 
                 }
 
                 environment {
-                    BUILD_DIR = "${env.WORKSPACE}/dist/rpmbuild/${ARCH}/${PYTHON_VERSION}"
+                    PYTHON_VERSION = sh(script: "echo \${DOCKER_TAG%%-*}", returnStdout: true).trim()
+                    BUILD_DIR = "${env.WORKSPACE}/dist/rpmbuild/${ARCH}/${DOCKER_TAG}"
                 }
 
                 stages {
@@ -141,14 +142,14 @@ pipeline {
                                         isStable: isStable,
                                         component: env.NAME,
                                         os: "sle-${sles_major}sp${sles_minor}",
-                                        pattern: "dist/rpmbuild/${ARCH}/${PYTHON_VERSION}/RPMS/${ARCH}/*.rpm",
+                                        pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/RPMS/${ARCH}/*.rpm",
                                 )
                                 publishCsmRpms(
                                         arch: "src",
                                         component: env.NAME,
                                         isStable: isStable,
                                         os: "sle-${sles_major}sp${sles_minor}",
-                                        pattern: "dist/rpmbuild/${ARCH}/${PYTHON_VERSION}/SRPMS/*.rpm",
+                                        pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/SRPMS/*.rpm",
                                 )
                             }
                         }
