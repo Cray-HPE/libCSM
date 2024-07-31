@@ -79,7 +79,7 @@ pipeline {
 
                     axis {
                         name 'DOCKER_TAG'
-                        values '3.12'
+                        values '3.12', '3.11-SLES15.5', '3.10', '3.9', '3.6'
                     }
 
                 }
@@ -133,20 +133,42 @@ pipeline {
 
                         steps {
                             script {
-                                publishCsmRpms(
-                                        arch: "${ARCH}",
-                                        isStable: isStable,
-                                        component: env.NAME,
-                                        os: "noos",
-                                        pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/RPMS/${ARCH}/*.rpm",
-                                )
-                                publishCsmRpms(
-                                        arch: "src",
-                                        component: env.NAME,
-                                        isStable: isStable,
-                                        os: "noos",
-                                        pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/SRPMS/*.rpm",
-                                )
+                                def sleVersion = sh(returnStdout: true, script: 'awk -F= \'/VERSION_ID/{gsub(/["]/,""); print \$NF}\' /etc/os-release').trim()
+                                def sles_version_parts = "${sleVersion}".tokenize('.')
+                                def sles_major = "${sles_version_parts[0]}"
+                                def sles_minor = "${sles_version_parts[1]}"
+
+                                if (sles_major == "15" && sles_minor >= "6") {
+                                    publishCsmRpms(
+                                            arch: "${ARCH}",
+                                            isStable: isStable,
+                                            component: env.NAME,
+                                            os: "noos",
+                                            pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/RPMS/${ARCH}/*.rpm",
+                                    )
+                                    publishCsmRpms(
+                                            arch: "src",
+                                            component: env.NAME,
+                                            isStable: isStable,
+                                            os: "noos",
+                                            pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/SRPMS/*.rpm",
+                                    )                                    
+                                } else {
+                                    publishCsmRpms(
+                                            arch: "${ARCH}",
+                                            isStable: isStable,
+                                            component: env.NAME,
+                                            os: "sle-${sles_major}sp${sles_minor}",
+                                            pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/RPMS/${ARCH}/*.rpm",
+                                    )
+                                    publishCsmRpms(
+                                            arch: "src",
+                                            component: env.NAME,
+                                            isStable: isStable,
+                                            os: "sle-${sles_major}sp${sles_minor}",
+                                            pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/SRPMS/*.rpm",
+                                    )
+                                }
                             }
                         }
                     }
