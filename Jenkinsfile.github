@@ -137,38 +137,20 @@ pipeline {
                                 def sles_version_parts = "${sleVersion}".tokenize('.')
                                 def sles_major = "${sles_version_parts[0]}"
                                 def sles_minor = "${sles_version_parts[1]}"
-
-                                if (sles_major == "15" && sles_minor >= "7") {
-                                    publishCsmRpms(
-                                            arch: "${ARCH}",
-                                            isStable: isStable,
-                                            component: env.NAME,
-                                            os: "noos",
-                                            pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/RPMS/${ARCH}/*.rpm",
-                                    )
-                                    publishCsmRpms(
-                                            arch: "src",
-                                            component: env.NAME,
-                                            isStable: isStable,
-                                            os: "noos",
-                                            pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/SRPMS/*.rpm",
-                                    )
-                                } else {
-                                    publishCsmRpms(
-                                            arch: "${ARCH}",
-                                            isStable: isStable,
-                                            component: env.NAME,
-                                            os: "sle-${sles_major}sp${sles_minor}",
-                                            pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/RPMS/${ARCH}/*.rpm",
-                                    )
-                                    publishCsmRpms(
-                                            arch: "src",
-                                            component: env.NAME,
-                                            isStable: isStable,
-                                            os: "sle-${sles_major}sp${sles_minor}",
-                                            pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/SRPMS/*.rpm",
-                                    )
-                                }
+                                publishCsmRpms(
+                                        arch: "${ARCH}",
+                                        isStable: isStable,
+                                        component: env.NAME,
+                                        os: "sle-${sles_major}sp${sles_minor}",
+                                        pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/RPMS/${ARCH}/*.rpm",
+                                )
+                                publishCsmRpms(
+                                        arch: "src",
+                                        component: env.NAME,
+                                        isStable: isStable,
+                                        os: "sle-${sles_major}sp${sles_minor}",
+                                        pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/SRPMS/*.rpm",
+                                )
                             }
                         }
                     }
