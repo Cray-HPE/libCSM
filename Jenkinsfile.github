@@ -79,7 +79,7 @@ pipeline {
 
                     axis {
                         name 'DOCKER_TAG'
-                        values '3.12', '3.11-SLES15.5', '3.10', '3.9', '3.6'
+                        values '3.13', '3.12', '3.11-SLES15.5', '3.10', '3.9', '3.6'
                     }
 
                 }
@@ -138,7 +138,7 @@ pipeline {
                                 def sles_major = "${sles_version_parts[0]}"
                                 def sles_minor = "${sles_version_parts[1]}"
 
-                                if (sles_major == "15" && sles_minor >= "6") {
+                                if (sles_major == "15" && sles_minor >= "7") {
                                     publishCsmRpms(
                                             arch: "${ARCH}",
                                             isStable: isStable,
@@ -152,7 +152,7 @@ pipeline {
                                             isStable: isStable,
                                             os: "noos",
                                             pattern: "dist/rpmbuild/${ARCH}/${DOCKER_TAG}/SRPMS/*.rpm",
-                                    )                                    
+                                    )
                                 } else {
                                     publishCsmRpms(
                                             arch: "${ARCH}",
